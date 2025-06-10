@@ -7,5 +7,7 @@ export interface StorageAdapter {
   delete(key: string): Promise<void>;
 
   list(prefix?: string): Promise<string[]>;
-  
+
+  prepare(projectId: string): Promise<void>;
+
 }
