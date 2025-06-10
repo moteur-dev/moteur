@@ -20,8 +20,6 @@ import e from 'express';
 import { cliLoadUser } from '../utils/auth.js';
 import { User } from '../../types/User.js';
 
-
-
 export async function listEntriesCommand(args: {
     projectId: string;
     model: string;

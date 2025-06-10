@@ -14,8 +14,6 @@ import { listBlocks } from '../../../src/api/blocks.js';
 import { cliLoadUser } from '../utils/auth.js';
 import { User } from '../../types/User.js';
 
-
-
 export async function listLayoutsCommand(args: {
     project: string;
     json?: boolean;
