@@ -6,8 +6,6 @@ import { createProjectCommand } from '../commands/project.js';
 import { User } from '../../types/User.js';
 import { cliLoadUser } from '../utils/auth.js';
 
-
-
 export async function showProjectsMenu() {
     const user: User = cliLoadUser();
     try {

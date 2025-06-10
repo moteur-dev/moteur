@@ -106,7 +106,6 @@ if (globalFlags.json) {
             if (subcommand === 'create-user') {
                 return createUserCommand();
             }
-
         }
 
         // Projects

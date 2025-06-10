@@ -38,7 +38,7 @@ export function generateJWT(user: User): string {
         email: user.email,
         roles: user.roles,
         projects: user.projects,
-        isActive: user.isActive,
+        isActive: user.isActive
     };
     const token: string = jwt.sign(
         payload,

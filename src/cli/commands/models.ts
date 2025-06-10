@@ -15,7 +15,6 @@ import { ModelSchema, modelSchemaFields } from '../../types/Model.js';
 import { cliLoadUser } from '../utils/auth.js';
 import { User } from '../../types/User.js';
 
-
 export async function listModelSchemasCommand(args: {
     projectId: string;
     json?: boolean;
