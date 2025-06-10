@@ -1,7 +1,7 @@
 // src/cli/menu/menus/systemSettingsMenu.ts
 import inquirer from 'inquirer';
-import { listFields } from '../../api/fields';
-import { listBlocks } from '../../api/blocks';
+import { listFields } from '../../api/fields.js';
+import { listBlocks } from '../../api/blocks.js';
 import { table } from 'table';
 
 export async function showSystemSettingsMenu() {

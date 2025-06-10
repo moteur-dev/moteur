@@ -1,4 +1,4 @@
-import { Field } from './Field';
+import { Field } from './Field.js';
 
 export interface Entry {
     id: string;

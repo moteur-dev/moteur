@@ -1,10 +1,10 @@
 // utils/eventBus.ts
-import { ProjectSchema } from '../types/Project';
-import { ModelSchema, Entry } from '../types/Model';
-import { Layout } from '../types/Layout';
-import { Block } from '../types/Block';
-import { StructureSchema } from '../types/Structure';
-import { User } from '../types/User';
+import { ProjectSchema } from '../types/Project.js';
+import { ModelSchema, Entry } from '../types/Model.js';
+import { Layout } from '../types/Layout.js';
+import { Block } from '../types/Block.js';
+import { StructureSchema } from '../types/Structure.js';
+import { User } from '../types/User.js';
 
 // Event context uses explicit resource keys (like { project, user }) for clarity.
 export interface EventMap {

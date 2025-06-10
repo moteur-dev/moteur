@@ -11,7 +11,7 @@ import { assertUserCanAccessProject } from '../utils/access.js';
 import { get } from 'http';
 import { getProject } from './projects.js';
 import { validateModel } from 'validators/validateModel.js';
-import { triggerEvent } from '../utils/eventBus';
+import { triggerEvent } from '../utils/eventBus.js';
 
 export function listModelSchemas(user: User, projectId: string): ModelSchema[] {
     if (!isValidId(projectId)) {

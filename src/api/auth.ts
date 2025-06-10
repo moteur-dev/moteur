@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 import { moteurConfig } from '../../moteur.config.js';
 import { getUserByEmail } from './users.js';
+
 import { User } from '../types/User.js';
 
 const JWT_SECRET = moteurConfig.auth?.jwtSecret ?? 'super-jwt-secret-key';

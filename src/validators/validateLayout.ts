@@ -1,4 +1,4 @@
-import { Layout } from '../types/Layout';
+import { Layout } from '../types/Layout.js';
 import { Block, BlockSchema } from '../types/Block.js';
 import { Field, FieldSchema } from '../types/Field.js';
 import { ValidationResult, ValidationIssue } from '../types/ValidationResult.js';

@@ -6,7 +6,7 @@ import {
     createEntryCommand,
     patchEntryCommand,
     deleteEntryCommand
-} from '../commands/entries';
+} from '../commands/entries.js';
 
 export async function showEntriesMenu(projectId: string, modelId: string) {
     try {

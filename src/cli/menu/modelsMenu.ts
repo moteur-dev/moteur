@@ -6,9 +6,9 @@ import {
     createModelSchemaCommand,
     patchModelSchemaCommand,
     deleteModelSchemaCommand
-} from '../commands/models';
-import { listProjects } from '../../api/projects';
-import { showEntriesMenu } from './entriesMenu';
+} from '../commands/models.js';
+import { listProjects } from '../../api/projects.js';
+import { showEntriesMenu } from './entriesMenu.js';
 import { showWelcomeBanner } from '../utils/showWelcomeBanner.js';
 import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
 import { User } from '../../types/User.js';

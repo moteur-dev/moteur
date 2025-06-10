@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
-import { listProjects } from '../../api/projects';
-import { User } from '../../types/User';
+import { listProjects } from '../../api/projects.js';
+import { User } from '../../types/User.js';
 
 export async function projectSelectPrompt(user: User) {
     const projects = listProjects(user);

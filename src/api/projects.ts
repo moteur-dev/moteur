@@ -8,7 +8,7 @@ import { readJson, writeJson, isExistingProjectId } from '../utils/fileUtils.js'
 import { projectFilePath, projectDir } from '../utils/pathUtils.js';
 import { User } from '../types/User.js';
 import { assertUserCanAccessProject, assertUserCanCreateProject } from '../utils/access.js';
-import { triggerEvent } from '../utils/eventBus';
+import { triggerEvent } from '../utils/eventBus.js';
 
 export function getProject(user: User, projectId: string): ProjectSchema {
     if (!isValidId(projectId)) {
