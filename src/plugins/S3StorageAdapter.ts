@@ -8,6 +8,7 @@ import {
     ListObjectsV2Command
 } from '@aws-sdk/client-s3';
 import { StorageAdapter } from '../types/Storage.js';
+import { storageRegistry } from '../registry/StorageRegistry.js';
 import { Readable } from 'stream';
 
 export interface S3StorageOptions {
@@ -131,3 +132,6 @@ export class S3StorageAdapter implements StorageAdapter {
         }
     }
 }
+
+// Self-register on import
+storageRegistry.register('s3', S3StorageAdapter);

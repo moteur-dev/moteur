@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { StorageAdapter } from '../types/Storage.js';
+import { storageRegistry } from '../registry/StorageRegistry.js';
 
 export interface LocalJsonStorageOptions {
     baseDir: string;
@@ -83,3 +84,6 @@ export class LocalJsonStorageAdapter implements StorageAdapter {
         await fs.mkdir(projectPath, { recursive: true });
     }
 }
+
+// Self-register on import
+storageRegistry.register('local', LocalJsonStorageAdapter);
