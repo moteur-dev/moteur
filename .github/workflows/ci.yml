@@ -24,7 +24,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
-      run: npm install
+      run: npm install --include-dev
 
     - name: Use CI-specific moteur config
       run: cp moteur.config.ci.ts moteur.config.ts
