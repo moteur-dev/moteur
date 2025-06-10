@@ -1,0 +1,37 @@
+{
+  "id": "core/audit",
+  "label": "Audit",
+  "description": "Information about who created or updated the content and when.",
+  "fields": {
+    "createdBy": {
+      "type": "core/text",
+      "label": "Created by",
+      "description": "Name or ID of the user who created this entry.",
+      "options": { "multilingual": false }
+    },
+    "updatedBy": {
+      "type": "core/text",
+      "label": "Updated by",
+      "description": "Name or ID of the user who last updated this entry.",
+      "options": { "multilingual": false }
+    },
+    "createdAt": {
+      "type": "core/datetime",
+      "label": "Created at",
+      "description": "Date/time when the entry was created.",
+      "options": { "multilingual": false }
+    },
+    "updatedAt": {
+      "type": "core/datetime",
+      "label": "Updated at",
+      "description": "Date/time when the entry was last updated.",
+      "options": { "multilingual": false }
+    },
+    "revision": {
+      "type": "core/number",
+      "label": "Revision",
+      "description": "Revision number of the entry.",
+      "options": { "multilingual": false }
+    }
+  }
+}

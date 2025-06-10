@@ -1,0 +1,22 @@
+{
+    "type": "core/quote",
+    "label": "Quote",
+    "description": "A block for displaying a quote with an optional author and author image.",
+    "fields": {
+      "text": {
+        "type": "core/rich-text",
+        "multilingual": true,
+        "required": true,
+        "label": "Quote"
+      },
+      "author": {
+        "type": "core/text",
+        "multilingual": true,
+        "label": "Author"
+      },
+      "authorImage": {
+        "type": "core/image",
+        "label": "Author Image"
+      }
+    }
+  }

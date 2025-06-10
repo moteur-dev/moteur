@@ -1,0 +1,22 @@
+{
+    "type": "core/gallery",
+    "label": "Gallery",
+    "description": "A hero field with a title, subtitle, and optional background image.",
+    "fields": {
+        "title": {
+            "type": "core/text",
+            "label": "Title",
+            "multilingual": true,
+            "required": true
+        },
+        "subtitle": {
+            "type": "core/rich-text",
+            "label": "Subtitle",
+            "multilingual": true
+        },
+        "backgroundImage": {
+            "type": "core/image",
+            "label": "Background Image"
+        }
+    }
+}

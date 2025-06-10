@@ -1,0 +1,20 @@
+
+# App config
+moteur.config.ts
+data/projects
+
+# Node and npm
+node_modules/
+dist/
+build/
+html/
+coverage/
+.env
+
+
+# OS and other
+.DS_Store
+
+# Editor files
+.idea/
+.vscode/

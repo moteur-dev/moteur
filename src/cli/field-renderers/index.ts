@@ -1,0 +1,28 @@
+import { registerCliFieldRenderer } from './renderCliField.js';
+import { renderCliTextField } from './renderCliTextField.js';
+import { renderCliBooleanField } from './renderCliBooleanField.js';
+import { renderCliNumberField } from './renderCliNumberField.js';
+import { renderCliSelectField } from './renderCliSelectField.js';
+import { renderCliStructureField } from './renderCliStructureField.js';
+import { renderCliLinkField } from './renderCliLinkField.js';
+import { renderCliImageField } from './renderCliImageField.js';
+import { renderCliHtmlField } from './renderCliHtmlField.js';
+import { renderCliMarkdownField } from './renderCliMarkdownField.js';
+import { renderCliColorField } from './renderCliColorField.js';
+import { renderCliListField } from './renderCliListField.js';
+import { renderCliObjectField } from './renderCliObjectField.js';
+import { renderCliRichtextField } from './renderCliRichtextField.js';
+
+registerCliFieldRenderer('core/text', renderCliTextField);
+registerCliFieldRenderer('core/boolean', renderCliBooleanField);
+registerCliFieldRenderer('core/number', renderCliNumberField);
+registerCliFieldRenderer('core/select', renderCliSelectField);
+registerCliFieldRenderer('core/structure', renderCliStructureField);
+registerCliFieldRenderer('core/link', renderCliLinkField);
+registerCliFieldRenderer('core/image', renderCliImageField);
+registerCliFieldRenderer('core/html', renderCliHtmlField);
+registerCliFieldRenderer('core/markdown', renderCliMarkdownField);
+registerCliFieldRenderer('core/color', renderCliColorField);
+registerCliFieldRenderer('core/list', renderCliListField);
+registerCliFieldRenderer('core/object', renderCliObjectField);
+registerCliFieldRenderer('core/rich-text', renderCliRichtextField);

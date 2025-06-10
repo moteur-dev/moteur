@@ -1,0 +1,25 @@
+{
+    "type": "core/image",
+    "label": "Image",
+    "description": "A single image block.",
+    "fields": {
+        "image": {
+            "type": "core/image",
+            "label": "Image",
+            "multilingual": true,
+            "required": true
+        },
+        "title": {
+          "type": "core/string",
+          "multilingual": true
+        },
+        "caption": {
+          "type": "core/string",
+          "multilingual": true
+        },
+        "credit": {
+          "type": "core/string",
+          "multilingual": true
+        }
+    }
+}

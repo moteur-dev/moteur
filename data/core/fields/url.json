@@ -1,0 +1,12 @@
+{
+    "type": "core/url",
+    "label": "URL",
+    "description": "A URL field.",
+    "fields": {
+        "url": {
+            "type": "string",
+            "multilingual": true,
+            "required": true
+        }
+    }
+}

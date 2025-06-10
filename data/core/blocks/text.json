@@ -1,0 +1,13 @@
+{
+    "type": "core/text",
+    "label": "Text",
+    "description": "A single-line string field with multilingual support.",
+    "fields": {
+        "value": {
+            "type": "string",
+            "format": "text",
+            "multilingual": true,
+            "required": true
+          }
+    }
+}

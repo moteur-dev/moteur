@@ -1,0 +1,29 @@
+{
+  "id": "core/seo",
+  "label": "SEO",
+  "description": "Search engine optimization fields.",
+  "fields": {
+    "seoTitle": {
+      "type": "core/text",
+      "label": "SEO Title",
+      "description": "Custom title for search engines.",
+      "options": { "multilingual": true }
+    },
+    "seoDescription": {
+      "type": "core/textarea",
+      "label": "SEO Description",
+      "description": "Custom meta description for search engines.",
+      "options": { "multilingual": true }
+    },
+    "seoImage": {
+      "type": "core/image",
+      "label": "SEO Image",
+      "description": "Image used for social sharing (e.g., Open Graph)."
+    },
+    "canonicalUrl": {
+      "type": "core/url",
+      "label": "Canonical URL",
+      "description": "Preferred URL for this content."
+    }
+  }
+}

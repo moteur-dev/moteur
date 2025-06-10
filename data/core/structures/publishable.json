@@ -1,0 +1,32 @@
+{
+  "id": "core/publishable",
+  "label": "Publishable",
+  "description": "Fields that control publishing status and slugs.",
+  "fields": {
+    "status": {
+      "type": "core/select",
+      "label": "Status",
+      "description": "Current publication status.",
+      "options": {
+        "choices": [
+          { "value": "draft", "label": "Draft" },
+          { "value": "published", "label": "Published" },
+          { "value": "archived", "label": "Archived" }
+        ],
+        "allowEmpty": false
+      }
+    },
+    "slug": {
+      "type": "core/text",
+      "label": "Slug",
+      "description": "URL-friendly identifier for the entry.",
+      "options": { "multilingual": false }
+    },
+    "publishDate": {
+      "type": "core/text",
+      "label": "Publish Date",
+      "description": "Date when the entry should be published.",
+      "options": { "multilingual": false }
+    }
+  }
+}

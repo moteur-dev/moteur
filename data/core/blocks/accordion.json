@@ -1,0 +1,46 @@
+{
+    "type": "core/accordion",
+    "label": "Accordion",
+    "description": "A list of expandable items with titles and rich content.",
+    "category": "content",
+    "fields": {
+      "title": {
+        "type": "core/text",
+        "label": "Title",
+        "multilingual": true
+      },
+      "items": {
+        "type": "core/list",
+        "label": "Accordion Items",
+        "subItems": {
+          "type": "core/object",
+          "label": "Accordion Item",
+          "fields": {
+            "title": {
+              "type": "core/text",
+              "label": "Title",
+              "multilingual": true,
+              "required": true
+            },
+            "content": {
+              "type": "core/rich-text",
+              "label": "Content",
+              "multilingual": true,
+              "required": true
+            }
+          }
+        },
+        "options": {
+          "allowEmpty": false,
+          "minItems": 1,
+          "maxItems": 80,
+          "sortable": true
+        }   
+      },
+      "multiOpen": {
+        "type": "core/boolean",
+        "label": "Allow multiple items open",
+        "default": false
+      }
+    }
+  }

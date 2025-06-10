@@ -1,0 +1,28 @@
+{
+    "type": "core/video",
+    "label": "Hero",
+    "description": "A block containing a single video.",
+    "fields": {
+        "video": {
+            "type": "core/video",
+            "label": "Video",
+            "description": "The video to display in the hero block.",
+            "multilingual": true,
+            "required": true
+        },
+        "title": {
+            "type": "core/text",
+            "label": "Title",
+            "description": "The title of the hero block.",
+            "multilingual": true,
+            "required": true
+        },
+        "description": {
+            "type": "core/text",
+            "label": "Description",
+            "description": "A short description of the hero block.",
+            "multilingual": true,
+            "required": false
+        }
+    }
+}

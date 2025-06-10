@@ -1,0 +1,12 @@
+[
+  {
+    "id": "admin",
+    "email": "admin@example.com",
+    "passwordHash": "$2b$10$hqYvthqdyuGBzp/fXPJ/P.mlVNxtXdo8HogInAURMyTTjq4Nb7dXy",
+    "roles": [
+      "admin"
+    ],
+    "projects": [],
+    "isActive": true
+  }
+]

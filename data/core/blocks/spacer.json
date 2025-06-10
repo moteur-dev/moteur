@@ -1,0 +1,32 @@
+{
+    "type": "core/spacer",
+    "label": "Spacer",
+    "description": "Adds vertical space between blocks",
+    "fields": {
+        "size": {
+            "type": "string",
+            "format": "select",
+            "options": ["xs", "sm", "md", "lg", "xl"],
+            "default": "md",
+            "label": "Spacing size"
+        },
+        "unit": {
+            "type": "string",
+            "format": "select",
+            "options": ["px", "rem", "em"],
+            "default": "rem",
+            "label": "Unit of measurement"
+        },
+        "hideOn": {
+            "type": "array",
+            "format": "select",
+            "options": ["mobile", "tablet", "desktop"],
+            "label": "Hide on device"
+        },
+         "custom": {
+            "type": "number",
+            "label": "Custom height (px)",
+            "description": "Overrides predefined size"
+        }
+    }
+}

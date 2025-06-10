@@ -1,0 +1,44 @@
+{
+  "id": "core/source",
+  "label": "Source",
+  "description": "A source structure defines a data source for a model, including its type, query parameters, and field mappings.",
+  "fields": {
+    "source": {
+      "type": "core/text",
+      "label": "Source ID",
+      "description": "The ID of the source model (e.g., 'project/source').",
+      "required": true
+    },
+    "type":{
+        "type": "core/text",
+        "label": "Source Type",
+        "description": "The type of source, such as 'json', 'csv', or 'api'.",  
+        "required": true,
+        "default": "json"
+    },
+    "readonly": {
+        "type": "core/boolean",
+        "label": "Read-Only",
+        "description": "If true, the source data cannot be modified.",
+        "default": false
+    },
+    "query": {
+        "type": "core/object",
+        "label": "Query Parameters",
+        "description": "Optional query parameters to filter or sort the source data.",
+        "required": false
+    },
+    "filters": {
+        "type": "core/object",
+        "label": "Filters",
+        "description": "Optional filters to apply to the source data.",
+        "required": false
+    },
+    "mappings":{
+        "type": "core/object",
+        "label": "Field Mappings",
+        "description": "Mappings for fields in the source model to the current model.",
+        "required": false
+    }
+  }
+}

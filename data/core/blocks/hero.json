@@ -1,0 +1,49 @@
+{
+    "type": "core/hero",
+    "label": "Hero",
+    "description": "A hero field with a title, subtitle, and optional background image.",
+    "fields": {
+        "title": {
+            "type": "core/text",
+            "label": "Title",
+            "multilingual": true,
+            "required": true
+        },
+        "subtitle": {
+            "type": "core/rich-text",
+            "label": "Subtitle",
+            "multilingual": true
+        },
+        "backgroundImage": {
+            "type": "core/image",
+            "label": "Background Image"
+        },
+        "backgroundColor": {
+            "type": "core/color",
+            "label": "Background Color",
+            "description": "A color for the background.",
+            "default": "#ffffff"
+        },
+        "headingLevel": {
+            "type": "core/select",
+            "label": "Heading Level",
+            "description": "The HTML heading level for the title.",
+            "options": ["h1", "h2", "h3", "h4", "h5", "h6"],
+            "default": "h1"
+        },
+        "alignment": {
+            "type": "core/select",
+            "label": "Text Alignment",
+            "description": "The alignment of the text within the hero block.",
+            "options": ["left", "center", "right"],
+            "default": "center"
+            
+        },
+        "cta":{
+            "type": "core/link",
+            "label": "Call to Action",
+            "description": "A URL for the call to action button.",
+            "multilingual": true
+        }
+    }
+}

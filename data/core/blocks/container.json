@@ -1,0 +1,17 @@
+{
+    "type": "core/container",
+    "label": "Container",
+    "description": "A container block that can hold other blocks.",
+    "fields": {
+        "blocks": {
+            "type": "core/list",
+            "label": "Blocks",
+            "description": "A list of blocks contained within this container.",
+            "items": {
+                "type": "core/block"
+            },
+            "multilingual": true,
+            "required": true
+        }
+    }
+}
