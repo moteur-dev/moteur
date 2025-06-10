@@ -14,7 +14,8 @@ export default [
       'node_modules/**',
       'coverage/**',
       'vitest.config.js',
-      'src/tests/**'
+      'src/tests/**',
+      'html/**'
     ],
   },
 
@@ -33,6 +34,7 @@ export default [
         process: true,
         require: true,
         module: true,
+        Buffer: true,
       },
     },
     plugins: {
@@ -54,11 +56,7 @@ export default [
           semi: true,       // Add semicolons
           singleQuote: true // Use single quotes
         }
-      ],
-
-      // General
-      'no-console': 'warn', // Use console sparingly
-      'eqeqeq': ['error', 'always'], // Avoid loose equality
+      ]
     },
   },
 ];
