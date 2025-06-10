@@ -6,8 +6,6 @@ import { listBlocks } from '../../api/blocks';
 import { cliLoadUser } from '../utils/auth';
 import { User } from '../../types/User';
 
-
-
 export async function addBlockToLayout(projectId: string, layoutId: string) {
     const user: User = cliLoadUser();
     const blockTypes = await listBlocks();

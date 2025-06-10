@@ -9,7 +9,6 @@ import { showWelcomeBanner } from '../utils/showWelcomeBanner.js';
 import { User } from '../../types/User.js';
 import { cliLoadUser } from '../utils/auth.js';
 
-
 export async function showProjectMenu(projectId: string) {
     const user: User = cliLoadUser();
     try {

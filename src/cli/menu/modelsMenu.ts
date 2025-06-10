@@ -14,8 +14,6 @@ import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
 import { User } from '../../types/User.js';
 import { cliLoadUser } from '../utils/auth.js';
 
-
-
 export async function showModelSchemasMenu(project: string) {
     const user: User = cliLoadUser();
     showWelcomeBanner();

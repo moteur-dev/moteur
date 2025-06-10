@@ -13,8 +13,6 @@ import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
 import { cliRequireRole, cliLoadUser } from '../utils/auth.js';
 import { User } from '../../../src/types/User.js';
 
-
-
 export async function listProjectsCommand(args: { json?: boolean; quiet?: boolean }) {
     const user: User = cliLoadUser();
     const projects = listProjects(user);
