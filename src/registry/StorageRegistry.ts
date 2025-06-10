@@ -1,26 +1,38 @@
 import { StorageAdapter } from '../types/Storage.js';
 
-export class StorageRegistry {
-  private adapters: Record<string, () => StorageAdapter> = {};
+type AdapterFactory = new (options: any) => StorageAdapter;
 
-  register(id: string, factory: () => StorageAdapter): void {
-    this.adapters[id] = factory;
+export class StorageRegistry {
+  private adapters: Record<string, AdapterFactory> = {};
+
+  register(id: string, adapterClass: AdapterFactory): void {
+    this.adapters[id] = adapterClass;
   }
 
-  get(id: string): StorageAdapter {
-    const factory = this.adapters[id];
-    if (!factory) {
+  get(id: string): AdapterFactory {
+    const adapterClass = this.adapters[id] || this.adapters[`core/${id}`];
+    if (!adapterClass) {
       throw new Error(`Storage adapter "${id}" not found in registry.`);
     }
-    return factory();
+    return adapterClass;
   }
 
   has(id: string): boolean {
-    return !!this.adapters[id];
+    return !!this.adapters[id] || !!this.adapters[`core/${id}`];
   }
 
-  all(): Record<string, () => StorageAdapter> {
+  list(): string[] {
+    return Object.keys(this.adapters);
+  }
+
+  all(): Record<string, AdapterFactory> {
     return this.adapters;
+  }
+
+
+  create(id: string, options: any): StorageAdapter {
+    const AdapterClass = this.get(id);
+    return new AdapterClass(options);
   }
 }
 

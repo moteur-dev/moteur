@@ -134,11 +134,4 @@ export class S3StorageAdapter implements StorageAdapter {
 }
 
 // Self-register on import
-storageRegistry.register('s3', () => new S3StorageAdapter({
-    bucket: process.env.S3_BUCKET!,
-    region: process.env.S3_REGION!,
-    credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY!,
-        secretAccessKey: process.env.S3_SECRET_KEY!,
-    },
-}));
+storageRegistry.register('s3', S3StorageAdapter);

@@ -10,6 +10,9 @@ export interface ProjectSchema {
 
     users?: string[]; // Optional list of authorized users
 
+    storage?: string; // Storage adapter ID (e.g., 'core/local', 'core/s3')
+    storageOptions?: Record<string, any>; // Options for the storage adapter
+
     features?: {
         pages: boolean; // Enable pages & templates
         layouts: boolean; // Enable layouts and blocks

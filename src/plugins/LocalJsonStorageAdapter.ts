@@ -86,7 +86,4 @@ export class LocalJsonStorageAdapter implements StorageAdapter {
 }
 
 // Self-register on import
-storageRegistry.register('local', () => new LocalJsonStorageAdapter({
-    baseDir: './data',
-    listMode: 'directory'
-}));
+storageRegistry.register('local', LocalJsonStorageAdapter);
