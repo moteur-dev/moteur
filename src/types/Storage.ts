@@ -1,13 +1,11 @@
 export interface StorageAdapter {
+    get(key: string): Promise<Buffer | null>;
 
-  get(key: string): Promise<Buffer | null>;
+    put(key: string, data: Buffer, options?: Record<string, any>): Promise<void>;
 
-  put(key: string, data: Buffer, options?: Record<string, any>): Promise<void>;
+    delete(key: string): Promise<void>;
 
-  delete(key: string): Promise<void>;
+    list(prefix?: string): Promise<string[]>;
 
-  list(prefix?: string): Promise<string[]>;
-
-  prepare(projectId: string): Promise<void>;
-
+    prepare(projectId: string): Promise<void>;
 }

@@ -1,11 +1,11 @@
 import {
-  S3Client,
-  HeadBucketCommand,
-  CreateBucketCommand,
-  GetObjectCommand,
-  PutObjectCommand,
-  DeleteObjectCommand,
-  ListObjectsV2Command
+    S3Client,
+    HeadBucketCommand,
+    CreateBucketCommand,
+    GetObjectCommand,
+    PutObjectCommand,
+    DeleteObjectCommand,
+    ListObjectsV2Command
 } from '@aws-sdk/client-s3';
 import { StorageAdapter } from '../types/Storage.js';
 import { Readable } from 'stream';
@@ -28,23 +28,21 @@ export class S3StorageAdapter implements StorageAdapter {
     constructor(options: S3StorageOptions) {
         this.s3 = new S3Client({
             region: options.region,
-            credentials: options.credentials,
+            credentials: options.credentials
         });
         this.bucket = options.bucket;
         this.prefix = options.prefix ?? '';
     }
 
-
     private getKey(key: string): string {
         return `${this.prefix}${key}`;
     }
-
 
     async get(key: string): Promise<Buffer | null> {
         try {
             const command = new GetObjectCommand({
                 Bucket: this.bucket,
-                Key: this.getKey(key),
+                Key: this.getKey(key)
             });
             const response = await this.s3.send(command);
 
@@ -78,59 +76,51 @@ export class S3StorageAdapter implements StorageAdapter {
             throw error;
         }
     }
-    
 
-    async put(
-        key: string,
-        data: Buffer,
-        options?: Record<string, any>
-    ): Promise<void> {
+    async put(key: string, data: Buffer, options?: Record<string, any>): Promise<void> {
         const command = new PutObjectCommand({
             Bucket: this.bucket,
             Key: this.getKey(key),
             Body: data,
-            ...options, // S3-specific options: e.g., ContentType, Metadata
+            ...options // S3-specific options: e.g., ContentType, Metadata
         });
         await this.s3.send(command);
     }
-
 
     async delete(key: string): Promise<void> {
         const command = new DeleteObjectCommand({
             Bucket: this.bucket,
-            Key: this.getKey(key),
+            Key: this.getKey(key)
         });
         await this.s3.send(command);
     }
-
 
     async list(prefix?: string): Promise<string[]> {
         const fullPrefix = this.getKey(prefix ?? '');
         const command = new ListObjectsV2Command({
             Bucket: this.bucket,
-            Prefix: fullPrefix,
+            Prefix: fullPrefix
         });
         const response = await this.s3.send(command);
 
         // Strip global prefix from keys for return consistency
         const keys =
-            response.Contents?.map((obj) =>
-            obj.Key ? obj.Key.replace(this.prefix, '') : ''
-            ).filter((key) => key !== '') ?? [];
+            response.Contents?.map(obj => (obj.Key ? obj.Key.replace(this.prefix, '') : '')).filter(
+                key => key !== ''
+            ) ?? [];
 
         return keys;
     }
-
 
     async prepare(projectId: string): Promise<void> {
         try {
             await this.s3.send(new HeadBucketCommand({ Bucket: this.bucket }));
         } catch (err: any) {
             if (err.$metadata?.httpStatusCode === 404) {
-            // Bucket doesn't exist: create it
-            await this.s3.send(new CreateBucketCommand({ Bucket: this.bucket }));
+                // Bucket doesn't exist: create it
+                await this.s3.send(new CreateBucketCommand({ Bucket: this.bucket }));
             } else {
-            throw err;
+                throw err;
             }
         }
 
