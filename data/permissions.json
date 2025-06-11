@@ -1,0 +1,16 @@
+{
+  "roles": {
+    "project-admin": [
+      { "action": "edit",    "resource": "field",   "scope": ["*", "*", "*"] },
+      { "action": "view",    "resource": "entry",   "scope": ["*", "*"]   },
+      { "action": "publish", "resource": "entry",   "scope": ["*", "*"]   }
+    ],
+    "model-editor": [
+      { "action": "edit",  "resource": "model",   "scope": ["*", "*"] },
+      { "action": "view",  "resource": "field",   "scope": ["*", "*", "*"] }
+    ],
+    "field-reviewer": [
+      { "action": "view",  "resource": "field",   "scope": ["*", "*", "*"] }
+    ]
+  }
+}

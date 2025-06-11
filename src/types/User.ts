@@ -5,4 +5,5 @@ export interface User {
     passwordHash: string;
     roles: string[];
     projects: string[];
+    extraPermissions?: string[];
 }
