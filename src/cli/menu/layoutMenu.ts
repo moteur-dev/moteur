@@ -56,12 +56,12 @@ export async function addBlockToLayout(projectId: string, layoutId: string) {
     console.log('\n✅ Block added successfully!');
 }
 
-export async function showLayoutMenu(projectId: string, layoutId: string) {
+export async function showLayoutMenu(args: { projectId?: string; layoutId?: string }) {
     const user: User = cliLoadUser();
-    const layout = await getLayout(user, projectId, layoutId);
+    const layout = await getLayout(user, args.projectId as string, args.layoutId as string);
 
     console.clear();
-    console.log(`\n📝 Editing Layout: ${layout.label || layoutId}`);
+    console.log(`\n📝 Editing Layout: ${layout.label || args.layoutId}`);
 
     const { layoutAction } = await inquirer.prompt([
         {
@@ -89,12 +89,12 @@ export async function showLayoutMenu(projectId: string, layoutId: string) {
                 default: layout.label
             });
             layout.label = newLabel;
-            await updateLayout(user, projectId, layoutId, layout);
+            await updateLayout(user, args.projectId as string, args.layoutId as string, layout);
             console.log('\n✅ Layout renamed successfully.');
             break;
         }
         case 'add': {
-            await addBlockToLayout(projectId, layoutId);
+            await addBlockToLayout(args.projectId as string, args.layoutId as string);
             break;
         }
         case 'edit': {
@@ -120,5 +120,5 @@ export async function showLayoutMenu(projectId: string, layoutId: string) {
     await inquirer.prompt([
         { type: 'input', name: 'continue', message: 'Press Enter to return to layout menu...' }
     ]);
-    await showLayoutMenu(projectId, layoutId);
+    await showLayoutMenu({ projectId: args.projectId, layoutId: args.layoutId });
 }

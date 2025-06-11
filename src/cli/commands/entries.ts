@@ -19,15 +19,17 @@ import { ValidationResult } from '../../../src/types/ValidationResult.js';
 import e from 'express';
 import { cliLoadUser } from '../utils/auth.js';
 import { User } from '../../types/User.js';
+import { cliRegistry } from '../../registry/CommandRegistry.js';
+import { showEntriesMenu } from '../menu/entriesMenu.js';
 
 export async function listEntriesCommand(args: {
-    projectId: string;
-    model: string;
+    projectId?: string;
+    model?: string;
     json?: boolean;
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const entries = listEntries(user, args.projectId, args.model);
+    const entries = listEntries(user, args.projectId as string, args.model as string);
     if (entries.length === 0) {
         if (!args.quiet) {
             console.log('📂 No entries found for this model.');
@@ -42,14 +44,14 @@ export async function listEntriesCommand(args: {
 }
 
 export async function getEntryCommand(args: {
-    projectId: string;
-    model: string;
-    id: string;
+    projectId?: string;
+    model?: string;
+    id?: string;
     json?: boolean;
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const entry = getEntry(user, args.projectId, args.model, args.id);
+    const entry = getEntry(user, args.projectId as string, args.model as string, args.id as string);
     if (args.json) return console.log(JSON.stringify(entry, null, 2));
     if (!args.quiet) {
         console.log(`📁 Entry "${args.id}" in model "${args.model}":`);
@@ -58,8 +60,8 @@ export async function getEntryCommand(args: {
 }
 
 export async function createEntryCommand(args: {
-    projectId: string;
-    model: string;
+    projectId?: string;
+    model?: string;
     file?: string;
     data?: string;
     quiet?: boolean;
@@ -69,14 +71,14 @@ export async function createEntryCommand(args: {
         args.projectId = await projectSelectPrompt(user);
     }
     if (!args.model) {
-        args.model = await modelSelectPrompt(user, args.projectId);
+        args.model = await modelSelectPrompt(user, args.projectId as string);
     }
     if (!args.projectId || !args.model) {
         console.error('❌ Project ID and model are required to create an entry.');
         return;
     }
 
-    const modelSchema = getModelSchema(user, args.projectId, args.model);
+    const modelSchema = getModelSchema(user, args.projectId as string, args.model as string);
 
     const { editMode } = await inquirer.prompt({
         type: 'list',
@@ -148,9 +150,9 @@ export async function createEntryCommand(args: {
 }
 
 export async function patchEntryCommand(args: {
-    projectId: string;
-    model: string;
-    id: string;
+    projectId?: string;
+    model?: string;
+    id?: string;
     file?: string;
     data?: string;
     quiet?: boolean;
@@ -160,7 +162,7 @@ export async function patchEntryCommand(args: {
         args.projectId = await projectSelectPrompt(user);
     }
     if (!args.model) {
-        args.model = await modelSelectPrompt(user, args.projectId);
+        args.model = await modelSelectPrompt(user, args.projectId as string);
     }
     if (!args.projectId || !args.model) {
         console.error('❌ Project ID and model are required to create an entry.');
@@ -211,13 +213,13 @@ export async function patchEntryCommand(args: {
 }
 
 export async function deleteEntryCommand(args: {
-    projectId: string;
-    model: string;
-    id: string;
+    projectId?: string;
+    model?: string;
+    id?: string;
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    deleteEntry(user, args.projectId, args.model, args.id);
+    deleteEntry(user, args.projectId as string, args.model as string, args.id as string);
     if (!args.quiet) {
         console.log(
             `🗑️ Moved entry "${args.id}" to trash in model "${args.model}" and project "${args.projectId}".`
@@ -226,9 +228,9 @@ export async function deleteEntryCommand(args: {
 }
 
 export async function validateEntryCommand(args: {
-    projectId: string;
-    model: string;
-    id: string;
+    projectId?: string;
+    model?: string;
+    id?: string;
     json?: boolean;
     quiet?: boolean;
 }) {
@@ -237,10 +239,10 @@ export async function validateEntryCommand(args: {
         args.projectId = await projectSelectPrompt(user);
     }
     if (!args.model) {
-        args.model = await modelSelectPrompt(user, args.projectId);
+        args.model = await modelSelectPrompt(user, args.projectId as string);
     }
     if (!args.id) {
-        args.id = await entrySelectPrompt(user, args.projectId, args.model);
+        args.id = await entrySelectPrompt(user, args.projectId as string, args.model as string);
     }
     if (!args.projectId || !args.model || !args.id) {
         console.error('❌ Project ID and model are required to create an entry.');
@@ -250,8 +252,8 @@ export async function validateEntryCommand(args: {
 }
 
 export async function validateAllEntriesCommand(args: {
-    projectId: string;
-    model: string;
+    projectId?: string;
+    model?: string;
     json?: boolean;
     quiet?: boolean;
 }) {
@@ -260,7 +262,7 @@ export async function validateAllEntriesCommand(args: {
         args.projectId = await projectSelectPrompt(user);
     }
     if (!args.model) {
-        args.model = await modelSelectPrompt(user, args.projectId);
+        args.model = await modelSelectPrompt(user, args.projectId as string);
     }
     if (!args.projectId || !args.model) {
         throw new Error('❌ Project ID and model are required to create an entry.');
@@ -269,21 +271,21 @@ export async function validateAllEntriesCommand(args: {
 }
 
 async function validateSingleEntry(args: {
-    projectId: string;
-    model: string;
-    id: string;
+    projectId?: string;
+    model?: string;
+    id?: string;
     json?: boolean;
     quiet?: boolean;
 }): Promise<ValidationResult> {
     const user: User = cliLoadUser();
-    const entry = getEntry(user, args.projectId, args.model, args.id);
+    const entry = getEntry(user, args.projectId as string, args.model as string, args.id as string);
     if (!entry) {
         throw new Error(
             `❌ Entry "${args.id}" not found in model "${args.model}" and project "${args.projectId}".`
         );
     }
 
-    const modelSchema = getModelSchema(user, args.projectId, args.model);
+    const modelSchema = getModelSchema(user, args.projectId as string, args.model as string);
     if (!modelSchema) {
         throw new Error(
             `❌ Model schema "${args.model}" not found in project "${args.projectId}".`
@@ -310,20 +312,20 @@ async function validateSingleEntry(args: {
 }
 
 async function validateAllEntries(args: {
-    projectId: string;
-    model: string;
+    projectId?: string;
+    model?: string;
     json?: boolean;
     quiet?: boolean;
 }): Promise<ValidationResult[] | undefined> {
     const user: User = cliLoadUser();
-    const modelSchema = getModelSchema(user, args.projectId, args.model);
+    const modelSchema = getModelSchema(user, args.projectId as string, args.model as string);
     if (!modelSchema) {
         throw new Error(
             `❌ Model schema "${args.model}" not found in project "${args.projectId}".`
         );
     }
 
-    const entries = listEntries(user, args.projectId, args.model);
+    const entries = listEntries(user, args.projectId as string, args.model as string);
     if (entries.length === 0) {
         console.log('📂 No entries found for this model.');
         return;
@@ -344,3 +346,61 @@ async function validateAllEntries(args: {
     }
     return validationResults;
 }
+
+cliRegistry.register('entries', {
+    name: '',
+    description: 'Interactive entries menu',
+    action: async (opts: { projectId?: string; model?: string }) => {
+        const projectId = opts.projectId;
+        const model = opts.model;
+        await showEntriesMenu(projectId as string, model as string);
+    }
+});
+
+// entries list
+cliRegistry.register('entries', {
+    name: 'list',
+    description: 'List all entries for a model',
+    action: listEntriesCommand
+});
+
+// entries get
+cliRegistry.register('entries', {
+    name: 'get',
+    description: 'Get a single entry',
+    action: getEntryCommand
+});
+
+// entries create
+cliRegistry.register('entries', {
+    name: 'create',
+    description: 'Create a new entry',
+    action: createEntryCommand
+});
+
+// entries patch
+cliRegistry.register('entries', {
+    name: 'patch',
+    description: 'Update an existing entry',
+    action: patchEntryCommand
+});
+
+// entries delete
+cliRegistry.register('entries', {
+    name: 'delete',
+    description: 'Delete an entry',
+    action: deleteEntryCommand
+});
+
+// entries validate (single)
+cliRegistry.register('entries', {
+    name: 'validate',
+    description: 'Validate an entry or all entries',
+    action: async opts => {
+        if (opts.id) {
+            await validateEntryCommand(opts);
+        } else {
+            await validateAllEntriesCommand(opts);
+        }
+    }
+});
