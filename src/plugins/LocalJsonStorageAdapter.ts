@@ -1,7 +1,8 @@
 import fs from 'fs/promises';
+import { constants as fsConstants } from 'fs';
 import path from 'path';
-import { StorageAdapter } from '../types/Storage';
-import { storageRegistry } from '../registry/StorageRegistry';
+import { StorageAdapter } from '../types/Storage.js';
+import { storageRegistry } from '../registry/StorageRegistry.js';
 
 export interface LocalJsonStorageOptions {
     baseDir: string;
@@ -54,23 +55,42 @@ export class LocalJsonStorageAdapter implements StorageAdapter {
     }
 
     async list(prefix?: string): Promise<string[]> {
-        const targetDir = path.join(this.baseDir, this.prefix, prefix ?? '');
+        const basePath = path.join(this.baseDir, this.prefix, prefix ?? '');
+        const possibleFile = basePath.endsWith('.json') ? basePath : `${basePath}.json`;
+
+        // Determine if we should use single-file mode
+        let useFileMode = this.listMode === 'file';
         try {
-            if (this.listMode === 'directory') {
-                const files = await fs.readdir(targetDir);
-                return files.filter(file => file.endsWith('on'));
-            } else if (this.listMode === 'file') {
-                const fullPath = targetDir.endsWith('on') ? targetDir : `${targetDir}on`;
-                const data = await fs.readFile(fullPath, 'utf-8');
+            await fs.access(possibleFile, fsConstants.F_OK);
+            useFileMode = true;
+        } catch {
+            // file doesn't exist — fall back to directory if in directory mode
+        }
+
+        if (useFileMode) {
+            // Single-file JSON mode
+            try {
+                const data = await fs.readFile(possibleFile, 'utf-8');
                 const json = JSON.parse(data);
+
                 if (Array.isArray(json)) {
                     return json.map((_, idx) => `${idx}`);
-                } else if (typeof json === 'object') {
+                } else if (json && typeof json === 'object') {
                     return Object.keys(json);
                 }
                 return [];
+            } catch (error: any) {
+                if (error.code === 'ENOENT') {
+                    return [];
+                }
+                throw error;
             }
-            return [];
+        }
+
+        // Directory-based mode
+        try {
+            const files = await fs.readdir(basePath);
+            return files.filter(file => file.endsWith('.json'));
         } catch (error: any) {
             if (error.code === 'ENOENT') {
                 return [];
