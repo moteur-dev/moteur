@@ -3,8 +3,8 @@ import { Block, BlockSchema } from '../types/Block';
 import { Field, FieldSchema } from '../types/Field';
 import { ValidationResult, ValidationIssue } from '../types/ValidationResult';
 import { createValidationResult, addIssue } from '../utils/validation';
-import { BlockRegistry } from 'registry/BlockRegistry';
-import { FieldRegistry } from 'registry/FieldRegistry';
+import { BlockRegistry } from '../registry/BlockRegistry';
+import { FieldRegistry } from '../registry/FieldRegistry';
 
 const blockRegistry = new BlockRegistry();
 const fieldRegistry = new FieldRegistry();

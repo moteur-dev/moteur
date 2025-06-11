@@ -2,7 +2,7 @@ import { BlockSchema } from '../types/Block.js';
 import { loadBlocks as loaderLoadBlocks } from '../loaders/loadBlocks';
 //import { htmlRenderer } from '../renderers/html/htmlBlockRenderer';
 import { isValidId } from '../utils/idUtils';
-import { isExistingProjectId } from 'utils/fileUtils';
+import { isExistingProjectId } from '../utils/fileUtils';
 
 /*const rendererMap: Record<string, any> = {
     html: htmlRenderer

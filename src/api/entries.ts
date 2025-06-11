@@ -8,7 +8,7 @@ import { isExistingEntryId } from '../utils/fileUtils';
 import { entryDir, entryFilePath } from '../utils/pathUtils';
 import { User } from '../types/User';
 import { getModelSchema } from './models';
-import { triggerEvent } from 'utils/eventBus';
+import { triggerEvent } from '../utils/eventBus';
 
 export function listEntries(user: User, projectId: string, modelId: string): Entry[] {
     // This validates project access and model schema existence

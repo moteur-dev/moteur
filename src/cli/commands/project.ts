@@ -4,14 +4,16 @@ import {
     createProject,
     updateProject,
     deleteProject
-} from '../../../src/api/projects';
+} from '../../api/projects';
 import { resolveInputData } from '../utils/resolveInputData';
 import { editJsonInEditor } from '../utils/editJsonInEditor';
-import { ProjectSchema, projectSchemaFields } from '../../../src/types/Project';
+import { ProjectSchema, projectSchemaFields } from '../../types/Project';
 import { renderCliField } from '../field-renderers/renderCliField';
 import { projectSelectPrompt } from '../utils/projectSelectPrompt';
 import { cliRequireRole, cliLoadUser } from '../utils/auth';
-import { User } from '../../../src/types/User';
+import { User } from '../../types/User';
+import { cliRegistry } from '../../registry/CommandRegistry';
+import { showProjectsMenu } from '../menu/projectsMenu';
 
 export async function listProjectsCommand(args: { json?: boolean; quiet?: boolean }) {
     const user: User = cliLoadUser();
@@ -29,9 +31,12 @@ export async function listProjectsCommand(args: { json?: boolean; quiet?: boolea
     }
 }
 
-export async function getProjectCommand(args: { id: string; json?: boolean; quiet?: boolean }) {
+export async function getProjectCommand(args: { id?: string; json?: boolean; quiet?: boolean }) {
     const user: User = cliLoadUser();
-    const project = getProject(user, args.id);
+    if (!args.id) {
+        args.id = await projectSelectPrompt(user);
+    }
+    const project = getProject(user, args.id as string);
     if (args.json) return console.log(JSON.stringify(project, null, 2));
     if (!args.quiet) {
         console.log(`📁 Project "${args.id}":`);
@@ -81,7 +86,7 @@ export async function createProjectCommand(args: {
 }
 
 export async function patchProjectCommand(args: {
-    id: string;
+    id?: string;
     file?: string;
     data?: string;
     json?: boolean;
@@ -111,20 +116,20 @@ export async function patchProjectCommand(args: {
         }
     }
 
-    const updated = updateProject(user, args.id, patch);
+    const updated = updateProject(user, args.id as string, patch);
     if (!args.quiet) {
         console.log(`🔧 Patched project "${args.id}"`);
     }
     return updated;
 }
 
-export async function patchProjectJSONCommand(args: { projectId: string; quiet?: boolean }) {
+export async function patchProjectJSONCommand(args: { projectId?: string; quiet?: boolean }) {
     const user: User = cliLoadUser();
-    const project = getProject(user, args.projectId);
+    const project = getProject(user, args.projectId as string);
     const edited = await editJsonInEditor(project, 'Project Settings');
 
     if (edited) {
-        const updated = updateProject(user, args.projectId, edited);
+        const updated = updateProject(user, args.projectId as string, edited);
         if (!args.quiet) {
             console.log(`✅ Project "${args.projectId}" updated via JSON editor.`);
         }
@@ -137,10 +142,54 @@ export async function patchProjectJSONCommand(args: { projectId: string; quiet?:
     }
 }
 
-export async function deleteProjectCommand(args: { id: string; quiet?: boolean }) {
+export async function deleteProjectCommand(args: { id?: string; quiet?: boolean }) {
     const user: User = cliLoadUser();
-    deleteProject(user, args.id);
+    deleteProject(user, args.id as string);
     if (!args.quiet) {
         console.log(`🗑️ Moved project "${args.id}" to trash`);
     }
 }
+
+cliRegistry.register('projects', {
+    name: '', // default when you run `moteur projects`
+    description: 'Interactive projects menu',
+    action: async (opts: {}) => {
+        await showProjectsMenu();
+    }
+});
+
+cliRegistry.register('projects', {
+    name: 'list',
+    description: 'List all projects',
+    action: listProjectsCommand
+});
+
+cliRegistry.register('projects', {
+    name: 'get',
+    description: 'Get one project by id',
+    action: getProjectCommand
+});
+
+cliRegistry.register('projects', {
+    name: 'create',
+    description: 'Create a new project',
+    action: createProjectCommand
+});
+
+cliRegistry.register('projects', {
+    name: 'patch',
+    description: 'Update an existing project',
+    action: patchProjectCommand
+});
+
+cliRegistry.register('projects', {
+    name: 'edit-json',
+    description: 'Edit project JSON in your editor',
+    action: patchProjectJSONCommand
+});
+
+cliRegistry.register('projects', {
+    name: 'delete',
+    description: 'Delete (trash) a project',
+    action: deleteProjectCommand
+});

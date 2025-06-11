@@ -51,7 +51,7 @@ export async function showProjectMenu(projectId: string) {
                         choices
                     }
                 ]);
-                await showLayoutMenu(projectId, selectedLayout);
+                await showLayoutMenu({ projectId, layoutId: selectedLayout });
 
                 break;
             }

@@ -4,6 +4,8 @@ import path from 'path';
 import bcrypt from 'bcrypt';
 import { loginUser } from '../../api/auth';
 import { createUser } from '../../api/users';
+import { cliRegistry } from '../../registry/CommandRegistry';
+import { showAuthMenu } from '../menu/authMenu';
 
 const TOKEN_FILE = path.resolve(
     process.env.HOME || process.env.USERPROFILE || '.',
@@ -64,3 +66,30 @@ export async function createUserCommand(): Promise<void> {
         process.exit(1);
     }
 }
+
+cliRegistry.register('auth', {
+    name: '',
+    description: 'Interactive auth menu',
+    action: async opts => {
+        await showAuthMenu();
+    }
+});
+
+// Register each subcommand:
+cliRegistry.register('auth', {
+    name: 'login',
+    description: 'Log in and save JWT token',
+    action: loginCommand
+});
+
+cliRegistry.register('auth', {
+    name: 'logout',
+    description: 'Log out and remove JWT token',
+    action: logoutCommand
+});
+
+cliRegistry.register('auth', {
+    name: 'create-user',
+    description: 'Create a new user',
+    action: createUserCommand
+});

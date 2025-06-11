@@ -7,13 +7,17 @@ import {
     deleteStructure
 } from '../../../src/api/structures.js';
 import { resolveInputData } from '../utils/resolveInputData.js';
+import { cliRegistry } from 'registry/CommandRegistry.js';
+import { showStructuresMenu } from '../menu/structuresMenu.js';
+import { cliLoadUser } from '../utils/auth.js';
+import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
 
 export async function listStructuresCommand(args: {
     project?: string;
     json?: boolean;
     quiet?: boolean;
 }) {
-    const structures = listStructures(args.project);
+    const structures = listStructures(args.project as string);
     if (args.json) {
         console.log(JSON.stringify(structures, null, 2));
     } else if (!args.quiet) {
@@ -25,12 +29,12 @@ export async function listStructuresCommand(args: {
 }
 
 export async function getStructureCommand(args: {
-    id: string;
+    id?: string;
     project?: string;
     json?: boolean;
     quiet?: boolean;
 }) {
-    const structure = getStructure(args.id, args.project);
+    const structure = getStructure(args.id as string, args.project as string);
     if (args.json) {
         console.log(JSON.stringify(structure, null, 2));
     } else if (!args.quiet) {
@@ -40,7 +44,7 @@ export async function getStructureCommand(args: {
 }
 
 export async function createStructureCommand(args: {
-    project: string;
+    project?: string;
     file?: string;
     data?: string;
     quiet?: boolean;
@@ -51,7 +55,7 @@ export async function createStructureCommand(args: {
         interactiveFields: ['type', 'label']
     });
 
-    const result = createStructure(args.project, input as StructureSchema);
+    const result = createStructure(args.project as string, input as StructureSchema);
 
     if (!args.quiet) {
         console.log(`✅ Created structure "${result.type}" in project "${args.project}"`);
@@ -59,8 +63,8 @@ export async function createStructureCommand(args: {
 }
 
 export async function patchStructureCommand(args: {
-    project: string;
-    id: string;
+    project?: string;
+    id?: string;
     file?: string;
     data?: string;
     quiet?: boolean;
@@ -71,7 +75,7 @@ export async function patchStructureCommand(args: {
         interactiveFields: ['label']
     });
 
-    const updated = updateStructure(args.project, args.id, patch);
+    const updated = updateStructure(args.project as string, args.id as string, patch);
 
     if (!args.quiet) {
         console.log(`✅ Updated structure "${args.id}" in project "${args.project}"`);
@@ -79,12 +83,57 @@ export async function patchStructureCommand(args: {
 }
 
 export async function deleteStructureCommand(args: {
-    project: string;
-    id: string;
+    project?: string;
+    id?: string;
     quiet?: boolean;
 }) {
-    deleteStructure(args.project, args.id);
+    deleteStructure(args.project as string, args.id as string);
     if (!args.quiet) {
         console.log(`🗑️ Moved structure "${args.id}" to trash in project "${args.project}"`);
     }
 }
+
+cliRegistry.register('structures', {
+    name: '',
+    description: 'Interactive structures menu',
+    action: async (opts: { projectId?: string }) => {
+        const user = cliLoadUser();
+        const projectId = opts.projectId ?? (await projectSelectPrompt(user));
+        await showStructuresMenu(projectId);
+    }
+});
+
+// structures list
+cliRegistry.register('structures', {
+    name: 'list',
+    description: 'List all structures in a project',
+    action: listStructuresCommand
+});
+
+// structures get
+cliRegistry.register('structures', {
+    name: 'get',
+    description: 'Get a single structure schema',
+    action: getStructureCommand
+});
+
+// structures create
+cliRegistry.register('structures', {
+    name: 'create',
+    description: 'Create a new structure schema',
+    action: createStructureCommand
+});
+
+// structures patch
+cliRegistry.register('structures', {
+    name: 'patch',
+    description: 'Update an existing structure schema',
+    action: patchStructureCommand
+});
+
+// structures delete
+cliRegistry.register('structures', {
+    name: 'delete',
+    description: 'Delete a structure schema',
+    action: deleteStructureCommand
+});
