@@ -1,5 +1,5 @@
-import { loadFields } from '../loaders/loadFields.js';
-import { FieldSchema } from '../types/Field.js';
+import { loadFields } from '../loaders/loadFields';
+import { FieldSchema } from '../types/Field';
 
 export class FieldRegistry {
     private fieldTypes: Record<string, FieldSchema>;

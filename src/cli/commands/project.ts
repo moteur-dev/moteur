@@ -4,14 +4,14 @@ import {
     createProject,
     updateProject,
     deleteProject
-} from '../../../src/api/projects.js';
-import { resolveInputData } from '../utils/resolveInputData.js';
-import { editJsonInEditor } from '../utils/editJsonInEditor.js';
-import { ProjectSchema, projectSchemaFields } from '../../../src/types/Project.js';
-import { renderCliField } from '../field-renderers/renderCliField.js';
-import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
-import { cliRequireRole, cliLoadUser } from '../utils/auth.js';
-import { User } from '../../../src/types/User.js';
+} from '../../../src/api/projects';
+import { resolveInputData } from '../utils/resolveInputData';
+import { editJsonInEditor } from '../utils/editJsonInEditor';
+import { ProjectSchema, projectSchemaFields } from '../../../src/types/Project';
+import { renderCliField } from '../field-renderers/renderCliField';
+import { projectSelectPrompt } from '../utils/projectSelectPrompt';
+import { cliRequireRole, cliLoadUser } from '../utils/auth';
+import { User } from '../../../src/types/User';
 
 export async function listProjectsCommand(args: { json?: boolean; quiet?: boolean }) {
     const user: User = cliLoadUser();

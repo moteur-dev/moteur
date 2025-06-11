@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { moteurConfig } from '../../moteur.config.js';
-import { Layout } from '../types/Layout.js';
+import { moteurConfig } from '../../moteur.config';
+import { Layout } from '../types/Layout';
 
 export function loadLayouts(project: string): Layout[] {
     const projectRoot = moteurConfig.projectRoot || 'data/projects';
@@ -10,7 +10,7 @@ export function loadLayouts(project: string): Layout[] {
 
     return fs
         .readdirSync(dir)
-        .filter(f => f.endsWith('.json'))
+        .filter(f => f.endsWith('on'))
         .map(f => {
             const filePath = path.join(dir, f);
             try {

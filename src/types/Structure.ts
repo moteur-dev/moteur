@@ -1,4 +1,4 @@
-import { Field } from './Field.js';
+import { Field } from './Field';
 
 export interface StructureSchema {
     type: string; // Unique structure ID (e.g., "core/teamMember")

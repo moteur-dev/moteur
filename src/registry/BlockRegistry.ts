@@ -1,5 +1,5 @@
-import { loadBlocks } from '../loaders/loadBlocks.js';
-import { BlockSchema } from '../types/Block.js';
+import { loadBlocks } from '../loaders/loadBlocks';
+import { BlockSchema } from '../types/Block';
 
 export class BlockRegistry {
     private schemas: Record<string, BlockSchema>;

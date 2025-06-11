@@ -1,6 +1,6 @@
-import { Field } from '../../../types/Field.js';
-import { ValidationIssue } from '../../../types/ValidationResult.js';
-import { FieldRegistry } from '../../../registry/FieldRegistry.js';
+import { Field } from '../../../types/Field';
+import { ValidationIssue } from '../../../types/ValidationResult';
+import { FieldRegistry } from '../../../registry/FieldRegistry';
 
 const fieldRegistry = new FieldRegistry();
 

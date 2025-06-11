@@ -1,4 +1,4 @@
-import { StorageAdapter } from '../types/Storage.js';
+import { StorageAdapter } from '../types/Storage';
 
 type AdapterFactory = new (options: any) => StorageAdapter;
 

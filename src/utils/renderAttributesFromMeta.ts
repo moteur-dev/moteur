@@ -1,4 +1,4 @@
-import { BlockMeta } from '../types/Block.js';
+import { BlockMeta } from '../types/Block';
 
 export function renderAttributesFromMeta(meta?: BlockMeta): string {
     if (!meta || typeof meta !== 'object') return '';

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import express from 'express';
-import { loginUser, generateJWT } from '../api/auth.js';
+import { loginUser, generateJWT } from '../api/auth';
 
 const router = express.Router();
 

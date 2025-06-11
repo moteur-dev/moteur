@@ -1,7 +1,7 @@
-import { Block, BlockSchema } from '../types/Block.js';
-import { Field } from '../types/Field.js';
-import { ValidationResult } from '../types/ValidationResult.js';
-import { createValidationResult, addIssue } from '../utils/validation.js';
+import { Block, BlockSchema } from '../types/Block';
+import { Field } from '../types/Field';
+import { ValidationResult } from '../types/ValidationResult';
+import { createValidationResult, addIssue } from '../utils/validation';
 
 type FieldRegistry = Record<string, Field>;
 

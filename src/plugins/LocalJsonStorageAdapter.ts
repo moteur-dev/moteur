@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { StorageAdapter } from '../types/Storage.js';
-import { storageRegistry } from '../registry/StorageRegistry.js';
+import { StorageAdapter } from '../types/Storage';
+import { storageRegistry } from '../registry/StorageRegistry';
 
 export interface LocalJsonStorageOptions {
     baseDir: string;
@@ -58,9 +58,9 @@ export class LocalJsonStorageAdapter implements StorageAdapter {
         try {
             if (this.listMode === 'directory') {
                 const files = await fs.readdir(targetDir);
-                return files.filter(file => file.endsWith('.json'));
+                return files.filter(file => file.endsWith('on'));
             } else if (this.listMode === 'file') {
-                const fullPath = targetDir.endsWith('.json') ? targetDir : `${targetDir}.json`;
+                const fullPath = targetDir.endsWith('on') ? targetDir : `${targetDir}on`;
                 const data = await fs.readFile(fullPath, 'utf-8');
                 const json = JSON.parse(data);
                 if (Array.isArray(json)) {

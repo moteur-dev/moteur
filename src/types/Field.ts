@@ -1,5 +1,3 @@
-import { an } from 'vitest/dist/chunks/reporters.d.DL9pg5DB.js';
-
 export interface Field {
     id?: string; // Unique identifier for the field
     type: string; // Field type (e.g., "text", "number")

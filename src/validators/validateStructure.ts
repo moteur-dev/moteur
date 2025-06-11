@@ -1,8 +1,8 @@
-import { StructureSchema } from '../types/Structure.js';
-import { Field } from '../types/Field.js';
-import { ValidationResult } from '../types/ValidationResult.js';
-import { createValidationResult, addIssue } from '../utils/validation.js';
-import { FieldRegistry } from '../registry/FieldRegistry.js';
+import { StructureSchema } from '../types/Structure';
+import { Field } from '../types/Field';
+import { ValidationResult } from '../types/ValidationResult';
+import { createValidationResult, addIssue } from '../utils/validation';
+import { FieldRegistry } from '../registry/FieldRegistry';
 
 const fieldRegistry = new FieldRegistry();
 

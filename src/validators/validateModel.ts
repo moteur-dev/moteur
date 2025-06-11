@@ -1,6 +1,6 @@
-import { ModelSchema } from '../types/Model.js';
-import { ValidationResult, ValidationIssue } from '../types/ValidationResult.js';
-import { createValidationResult, addIssue } from '../utils/validation.js';
+import { ModelSchema } from '../types/Model';
+import { ValidationResult, ValidationIssue } from '../types/ValidationResult';
+import { createValidationResult, addIssue } from '../utils/validation';
 
 export function validateModel(model: ModelSchema): ValidationResult {
     const result = createValidationResult();

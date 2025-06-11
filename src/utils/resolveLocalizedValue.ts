@@ -1,4 +1,4 @@
-import { moteurConfig } from '../../moteur.config.js';
+import { moteurConfig } from '../../moteur.config';
 
 /**
  * Resolves a multilingual value with fallback support.

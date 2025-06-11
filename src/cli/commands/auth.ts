@@ -2,8 +2,8 @@ import inquirer from 'inquirer';
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcrypt';
-import { loginUser } from '../../api/auth.js';
-import { createUser } from '../../api/users.js';
+import { loginUser } from '../../api/auth';
+import { createUser } from '../../api/users';
 
 const TOKEN_FILE = path.resolve(
     process.env.HOME || process.env.USERPROFILE || '.',

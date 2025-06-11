@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyJWT } from '../api/auth.js';
+import { verifyJWT } from '../api/auth';
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
     const token = req.headers.authorization?.replace('Bearer ', '');

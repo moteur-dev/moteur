@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { BlockSchema } from '../types/Block.js';
-import { normalizeType } from '../utils/normalizeType.js';
-import { moteurConfig } from '../../moteur.config.js';
+import { BlockSchema } from '../types/Block';
+import { normalizeType } from '../utils/normalizeType';
+import { moteurConfig } from '../../moteur.config';
 
 export function loadBlocks(): Record<string, BlockSchema> {
     const registry: Record<string, BlockSchema> = {};
@@ -16,7 +16,7 @@ export function loadBlocks(): Record<string, BlockSchema> {
         }
 
         try {
-            const files = fs.readdirSync(root).filter(file => file.endsWith('.json'));
+            const files = fs.readdirSync(root).filter(file => file.endsWith('on'));
 
             for (const file of files) {
                 try {

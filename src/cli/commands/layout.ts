@@ -8,11 +8,11 @@ import {
     deleteLayout,
     renderLayout
 } from '../../../src/api/layouts.js';
-import { resolveInputData } from '../utils/resolveInputData.js';
-import { Layout } from '../../../src/types/Layout.js';
-import { listBlocks } from '../../../src/api/blocks.js';
-import { cliLoadUser } from '../utils/auth.js';
-import { User } from '../../types/User.js';
+import { resolveInputData } from '../utils/resolveInputData';
+import { Layout } from '../../../src/types/Layout';
+import { listBlocks } from '../../../src/api/blocks';
+import { cliLoadUser } from '../utils/auth';
+import { User } from '../../types/User';
 
 export async function listLayoutsCommand(args: {
     project: string;

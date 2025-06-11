@@ -1,7 +1,7 @@
-import { Entry } from '../types/Model.js';
-import { ModelSchema } from '../types/Model.js';
-import { validateFieldValue } from './validateFieldValue.js';
-import { ValidationResult, ValidationIssue } from '../types/ValidationResult.js';
+import { Entry } from '../types/Model';
+import { ModelSchema } from '../types/Model';
+import { validateFieldValue } from './validateFieldValue';
+import { ValidationResult, ValidationIssue } from '../types/ValidationResult';
 
 export function validateEntry(entry: Entry, schema: ModelSchema): ValidationResult {
     const issues: ValidationIssue[] = [];

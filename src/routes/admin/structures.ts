@@ -5,7 +5,7 @@ import {
     createStructure,
     updateStructure,
     deleteStructure
-} from '../../api/structures.js';
+} from '../../api/structures';
 
 type StructureParams = { project: string };
 type StructureWithIdParams = { project: string; id: string };

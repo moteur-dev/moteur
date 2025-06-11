@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import { moteurConfig } from '../../moteur.config.js';
-import { ProjectSchema } from '../types/Project.js';
-import { loadProjects } from '../loaders/loadProjects.js';
-import { isValidId } from '../utils/idUtils.js';
-import { readJson, writeJson, isExistingProjectId } from '../utils/fileUtils.js';
-import { projectFilePath, projectDir } from '../utils/pathUtils.js';
-import { User } from '../types/User.js';
-import { assertUserCanAccessProject, assertUserCanCreateProject } from '../utils/access.js';
+import { moteurConfig } from '../../moteur.config';
+import { ProjectSchema } from '../types/Project';
+import { loadProjects } from '../loaders/loadProjects';
+import { isValidId } from '../utils/idUtils';
+import { readJson, writeJson, isExistingProjectId } from '../utils/fileUtils';
+import { projectFilePath, projectDir } from '../utils/pathUtils';
+import { User } from '../types/User';
+import { assertUserCanAccessProject, assertUserCanCreateProject } from '../utils/access';
 import { triggerEvent } from '../utils/eventBus';
 
 export function getProject(user: User, projectId: string): ProjectSchema {

@@ -1,13 +1,13 @@
 import express from 'express';
-import loginRoute from './login.js';
-import publicBlocks from './public/blocks.js';
-import publicFields from './public/fields.js';
-import adminBlocks from './admin/blocks.js';
-import adminFields from './admin/fields.js';
-import adminStructures from './admin/structures.js';
-import adminProjects from './admin/projects.js';
-import preview from './public/preview.js';
-import { moteurConfig } from '../../moteur.config.js';
+import loginRoute from './login';
+import publicBlocks from './public/blocks';
+import publicFields from './public/fields';
+import adminBlocks from './admin/blocks';
+import adminFields from './admin/fields';
+import adminStructures from './admin/structures';
+import adminProjects from './admin/projects';
+import preview from './public/preview';
+import { moteurConfig } from '../../moteur.config';
 
 const app = express();
 app.use(express.json());

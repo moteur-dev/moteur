@@ -1,4 +1,4 @@
-import { Field, FieldSchema, FieldOptions } from '../../Field.js';
+import { Field, FieldSchema, FieldOptions } from '../../Field';
 
 export interface ValidationRule {
     pattern: string;
