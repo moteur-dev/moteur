@@ -9,10 +9,10 @@ import {
 } from '../commands/models';
 import { listProjects } from '../../api/projects';
 import { showEntriesMenu } from './entriesMenu';
-import { showWelcomeBanner } from '../utils/showWelcomeBanner.js';
-import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
-import { User } from '../../types/User.js';
-import { cliLoadUser } from '../utils/auth.js';
+import { showWelcomeBanner } from '../utils/showWelcomeBanner';
+import { projectSelectPrompt } from '../utils/projectSelectPrompt';
+import { User } from '../../types/User';
+import { cliLoadUser } from '../utils/auth';
 
 export async function showModelSchemasMenu(project: string) {
     const user: User = cliLoadUser();

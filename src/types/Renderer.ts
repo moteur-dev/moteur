@@ -1,4 +1,4 @@
-import { Block } from './Block.js';
+import { Block } from './Block';
 
 export interface RenderOptions {
     locale: string;

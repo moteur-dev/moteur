@@ -1,7 +1,7 @@
 import { Router } from 'express';
-//import { validateBlock } from '../../../validators/validateBlock.js';
-//import { listFields } from '../../../api/fields.js';
-//import { loadFieldValidators } from '../../../api/fieldValidators.js';
+//import { validateBlock } from '../../../validators/validateBlock';
+//import { listFields } from '../../../api/fields';
+//import { loadFieldValidators } from '../../../api/fieldValidators';
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.post('/block', async (req: any, res: any) => {
         /*const fieldRegistry = await listFields();
     const validators = loadFieldValidators();
     const result = validateBlock(block, schema, fieldRegistry, validators);
-    return res.json(result);*/
+    return reson(result);*/
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
 

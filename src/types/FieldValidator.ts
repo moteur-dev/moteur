@@ -1,4 +1,4 @@
-import { ValidationResult } from './ValidationResult.js';
-import { FieldSchema } from './Field.js';
+import { ValidationResult } from './ValidationResult';
+import { FieldSchema } from './Field';
 
 export type FieldValidator = (value: any, fieldSchema: FieldSchema) => ValidationResult;

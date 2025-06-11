@@ -1,4 +1,4 @@
-import { Field } from './Field.js';
+import { Field } from './Field';
 
 export interface Block {
     type: string; // Block type (e.g., "core/hero")

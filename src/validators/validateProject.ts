@@ -1,6 +1,6 @@
-import { ProjectSchema } from '../types/Project.js';
-import { ValidationResult, ValidationIssue } from '../types/ValidationResult.js';
-import { createValidationResult, addIssue } from '../utils/validation.js';
+import { ProjectSchema } from '../types/Project';
+import { ValidationResult, ValidationIssue } from '../types/ValidationResult';
+import { createValidationResult, addIssue } from '../utils/validation';
 
 export function validateProject(project: ProjectSchema): ValidationResult {
     const result = createValidationResult();

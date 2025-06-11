@@ -1,4 +1,4 @@
-import { ValidationIssue, ValidationResult } from '../types/ValidationResult.js';
+import { ValidationIssue, ValidationResult } from '../types/ValidationResult';
 
 export function createValidationResult(): ValidationResult {
     return {

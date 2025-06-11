@@ -15,7 +15,7 @@ import {
     structureDir,
     trashStructureDir,
     structureFilePath
-} from './pathUtils.js';
+} from './pathUtils';
 
 export function readJson(file: string): any {
     const raw = fs.readFileSync(file, 'utf-8');

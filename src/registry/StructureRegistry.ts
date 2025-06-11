@@ -1,5 +1,5 @@
-import { loadStructures } from '../loaders/loadStructures.js';
-import { StructureSchema } from '../types/Structure.js';
+import { loadStructures } from '../loaders/loadStructures';
+import { StructureSchema } from '../types/Structure';
 
 export class StructureRegistry {
     private structures: Record<string, StructureSchema>;

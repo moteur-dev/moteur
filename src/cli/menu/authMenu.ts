@@ -1,8 +1,8 @@
 import inquirer from 'inquirer';
-import { loginUser } from '../../api/auth.js';
+import { loginUser } from '../../api/auth';
 import fs from 'fs';
 import path from 'path';
-import { moteurConfig } from '../../../moteur.config.js';
+import { moteurConfig } from '../../../moteur.config';
 
 const TOKEN_FILE = path.resolve(
     process.env.HOME || process.env.USERPROFILE || '.',

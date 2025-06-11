@@ -1,6 +1,6 @@
-import { onEvent } from '../../utils/eventBus.js';
-import { validateProject } from '../../validators/validateProject.js';
-import { validateModel } from '../../validators/validateModel.js';
+import { onEvent } from '../../utils/eventBus';
+import { validateProject } from '../../validators/validateProject';
+import { validateModel } from '../../validators/validateModel';
 
 onEvent('project.beforeCreate', async ({ project }) => {
     const result = validateProject(project);

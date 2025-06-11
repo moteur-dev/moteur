@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { moteurConfig } from '../../moteur.config.js';
 import { ModelSchema } from '../types/Model.js';
-import { isExistingProjectId, readJson, writeJson } from '../utils/fileUtils.js';
+import { readJson, writeJson } from '../utils/fileUtils.js';
 import { isValidId } from 'utils/idUtils.js';
 import { isExistingModelSchema } from '../utils/fileUtils.js';
 import { modelDir, modelFilePath } from 'utils/pathUtils.js';

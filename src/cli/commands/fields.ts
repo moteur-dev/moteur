@@ -1,4 +1,4 @@
-import { listFields } from '../../../src/api/fields.js';
+import { listFields } from '../../../src/api/fields';
 
 export async function listFieldsCommand(args: { json?: boolean; quiet?: boolean }) {
     const fields = listFields();

@@ -1,4 +1,4 @@
-import { listBlocks } from '../../../src/api/blocks.js';
+import { listBlocks } from '../../../src/api/blocks';
 
 export async function listBlocksCommand(args: {
     project?: string;

@@ -1,16 +1,16 @@
-import { Field } from '../types/Field.js';
-import { ValidationIssue } from '../types/ValidationResult.js';
+import { Field } from '../types/Field';
+import { ValidationIssue } from '../types/ValidationResult';
 
 // Core validators
-import { validateTextField } from './fields/core/validateTextField.js';
-import { validateNumberField } from './fields/core/validateNumberField.js';
-import { validateBooleanField } from './fields/core/validateBooleanField.js';
-import { validateColorField } from './fields/core/validateColorField.js';
-import { validateDateTimeField } from './fields/core/validateDatetimeField.js';
-import { validateMarkdownField } from './fields/core/validateMarkdownField.js';
-import { validateListField } from './fields/core/validateListField.js';
-import { validateObjectField } from './fields/core/validateObjectField.js';
-import { validateStructureField } from './fields/core/validateStructureField.js';
+import { validateTextField } from './fields/core/validateTextField';
+import { validateNumberField } from './fields/core/validateNumberField';
+import { validateBooleanField } from './fields/core/validateBooleanField';
+import { validateColorField } from './fields/core/validateColorField';
+import { validateDateTimeField } from './fields/core/validateDatetimeField';
+import { validateMarkdownField } from './fields/core/validateMarkdownField';
+import { validateListField } from './fields/core/validateListField';
+import { validateObjectField } from './fields/core/validateObjectField';
+import { validateStructureField } from './fields/core/validateStructureField';
 
 export function validateFieldValue(value: any, field: Field, path: string): ValidationIssue[] {
     switch (field.type) {

@@ -1,5 +1,5 @@
 import express from 'express';
-import { FieldRegistry } from '../../registry/FieldRegistry.js';
+import { FieldRegistry } from '../../registry/FieldRegistry';
 
 const router = express.Router();
 const registry = new FieldRegistry();

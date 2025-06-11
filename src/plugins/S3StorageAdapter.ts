@@ -7,8 +7,8 @@ import {
     DeleteObjectCommand,
     ListObjectsV2Command
 } from '@aws-sdk/client-s3';
-import { StorageAdapter } from '../types/Storage.js';
-import { storageRegistry } from '../registry/StorageRegistry.js';
+import { StorageAdapter } from '../types/Storage';
+import { storageRegistry } from '../registry/StorageRegistry';
 import { Readable } from 'stream';
 
 export interface S3StorageOptions {

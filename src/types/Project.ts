@@ -1,5 +1,5 @@
-import { Audit } from './Audit.js';
-import { Field } from './Field.js';
+import { Audit } from './Audit';
+import { Field } from './Field';
 
 export interface ProjectSchema {
     id: string; // Unique project ID (same as folder name)

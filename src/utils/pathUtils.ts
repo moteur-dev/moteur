@@ -1,5 +1,5 @@
 import path from 'path';
-import { moteurConfig } from '../../moteur.config.js';
+import { moteurConfig } from '../../moteur.config';
 
 export function baseProjectsDir(): string {
     return path.join(moteurConfig.projectRoot);
@@ -34,19 +34,19 @@ export function structureDir(projectId: string, structureId: string): string {
 }
 
 export function projectFilePath(projectId: string): string {
-    return path.join(projectDir(projectId), 'project.json');
+    return path.join(projectDir(projectId), 'projecton');
 }
 export function modelFilePath(projectId: string, modelId: string): string {
-    return path.join(modelDir(projectId, modelId), 'model.json');
+    return path.join(modelDir(projectId, modelId), 'modelon');
 }
 export function entryFilePath(projectId: string, modelId: string, entryId: string): string {
-    return path.join(entryDir(projectId, modelId, entryId), 'entry.json');
+    return path.join(entryDir(projectId, modelId, entryId), 'entryon');
 }
 export function layoutFilePath(projectId: string, layoutId: string): string {
-    return path.join(layoutDir(projectId, layoutId), 'layout.json');
+    return path.join(layoutDir(projectId, layoutId), 'layouton');
 }
 export function structureFilePath(projectId: string, structureId: string): string {
-    return path.join(structureDir(projectId, structureId), 'structure.json');
+    return path.join(structureDir(projectId, structureId), 'structureon');
 }
 
 export function baseProjectsTrashDir(): string {

@@ -1,5 +1,5 @@
-import { Field } from '../../../types/Field.js';
-import { ValidationIssue } from '../../../types/ValidationResult.js';
+import { Field } from '../../../types/Field';
+import { ValidationIssue } from '../../../types/ValidationResult';
 
 export function validateTextField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];

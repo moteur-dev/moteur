@@ -1,7 +1,7 @@
 import express from 'express';
-import { moteurConfig } from '../../../moteur.config.js';
-import { htmlRenderer } from '../../renderers/html/htmlBlockRenderer.js';
-import { Block } from '../../types/Block.js';
+import { moteurConfig } from '../../../moteur.config';
+import { htmlRenderer } from '../../renderers/html/htmlBlockRenderer';
+import { Block } from '../../types/Block';
 
 const router = express.Router();
 

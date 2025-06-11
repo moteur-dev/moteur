@@ -1,8 +1,8 @@
-import type * as Projects from '../api/projects.js';
-import type * as Layouts from '../api/layouts.js';
-import type * as Structures from '../api/structures.js';
-import type * as Fields from '../api/fields.js';
-import type * as Blocks from '../api/blocks.js';
+import type * as Projects from '../api/projects';
+import type * as Layouts from '../api/layouts';
+import type * as Structures from '../api/structures';
+import type * as Fields from '../api/fields';
+import type * as Blocks from '../api/blocks';
 
 export interface MoteurAPI {
     projects: typeof Projects;

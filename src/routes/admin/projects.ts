@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { requireAuth, requireAdmin, requireProjectAccess } from '../../middlewares/auth.js';
+import { requireAuth, requireAdmin, requireProjectAccess } from '../../middlewares/auth';
 
 // Dummy project data for demonstration
 const projects = [

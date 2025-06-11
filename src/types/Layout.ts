@@ -1,4 +1,4 @@
-import { Block } from './Block.js';
+import { Block } from './Block';
 
 export interface Layout {
     id: string; // Unique layout ID (used as filename)

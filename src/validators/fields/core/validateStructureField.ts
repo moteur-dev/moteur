@@ -1,7 +1,7 @@
-import { Field } from '../../../types/Field.js';
-import { ValidationIssue } from '../../../types/ValidationResult.js';
-import { getStructure } from '../../../api/structures.js';
-import { validateFieldValue } from '../../validateFieldValue.js';
+import { Field } from '../../../types/Field';
+import { ValidationIssue } from '../../../types/ValidationResult';
+import { getStructure } from '../../../api/structures';
+import { validateFieldValue } from '../../validateFieldValue';
 
 export function validateStructureField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];

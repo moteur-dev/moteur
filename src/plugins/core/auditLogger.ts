@@ -1,6 +1,6 @@
-import { onEvent } from '../../utils/eventBus.js';
-import { Audit } from '../../types/Audit.js';
-import { User } from '../../types/User.js';
+import { onEvent } from '../../utils/eventBus';
+import { Audit } from '../../types/Audit';
+import { User } from '../../types/User';
 
 onEvent('project.beforeCreate', async ({ project, user }) => {
     project.meta = project.meta || {};

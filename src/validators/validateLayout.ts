@@ -1,10 +1,10 @@
 import { Layout } from '../types/Layout';
-import { Block, BlockSchema } from '../types/Block.js';
-import { Field, FieldSchema } from '../types/Field.js';
-import { ValidationResult, ValidationIssue } from '../types/ValidationResult.js';
-import { createValidationResult, addIssue } from '../utils/validation.js';
-import { BlockRegistry } from 'registry/BlockRegistry.js';
-import { FieldRegistry } from 'registry/FieldRegistry.js';
+import { Block, BlockSchema } from '../types/Block';
+import { Field, FieldSchema } from '../types/Field';
+import { ValidationResult, ValidationIssue } from '../types/ValidationResult';
+import { createValidationResult, addIssue } from '../utils/validation';
+import { BlockRegistry } from 'registry/BlockRegistry';
+import { FieldRegistry } from 'registry/FieldRegistry';
 
 const blockRegistry = new BlockRegistry();
 const fieldRegistry = new FieldRegistry();

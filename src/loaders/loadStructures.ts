@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { moteurConfig } from '../../moteur.config.js';
-import { StructureSchema } from '../types/Structure.js';
-import { normalizeType } from '../utils/normalizeType.js';
+import { moteurConfig } from '../../moteur.config';
+import { StructureSchema } from '../types/Structure';
+import { normalizeType } from '../utils/normalizeType';
 
 export function loadStructures(project?: string): Record<string, StructureSchema> {
     const registry: Record<string, StructureSchema> = {};
@@ -27,7 +27,7 @@ export function loadStructures(project?: string): Record<string, StructureSchema
 function loadFromDir(dirPath: string, registry: Record<string, StructureSchema>) {
     if (!fs.existsSync(dirPath)) return;
 
-    const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.json'));
+    const files = fs.readdirSync(dirPath).filter(f => f.endsWith('on'));
 
     for (const file of files) {
         try {

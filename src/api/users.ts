@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { moteurConfig } from '../../moteur.config.js';
-import { User } from '../types/User.js';
-import { writeJson } from '../utils/fileUtils.js';
+import { moteurConfig } from '../../moteur.config';
+import { User } from '../types/User';
+import { writeJson } from '../utils/fileUtils';
 
 const USERS_FILE = path.resolve(moteurConfig.auth.usersFile);
 

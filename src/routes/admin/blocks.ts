@@ -1,5 +1,5 @@
 import express from 'express';
-import { BlockRegistry } from '../../registry/BlockRegistry.js';
+import { BlockRegistry } from '../../registry/BlockRegistry';
 
 const router = express.Router();
 const registry = new BlockRegistry();
