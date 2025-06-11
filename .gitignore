@@ -4,11 +4,11 @@ moteur.config.ts
 data/projects
 
 # Node and npm
-node_modules/
-dist/
-build/
-html/
-coverage/
+/node_modules/
+/dist/
+/build/
+/html/
+/coverage/
 .env
 
 
