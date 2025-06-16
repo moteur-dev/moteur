@@ -25,6 +25,8 @@ Soft-deletes: moves a project to `.trash/projects/{id}`.
 
 ### `Moteur.projects.validateProject(user: User, id: string, data)
 
+### `Moteur.projects.generateFromBlueprint(user: User, blueprint: Blueprint)
+
 ---
 
 ## 📄 Layouts API
