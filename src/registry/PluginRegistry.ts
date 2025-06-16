@@ -16,7 +16,6 @@ export class PluginRegistry {
         }
         return plugin;
     }
-    git;
 
     has(id: string): boolean {
         return !!this.plugins[id];

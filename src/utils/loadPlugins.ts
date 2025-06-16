@@ -1,56 +1,60 @@
-import path from 'path'
-import { pathToFileURL } from 'url'
-import { PluginManifest, PluginModule } from '@/types/Plugin'
-import { pluginRegistry } from '@/registry/PluginRegistry'
+import path from 'path';
+import { pathToFileURL } from 'url';
+import { PluginManifest, PluginModule } from '@/types/Plugin';
+import { pluginRegistry } from '@/registry/PluginRegistry';
+import { error } from 'console';
 
-export async function loadPluginById(manifest: PluginManifest): Promise<PluginModule> {
-  const mod: PluginModule = { name: manifest.id, dataPath: '', manifest }
+export async function loadPluginsForProject(pluginIds: string[]): Promise<PluginModule[]> {
+    const loaded: PluginModule[] = [];
 
-  try {
-    if (manifest.source === 'local') {
-      const base = path.resolve(`./plugins/${manifest.id}`)
+    for (const id of pluginIds) {
+        if (!pluginRegistry.has(id)) {
+            throw new Error(`Plugin "${id}" is not available or not registered.`);
+        }
 
-      const tryImport = async (key: keyof PluginModule, file: string) => {
-        try {
-          const m = await import(pathToFileURL(path.join(base, file)).href)
-          mod[key] = m?.default ?? m
-        } catch {}
-      }
-
-      await Promise.all([
-        tryImport('routes', 'routes.ts'),
-        tryImport('api', 'api.ts'),
-        tryImport('storage', 'storage.ts'),
-        tryImport('tests', 'api.test.ts'),
-        tryImport('manifest', 'manifest.ts'),
-      ])
-
-      mod.dataPath = path.join(base, 'data')
+        const manifest = pluginRegistry.get(id);
+        const plugin = await loadPluginById(manifest);
+        loaded.push(plugin);
     }
 
-    // (future) npm plugins use manifest.packageName instead
-  } catch (err) {
-    console.warn(`[plugin:${manifest.id}] failed to load`, err)
-  }
-
-  return mod
+    return loaded;
 }
 
-/**
- * Loads all enabled plugins for a project by plugin ID
- */
-export async function loadPluginsForProject(pluginIds: string[]): Promise<PluginModule[]> {
-  const loaded: PluginModule[] = []
+export async function loadPluginById(manifest: PluginManifest): Promise<PluginModule> {
+    const plugin: PluginModule = {
+        name: manifest.id,
+        dataPath: '',
+        manifest
+    };
 
-  for (const id of pluginIds) {
-    if (!pluginRegistry.has(id)) {
-      throw new Error(`Plugin "${id}" is not available or not registered.`)
+    try {
+        if (manifest.source === 'local') {
+            const base = path.resolve(`./plugins/${manifest.id}`);
+
+            const tryImport = async (key: keyof PluginModule, file: string) => {
+                try {
+                    const mod = await import(pathToFileURL(path.join(base, file)).href);
+                    plugin[key] = mod?.default ?? mod;
+                } catch (error) {
+                    console.error(`[plugin:${manifest.id}] Failed to load ${file}`, error);
+                }
+            };
+
+            await Promise.all([
+                tryImport('api', 'api.ts'),
+                tryImport('routes', 'routes.ts'),
+                tryImport('storage', 'storage.ts'),
+                tryImport('tests', 'api.test.ts'),
+                tryImport('manifest', 'manifest.ts') // should already be called
+            ]);
+
+            plugin.dataPath = path.join(base, 'data');
+        }
+
+        // Future: support 'npm' source via manifest.packageName
+    } catch (err) {
+        console.warn(`[plugin:${manifest.id}] Failed to load`, err);
     }
 
-    const manifest = pluginRegistry.get(id)
-    const plugin = await loadPluginById(manifest)
-    loaded.push(plugin)
-  }
-
-  return loaded
+    return plugin;
 }
