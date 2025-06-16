@@ -1,38 +1,39 @@
 // src/registry/PluginRegistry.ts
 
-import type { PluginManifest } from '@/types/Plugin'
+import type { PluginManifest } from '@/types/Plugin';
 
 export class PluginRegistry {
-  private plugins: Record<string, PluginManifest> = {}
+    private plugins: Record<string, PluginManifest> = {};
 
-  register(id: string, manifest: PluginManifest): void {
-    this.plugins[id] = manifest
-  }
-
-  get(id: string): PluginManifest {
-    const plugin = this.plugins[id]
-    if (!plugin) {
-      throw new Error(`Plugin "${id}" not found in registry.`)
+    register(id: string, manifest: PluginManifest): void {
+        this.plugins[id] = manifest;
     }
-    return plugin
-  }
 
-  has(id: string): boolean {
-    return !!this.plugins[id]
-  }
+    get(id: string): PluginManifest {
+        const plugin = this.plugins[id];
+        if (!plugin) {
+            throw new Error(`Plugin "${id}" not found in registry.`);
+        }
+        return plugin;
+    }
+    git;
 
-  list(): string[] {
-    return Object.keys(this.plugins)
-  }
+    has(id: string): boolean {
+        return !!this.plugins[id];
+    }
 
-  all(): Record<string, PluginManifest> {
-    return this.plugins
-  }
+    list(): string[] {
+        return Object.keys(this.plugins);
+    }
 
-  clear(): void {
-    this.plugins = {}
-  }
+    all(): Record<string, PluginManifest> {
+        return this.plugins;
+    }
+
+    clear(): void {
+        this.plugins = {};
+    }
 }
 
 // Singleton instance
-export const pluginRegistry = new PluginRegistry()
+export const pluginRegistry = new PluginRegistry();
