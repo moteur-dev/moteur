@@ -20,7 +20,10 @@ export async function loadPluginsForProject(pluginIds: string[]): Promise<Plugin
     return loaded;
 }
 
-export async function loadPluginById(manifest: PluginManifest): Promise<PluginModule> {
+export async function loadPluginById(
+    manifest: PluginManifest,
+    overridePath?: string // ✅ this is new
+): Promise<PluginModule> {
     const plugin: PluginModule = {
         name: manifest.id,
         dataPath: '',
@@ -29,7 +32,9 @@ export async function loadPluginById(manifest: PluginManifest): Promise<PluginMo
 
     try {
         if (manifest.source === 'local') {
-            const base = path.resolve(`./plugins/${manifest.id}`);
+            const base = overridePath
+                ? path.resolve(overridePath)
+                : path.resolve(`./plugins/${manifest.id}`);
 
             const tryImport = async (key: keyof PluginModule, file: string) => {
                 try {
@@ -45,13 +50,11 @@ export async function loadPluginById(manifest: PluginManifest): Promise<PluginMo
                 tryImport('routes', 'routes.ts'),
                 tryImport('storage', 'storage.ts'),
                 tryImport('tests', 'api.test.ts'),
-                tryImport('manifest', 'manifest.ts') // should already be called
+                tryImport('manifest', 'manifest.ts')
             ]);
 
             plugin.dataPath = path.join(base, 'data');
         }
-
-        // Future: support 'npm' source via manifest.packageName
     } catch (err) {
         console.warn(`[plugin:${manifest.id}] Failed to load`, err);
     }
