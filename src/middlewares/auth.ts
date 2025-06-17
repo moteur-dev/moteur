@@ -10,8 +10,8 @@ export function requireAuth(req: any, res: any, next: NextFunction) {
     }
 
     try {
-        const payload = verifyJWT(token)
-        const user = getUserById(payload.sub as string)
+        const payload = verifyJWT(token);
+        const user = getUserById(payload.sub as string);
         if (!user || !user.id || !user.isActive) {
             return res.status(401).json({ error: 'Invalid or expired token' });
         }
