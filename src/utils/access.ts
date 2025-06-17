@@ -2,7 +2,6 @@ import { User } from '../types/User';
 import { ProjectSchema } from '../types/Project';
 
 export function assertUserCanAccessProject(user: User, project: ProjectSchema): void {
-    console.log(project.users);
     if (!project.users || project.users.length === 0) {
         throw new Error(`Project "${project.id}" has no specific users defined.`);
     }
@@ -17,5 +16,5 @@ export function assertUserCanCreateProject(user: User): void {
             `User "${user?.id || 'unknown'}" does not have permission to create projects.`
         );
     }
-    // @todo: limit the number of projects per user
+    // @todo: limit the number of projects per user?
 }
