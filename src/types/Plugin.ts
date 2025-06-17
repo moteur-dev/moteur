@@ -12,6 +12,7 @@ export interface PluginManifest {
     icon?: string; // Emoji or icon class
     version?: string; // Semver (if known)
     source: PluginSource; // Where it's loaded from
+    basePath?: string; // Base path for local plugins (e.g., './plugins/hello-world')
 }
 
 /**
@@ -33,6 +34,7 @@ export interface PluginModule {
 
     manifest?: PluginManifest;
     api?: any; // Optional developer API extension
+    openapi?: any; // Optional OpenAPI spec
     routes?: {
         router: import('express').Router;
         spec: any /* Record<string, import('openapi-types').OpenAPIV3.PathItemObject>*/;

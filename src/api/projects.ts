@@ -9,6 +9,8 @@ import { projectFilePath, projectDir } from '@/utils/pathUtils';
 import { User } from '@/types/User';
 import { assertUserCanAccessProject, assertUserCanCreateProject } from '@/utils/access';
 import { triggerEvent } from '@/utils/eventBus';
+import { validateProject } from '@/validators/validateProject';
+import { ValidationResult } from '@/types/ValidationResult';
 
 export function getProject(user: User, projectId: string): ProjectSchema {
     if (!isValidId(projectId)) {
@@ -35,10 +37,21 @@ export function listProjects(user: User): ProjectSchema[] {
     });
 }
 
-export function createProject(user: User, project: ProjectSchema): ProjectSchema {
+export function createProject(
+    user: User,
+    project: ProjectSchema
+): { project?: ProjectSchema; validation?: ValidationResult } {
     assertUserCanCreateProject(user);
+    if (!project || !project.id || !isValidId(project.id)) {
+        throw new Error(`Invalid project schema: "${JSON.stringify(project)}"`);
+    }
     if (isExistingProjectId(project.id)) {
         throw new Error(`Project with id "${project.id}" already exists`);
+    }
+
+    const validationErrors = validateProject(project);
+    if (validationErrors.issues.length > 0) {
+        return { validation: validationErrors };
     }
 
     triggerEvent('project.beforeCreate', { project, user });
@@ -51,7 +64,7 @@ export function createProject(user: User, project: ProjectSchema): ProjectSchema
 
     writeJson(projectFilePath(project.id), project);
     triggerEvent('project.afterCreate', { project, user });
-    return project;
+    return { project };
 }
 
 export function updateProject(
