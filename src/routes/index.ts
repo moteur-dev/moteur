@@ -8,6 +8,7 @@ import adminStructures from './admin/structures';
 import adminProjects from './admin/projects';
 import preview from './public/preview';
 import { moteurConfig } from '../../moteur.config';
+import { openApiSpec } from './openapi';
 
 const app = express();
 app.use(express.json());
@@ -28,6 +29,11 @@ app.use(basePath + '/admin/:project/structures', adminStructures);
 app.use(basePath + '/blocks', publicBlocks);
 app.use(basePath + '/fields', publicFields);
 app.use(basePath + '/preview', preview);
+
+const router = express.Router();
+router.get('/openapi.json', (req, res) => {
+    res.json(openApiSpec);
+});
 
 const PORT = moteurConfig.api.port || process.env.PORT || 3000;
 app.listen(PORT, () => {
