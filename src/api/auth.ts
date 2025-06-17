@@ -7,7 +7,10 @@ import { User } from '@/types/User';
 const JWT_SECRET = moteurConfig.auth?.jwtSecret ?? 'super-jwt-secret-key';
 const JWT_EXPIRES_IN = moteurConfig.auth?.jwtExpiresIn ?? '2h';
 
-export async function loginUser(email: string, password: string): Promise<string> {
+export async function loginUser(
+    email: string,
+    password: string
+): Promise<{ token: string; user: User }> {
     if (!email || !password) {
         throw new Error('Missing email or password');
     }
@@ -25,7 +28,10 @@ export async function loginUser(email: string, password: string): Promise<string
         throw new Error('User is not active');
     }
 
-    return generateJWT(user);
+    return {
+        token: generateJWT(user),
+        user
+    };
 }
 
 export function generateJWT(user: User): string {
