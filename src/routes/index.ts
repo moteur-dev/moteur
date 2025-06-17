@@ -1,5 +1,6 @@
 import express from 'express';
 import loginRoute from './auth/login';
+import refreshRoute from './auth/refresh';
 import publicBlocks from './public/blocks';
 import publicFields from './public/fields';
 import adminBlocks from './admin/blocks';
@@ -18,6 +19,7 @@ const basePath = moteurConfig.api.basePath ?? '/api/moteur';
 console.log(`Using base path: ${basePath}`);
 
 app.use(basePath + '/auth', loginRoute);
+app.use(basePath + '/auth', refreshRoute);
 
 // Admin routes
 app.use(basePath + '/blocks', adminBlocks);
