@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 import { moteurConfig } from '../../moteur.config';
-import { getUserByEmail } from './users';
-import { User } from '../types/User';
+import { getUserByEmail } from '@/api/users';
+import { User } from '@/types/User';
 
 const JWT_SECRET = moteurConfig.auth?.jwtSecret ?? 'super-jwt-secret-key';
 const JWT_EXPIRES_IN = moteurConfig.auth?.jwtExpiresIn ?? '2h';

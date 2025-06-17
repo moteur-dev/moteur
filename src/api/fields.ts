@@ -1,4 +1,4 @@
-import { FieldSchema } from '../types/Field';
+import { FieldSchema } from '@/types/Field';
 
 import { loadFields as loaderLoadFields } from '../loaders/loadFields';
 
