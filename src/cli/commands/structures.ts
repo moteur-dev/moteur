@@ -1,4 +1,4 @@
-import { StructureSchema } from 'types/Structure.js';
+import { StructureSchema } from '@/types/Structure.js';
 import {
     listStructures,
     getStructure,
@@ -7,7 +7,7 @@ import {
     deleteStructure
 } from '../../../src/api/structures.js';
 import { resolveInputData } from '../utils/resolveInputData.js';
-import { cliRegistry } from 'registry/CommandRegistry.js';
+import { cliRegistry } from '@/registry/CommandRegistry.js';
 import { showStructuresMenu } from '../menu/structuresMenu.js';
 import { cliLoadUser } from '../utils/auth.js';
 import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';

@@ -1,16 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import { moteurConfig } from '../../moteur.config.js';
-import { ModelSchema } from '../types/Model.js';
-import { readJson, writeJson } from '../utils/fileUtils.js';
-import { isValidId } from '../utils/idUtils.js';
-import { isExistingModelSchema } from '../utils/fileUtils.js';
-import { modelDir, modelFilePath } from '../utils/pathUtils.js';
-import { User } from '../types/User.js';
-import { assertUserCanAccessProject } from '../utils/access.js';
-import { getProject } from './projects.js';
-import { validateModel } from 'validators/validateModel.js';
-import { triggerEvent } from '../utils/eventBus';
+import { ModelSchema } from '@/types/Model.js';
+import { readJson, writeJson } from '@/utils/fileUtils.js';
+import { isValidId } from '@/utils/idUtils.js';
+import { isExistingModelSchema } from '@/utils/fileUtils.js';
+import { modelDir, modelFilePath } from '@/utils/pathUtils.js';
+import { User } from '@/types/User.js';
+import { assertUserCanAccessProject } from '@/utils/access.js';
+import { getProject } from '@/api/projects.js';
+import { validateModel } from '@/validators/validateModel.js';
+import { triggerEvent } from '@/utils/eventBus';
 
 export function listModelSchemas(user: User, projectId: string): ModelSchema[] {
     if (!isValidId(projectId)) {

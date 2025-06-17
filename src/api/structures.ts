@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { moteurConfig } from '../../moteur.config';
-import { StructureSchema } from '../types/Structure';
-import { readJson, writeJson } from '../utils/fileUtils';
-import { loadStructures } from '../loaders/loadStructures';
-import { validateStructure } from '../validators/validateStructure';
-import { isValidId } from '../utils/idUtils';
+import { StructureSchema } from '@/types/Structure';
+import { readJson, writeJson } from '@/utils/fileUtils';
+import { loadStructures } from '@/loaders/loadStructures';
+import { validateStructure } from '@/validators/validateStructure';
+import { isValidId } from '@/utils/idUtils';
 
 /** List all structures for a given project (including global fallbacks) */
 export function listStructures(project?: string): Record<string, StructureSchema> {
