@@ -11,11 +11,11 @@ export function loadProjects(): ProjectSchema[] {
     return fs
         .readdirSync(root)
         .filter(dir => {
-            const fullPath = path.join(root, dir, 'projecton');
+            const fullPath = path.join(root, dir, 'project.json');
             return fs.existsSync(fullPath);
         })
         .map(dir => {
-            const configPath = path.join(root, dir, 'projecton');
+            const configPath = path.join(root, dir, 'project.json');
             try {
                 const raw = fs.readFileSync(configPath, 'utf-8');
                 const schema = JSON.parse(raw) as ProjectSchema;

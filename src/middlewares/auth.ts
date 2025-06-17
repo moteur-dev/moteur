@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyJWT } from '../api/auth';
-import { getUserById } from '../api/users';
+import { verifyJWT } from '@/api/auth';
+import { getUserById } from '@/api/users';
+import { getProject } from '@/api/projects';
 
 export function requireAuth(req: any, res: any, next: NextFunction) {
     const token = req.headers.authorization?.replace('Bearer ', '');
@@ -55,12 +56,13 @@ export function requireProjectAccess(req: Request, res: Response, next: NextFunc
     requireAuth(req, res, () => {
         const user = (req as any).user;
         const projectId = req.params.projectId || req.body.projectId;
+        const project = getProject(user, projectId);
 
         if (!projectId) {
             return res.status(400).json({ error: 'Project ID is required' });
         }
 
-        if (!user.projects.includes(projectId)) {
+        if (!project.users?.includes(user.id)) {
             return res.status(403).json({ error: 'Access to this project is forbidden' });
         }
 

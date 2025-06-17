@@ -2,6 +2,7 @@ import { User } from '../types/User';
 import { ProjectSchema } from '../types/Project';
 
 export function assertUserCanAccessProject(user: User, project: ProjectSchema): void {
+    console.log(project.users);
     if (!project.users || project.users.length === 0) {
         throw new Error(`Project "${project.id}" has no specific users defined.`);
     }
