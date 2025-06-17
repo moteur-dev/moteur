@@ -13,6 +13,8 @@ export interface ProjectSchema {
     storage?: string; // Storage adapter ID (e.g., 'core/local', 'core/s3')
     storageOptions?: Record<string, any>; // Options for the storage adapter
 
+    plugins?: string[]; // List of plugin IDs to enable for this project
+
     features?: {
         pages: boolean; // Enable pages & templates
         layouts: boolean; // Enable layouts and blocks
