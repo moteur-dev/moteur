@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyJWT } from '../api/auth';
+import { getUserById } from '../api/users';
 
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
+export function requireAuth(req: any, res: any, next: NextFunction) {
     const token = req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) {
@@ -9,7 +10,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     }
 
     try {
-        const user = verifyJWT(token);
+        const payload = verifyJWT(token)
+        const user = getUserById(payload.sub as string)
+        if (!user || !user.id || !user.isActive) {
+            return res.status(401).json({ error: 'Invalid or expired token' });
+        }
         (req as any).user = user;
         next();
     } catch (err) {
