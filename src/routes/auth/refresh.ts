@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
 import { generateJWT } from '@/api/auth';
 import { requireAuth } from '@/middlewares/auth';
-import type { OpenAPIV3 } from 'openapi-types'
+import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = express.Router();
 
@@ -18,41 +18,41 @@ router.post('/refresh', requireAuth, async (req: any, res: any) => {
 });
 
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
-  '/auth/refresh': {
-    post: {
-      summary: 'Refresh the JWT',
-      tags: ['Auth'],
-      security: [{ bearerAuth: [] }],
-      responses: {
-        '200': {
-          description: 'New JWT token',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  token: { type: 'string' }
+    '/auth/refresh': {
+        post: {
+            summary: 'Refresh the JWT',
+            tags: ['Auth'],
+            security: [{ bearerAuth: [] }],
+            responses: {
+                '200': {
+                    description: 'New JWT token',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    token: { type: 'string' }
+                                }
+                            }
+                        }
+                    }
+                },
+                '401': {
+                    description: 'Unauthorized or invalid user',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    error: { type: 'string' }
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
-        },
-        '401': {
-          description: 'Unauthorized or invalid user',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  error: { type: 'string' }
-                }
-              }
-            }
-          }
         }
-      }
     }
-  }
-}
+};
 
 export default router;
