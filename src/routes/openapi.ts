@@ -4,55 +4,55 @@ import type { OpenAPIV3 } from 'openapi-types';
 import { mergePluginSpecs } from '@/utils/mergePluginSpecs';
 
 const baseSchemas: OpenAPIV3.ComponentsObject['schemas'] = {
-  User: {
-    type: 'object',
-    required: ['id', 'email'],
-    properties: {
-      id: { type: 'string' },
-      email: { type: 'string' },
-      roles: {
-        type: 'array',
-        items: { type: 'string' }
-      },
-      projects: {
-        type: 'array',
-        items: { type: 'string' }
-      },
-      isActive: { type: 'boolean' }
-    }
-  },
-  Project: {
-    type: 'object',
-    required: ['id', 'label'],
-    properties: {
-      id: { type: 'string' },
-      label: { type: 'string' },
-      description: { type: 'string' },
-      plugins: {
-        type: 'array',
-        items: { type: 'string' }
-      }
-    }
-  },
-  ValidationResult: {
-    type: 'object',
-    required: ['valid', 'errors'],
-    properties: {
-      valid: { type: 'boolean', example: false },
-      errors: {
-        type: 'array',
-        items: {
-          type: 'object',
-          required: ['field', 'message'],
-          properties: {
-            field: { type: 'string' },
-            message: { type: 'string' }
-          }
+    User: {
+        type: 'object',
+        required: ['id', 'email'],
+        properties: {
+            id: { type: 'string' },
+            email: { type: 'string' },
+            roles: {
+                type: 'array',
+                items: { type: 'string' }
+            },
+            projects: {
+                type: 'array',
+                items: { type: 'string' }
+            },
+            isActive: { type: 'boolean' }
         }
-      }
+    },
+    Project: {
+        type: 'object',
+        required: ['id', 'label'],
+        properties: {
+            id: { type: 'string' },
+            label: { type: 'string' },
+            description: { type: 'string' },
+            plugins: {
+                type: 'array',
+                items: { type: 'string' }
+            }
+        }
+    },
+    ValidationResult: {
+        type: 'object',
+        required: ['valid', 'errors'],
+        properties: {
+            valid: { type: 'boolean', example: false },
+            errors: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    required: ['field', 'message'],
+                    properties: {
+                        field: { type: 'string' },
+                        message: { type: 'string' }
+                    }
+                }
+            }
+        }
     }
-  }
-}
+};
 
 // You can dynamically generate this if needed
 export const baseSpec: OpenAPIV3.Document = {
