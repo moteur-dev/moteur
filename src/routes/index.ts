@@ -13,6 +13,8 @@ import preview from './public/preview';
 import { moteurConfig } from '../../moteur.config';
 import { loginUser } from '../api/auth';
 
+import '@/fields';
+
 const app = express();
 app.use(express.json());
 

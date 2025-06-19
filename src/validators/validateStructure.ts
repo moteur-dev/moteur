@@ -2,9 +2,7 @@ import { StructureSchema } from '../types/Structure';
 import { Field } from '../types/Field';
 import { ValidationResult } from '../types/ValidationResult';
 import { createValidationResult, addIssue } from '../utils/validation';
-import { FieldRegistry } from '../registry/FieldRegistry';
-
-const fieldRegistry = new FieldRegistry();
+import fieldRegistry from '../registry/FieldRegistry';
 
 export function validateStructure(structure: StructureSchema): ValidationResult {
     const result = createValidationResult();
