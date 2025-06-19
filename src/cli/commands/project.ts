@@ -71,16 +71,12 @@ export async function createProjectCommand(args: {
         }
     }
 
-    console.log('Confirm project data:');
-    console.log(project);
-
-    console.log(user);
     const created = createProject(user, project as ProjectSchema);
     if (args.json) {
         return console.log(JSON.stringify(created, null, 2));
     }
     if (!args.quiet) {
-        console.log(`✅ Created project "${created?.id}"`);
+        console.log(`✅ Created project`);
     }
     return created;
 }
