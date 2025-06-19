@@ -62,7 +62,7 @@ githubAuthRoute.get('/github/callback', async (req: any, res: any) => {
 
         if (!user) {
             user = {
-                id: `user:${crypto.randomUUID()}`, // or github: prefix if you want to track origin
+                id: `user:${randomUUID()}`, // or github: prefix if you want to track origin
                 isActive: true,
                 email,
                 name: profile.name || profile.login,
