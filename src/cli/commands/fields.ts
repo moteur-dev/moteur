@@ -1,7 +1,7 @@
-import { listFields } from '../../../src/api/fields';
+import fieldRegistry from '@/registry/FieldRegistry';
 
 export async function listFieldsCommand(args: { json?: boolean; quiet?: boolean }) {
-    const fields = listFields();
+    const fields = fieldRegistry.all();
     if (args.json) {
         console.log(JSON.stringify(fields, null, 2));
     } else if (!args.quiet) {

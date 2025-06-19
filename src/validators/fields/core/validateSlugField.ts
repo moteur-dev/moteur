@@ -1,8 +1,6 @@
 import { Field } from '../../../types/Field';
 import { ValidationIssue } from '../../../types/ValidationResult';
-import { FieldRegistry } from '../../../registry/FieldRegistry';
-
-const fieldRegistry = new FieldRegistry();
+import fieldRegistry from '../../../registry/FieldRegistry';
 
 export function validateSlugField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];

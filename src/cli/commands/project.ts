@@ -80,7 +80,7 @@ export async function createProjectCommand(args: {
         return console.log(JSON.stringify(created, null, 2));
     }
     if (!args.quiet) {
-        console.log(`✅ Created project "${created.id}"`);
+        console.log(`✅ Created project "${created?.id}"`);
     }
     return created;
 }

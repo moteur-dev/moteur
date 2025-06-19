@@ -14,7 +14,7 @@ export interface FieldSchema {
     type: string; // Schema type
     label: string; // Display label
     description?: string; // Optional description
-    fields: Record<string, Field>; // Field definitions for instance data
+    fields?: Record<string, FieldSchema>; // Field definitions for instance data
     options?: FieldOptions; // Additional options
     default?: any; // Default value for the field
     required?: boolean; // Whether the field is mandatory

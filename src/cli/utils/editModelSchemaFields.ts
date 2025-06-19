@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
 import { getModelSchema, updateModelSchema } from '../../../src/api/models.js';
-import { listFields } from '../../../src/api/fields.js';
+import fieldRegistry from '../../../src/registry/FieldRegistry.js';
 import { renderCliField } from '../field-renderers/renderCliField.js';
 import '../field-renderers/index.js';
 import { editJsonInEditor } from './editJsonInEditor.js';
@@ -10,7 +10,7 @@ export async function editModelSchemaFields(user: User, projectId: string, model
     let modelSchema = getModelSchema(user, projectId, modelId);
 
     // Fetch available field types dynamically
-    const availableFields = Object.values(listFields()).map(f => ({
+    const availableFields = Object.values(fieldRegistry.all()).map(f => ({
         name: `${f.label} (${f.type})`,
         value: f.type
     }));

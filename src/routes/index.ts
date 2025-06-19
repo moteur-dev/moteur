@@ -35,6 +35,8 @@ const mergedApiSpecs = await mergePluginSpecs({
     }
 });
 
+import '@/fields';
+
 const app = express();
 app.use(express.json());
 
