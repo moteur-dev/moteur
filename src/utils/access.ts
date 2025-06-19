@@ -16,5 +16,5 @@ export function assertUserCanCreateProject(user: User): void {
             `User "${user?.id || 'unknown'}" does not have permission to create projects.`
         );
     }
-    // @todo: limit the number of projects per user
+    // @todo: limit the number of projects per user?
 }

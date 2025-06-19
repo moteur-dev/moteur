@@ -1,3 +1,4 @@
+import { Audit } from './Audit';
 import { Field } from './Field';
 
 export interface Entry {
@@ -5,13 +6,7 @@ export interface Entry {
     type: string; // The ModelSchema this instance belongs to
     data: Record<string, any>;
     meta?: {
-        audit?: {
-            createdAt?: string;
-            updatedAt?: string;
-            createdBy?: string;
-            updatedBy?: string;
-            revision?: number;
-        };
+        audit?: Audit;
     };
     options?: Record<string, any>; // Additional options (e.g., versioning)
 }
@@ -24,13 +19,7 @@ export interface ModelSchema {
     modelType?: 'content' | 'userData' | 'taxonomy' | 'settings'; // Type of model
     optionsSchema?: Record<string, any>; // Additional config (e.g., versioning)
     meta?: {
-        audit?: {
-            createdAt?: string;
-            updatedAt?: string;
-            createdBy?: string;
-            updatedBy?: string;
-            revision?: number;
-        };
+        audit?: Audit;
     };
 }
 

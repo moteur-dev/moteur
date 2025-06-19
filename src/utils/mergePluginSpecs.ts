@@ -1,15 +1,38 @@
-import type { PluginModule } from '@/types/Plugin';
-import { openApiSpec } from '@/routes/openapi';
-import type { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from 'openapi-types';
+import { loadPluginsForProject } from './loadPlugins';
+import { moteurConfig } from '../../moteur.config';
 
-export function mergePluginSpecs(plugins: PluginModule[]) {
+/**
+ * Merges OpenAPI specs from core and plugins.
+ * @param baseSpec The base OpenAPI spec to extend
+ * @param projectPluginIds Optional list of plugin IDs to load
+ */
+export async function mergePluginSpecs(
+    baseSpec: OpenAPIV3.Document,
+    projectPluginIds: string[] = []
+): Promise<OpenAPIV3.Document> {
+    const merged: OpenAPIV3.Document = {
+        ...baseSpec,
+        paths: { ...baseSpec.paths }
+    };
+
+    // Load all plugins for the project
+    const plugins = await loadPluginsForProject(projectPluginIds);
+
     for (const plugin of plugins) {
-        const basePath = `/plugins/${plugin.name}`;
+        const openapi = plugin.openapi;
+        if (!openapi || !openapi.paths) continue;
 
-        if (plugin.routes?.spec) {
-            for (const [subpath, def] of Object.entries(plugin.routes.spec)) {
-                openApiSpec.paths[`${basePath}${subpath}`] = def as OpenAPIV3.PathItemObject;
+        const basePath = plugin.manifest?.basePath ?? `/plugins/${plugin.manifest?.id}`;
+
+        for (const [subpath, def] of Object.entries(openapi.paths)) {
+            const fullPath = `${basePath}${subpath}`;
+            if (merged.paths[fullPath]) {
+                console.warn(`⚠️ Conflict: OpenAPI path already exists: ${fullPath}`);
             }
+            merged.paths[fullPath] = def as OpenAPIV3.PathItemObject;
         }
     }
+
+    return merged;
 }

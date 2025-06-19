@@ -1,34 +1,58 @@
-import express from 'express';
-import loginRoute from './auth/login';
-import refreshRoute from './auth/refresh';
-import meRoute from './auth/me';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import dotenv from 'dotenv';
 
-import publicBlocks from './public/blocks';
-import publicFields from './public/fields';
-import adminBlocks from './admin/blocks';
-import adminFields from './admin/fields';
-import adminStructures from './admin/structures';
-import adminProjects from './admin/projects';
-import preview from './public/preview';
+// ESM-safe __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+console.log('Loading ', resolve(__dirname, '../../.env'));
+dotenv.config({ path: resolve(__dirname, '../../.env') });
+
+import express from 'express';
+import openapiRoute, { baseSpec } from './openapi';
+import swaggerUi from 'swagger-ui-express';
+
+import authRoutes from './auth';
+import projectRoutes from './projects';
 import { moteurConfig } from '../../moteur.config';
-import { loginUser } from '../api/auth';
+
+import { authSpecs } from './auth';
+import { mergePluginSpecs } from '@/utils/mergePluginSpecs';
+
+const mergedApiSpecs = await mergePluginSpecs({
+    ...baseSpec,
+    paths: {
+        ...baseSpec.paths,
+        ...authSpecs.paths
+    },
+    components: {
+        ...baseSpec.components,
+        schemas: {
+            ...baseSpec.components?.schemas,
+            ...authSpecs.schemas
+        }
+    }
+});
 
 const app = express();
 app.use(express.json());
 
-// Base API path from config
 const basePath = moteurConfig.api.basePath ?? '/api/moteur';
-app.use(basePath + '/auth', loginRoute);
-app.use(basePath + '/auth', refreshRoute);
-app.use(basePath + '/auth', meRoute);
 
-// Admin routes
-app.use(basePath + '/blocks', adminBlocks);
-app.use(basePath + '/fields', adminFields);
-app.use(basePath + '/projects', adminProjects);
-app.use(basePath + '/:project/structures', adminStructures);
+const router = express.Router();
+router.get('/openapi.json', async (req, res) => {
+    const spec = mergedApiSpecs;
 
-app.use(basePath + '/preview', preview);
+    res.json(spec);
+});
+
+app.use(basePath, router);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(mergedApiSpecs));
+
+app.use(basePath, openapiRoute);
+app.use(basePath + '/auth', authRoutes);
+app.use(basePath + '/projects', projectRoutes);
 
 const PORT = moteurConfig.api.port || process.env.PORT || 3000;
 app.listen(PORT, () => {
