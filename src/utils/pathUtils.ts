@@ -34,19 +34,19 @@ export function structureDir(projectId: string, structureId: string): string {
 }
 
 export function projectFilePath(projectId: string): string {
-    return path.join(projectDir(projectId), 'projecton');
+    return path.join(projectDir(projectId), 'project.json');
 }
 export function modelFilePath(projectId: string, modelId: string): string {
-    return path.join(modelDir(projectId, modelId), 'modelon');
+    return path.join(modelDir(projectId, modelId), 'model.json');
 }
 export function entryFilePath(projectId: string, modelId: string, entryId: string): string {
-    return path.join(entryDir(projectId, modelId, entryId), 'entryon');
+    return path.join(entryDir(projectId, modelId, entryId), 'entry.json');
 }
 export function layoutFilePath(projectId: string, layoutId: string): string {
-    return path.join(layoutDir(projectId, layoutId), 'layouton');
+    return path.join(layoutDir(projectId, layoutId), 'layout.json');
 }
 export function structureFilePath(projectId: string, structureId: string): string {
-    return path.join(structureDir(projectId, structureId), 'structureon');
+    return path.join(structureDir(projectId, structureId), 'structure.json');
 }
 
 export function baseProjectsTrashDir(): string {
