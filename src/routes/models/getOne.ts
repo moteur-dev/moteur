@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { requireProjectAccess } from '@/middlewares/auth';
 import { getModelSchema } from '@/api/models';
+import type { OpenAPIV3 } from 'openapi-types';
 
 const router = Router({ mergeParams: true });
 
@@ -20,5 +21,56 @@ router.get('/:modelId', requireProjectAccess, (req: any, res: any) => {
         res.status(500).json({ error: 'Failed to get model' });
     }
 });
+
+export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
+    '/projects/{projectId}/models/{modelId}': {
+        get: {
+            summary: 'Get a single model from a project',
+            tags: ['Models'],
+            parameters: [
+                {
+                    name: 'projectId',
+                    in: 'path',
+                    required: true,
+                    schema: { type: 'string' }
+                },
+                {
+                    name: 'modelId',
+                    in: 'path',
+                    required: true,
+                    schema: { type: 'string' }
+                }
+            ],
+            responses: {
+                '200': {
+                    description: 'Returns the model schema',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    model: { $ref: '#/components/schemas/Model' }
+                                }
+                            }
+                        }
+                    }
+                },
+                '404': {
+                    description: 'Model not found',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    error: { type: 'string' }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
 
 export default router;

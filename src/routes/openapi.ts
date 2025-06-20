@@ -34,6 +34,42 @@ const baseSchemas: OpenAPIV3.ComponentsObject['schemas'] = {
             }
         }
     },
+    Model: {
+        type: 'object',
+        required: ['id', 'label', 'fields'],
+        properties: {
+            id: { type: 'string' },
+            label: { type: 'string' },
+            description: { type: 'string' },
+            fields: {
+                type: 'object',
+                additionalProperties: {
+                    $ref: '#/components/schemas/Field'
+                }
+            },
+            meta: {
+                type: 'object',
+                additionalProperties: true
+            }
+        }
+    },
+    Field: {
+        type: 'object',
+        required: ['type'],
+        properties: {
+            type: { type: 'string' },
+            label: { type: 'string' },
+            required: { type: 'boolean' },
+            options: {
+                type: 'object',
+                additionalProperties: true
+            },
+            meta: {
+                type: 'object',
+                additionalProperties: true
+            }
+        }
+    },
     ValidationResult: {
         type: 'object',
         required: ['valid', 'errors'],

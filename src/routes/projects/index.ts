@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import getAll from './getAll';
-import getOne from './getOne';
-import create from './create';
+import getAll, { openapi as getAllSpec } from './getAll';
+import getOne, { openapi as getOneSpec } from './getOne';
+import create, { openapi as createSpec } from './create';
 //import update from './update'
 //import remove from './delete'
 
@@ -13,5 +13,13 @@ router.use(getOne);
 router.use(create);
 //router.use(update)
 //router.use(remove)
+
+export const projectsSpecs = {
+    paths: {
+        ...getAllSpec,
+        ...getOneSpec,
+        ...createSpec
+    }
+};
 
 export default router;
