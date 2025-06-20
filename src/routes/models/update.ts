@@ -1,38 +1,44 @@
 import { Router } from 'express';
 import { requireAdmin } from '@/middlewares/auth';
-import { updateProject } from '@/api/projects';
-import { validateProject } from '@/validators/validateProject';
+import { updateModelSchema } from '@/api/models';
+import { validateModel } from '@/validators/validateModel';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
-router.patch('/:projectId', requireAdmin, (req: any, res: any) => {
-    const { projectId } = req.params;
-    if (!projectId) {
-        return res.status(400).json({ error: 'Missing projectId in path' });
+router.patch('/:modelId', requireAdmin, (req: any, res: any) => {
+    const { projectId, modelId } = req.params;
+    if (!projectId || !modelId) {
+        return res.status(400).json({ error: 'Missing projectId or modelId in path' });
     }
 
-    const validation = validateProject(req.body);
+    const validation = validateModel(req.body);
     if (!validation.valid) {
         return res.status(400).json({ validation: validation.issues, error: 'Validation failed' });
     }
 
     try {
-        const project = updateProject(req.user!, projectId, req.body);
-        return res.json(project);
+        const model = updateModelSchema(req.user!, projectId, modelId, req.body);
+        return res.json(model);
     } catch (err: any) {
         return res.status(400).json({ error: err.message });
     }
 });
 
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
-    '/projects/{projectId}': {
+    '/projects/{projectId}/models/{modelId}': {
         patch: {
-            summary: 'Update a project',
-            tags: ['Projects'],
+            summary: 'Update a model in a project',
+            tags: ['Models'],
             parameters: [
                 {
                     name: 'projectId',
+                    in: 'path',
+                    required: true,
+                    schema: { type: 'string' }
+                },
+                {
+                    name: 'modelId',
                     in: 'path',
                     required: true,
                     schema: { type: 'string' }
@@ -42,16 +48,16 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 required: true,
                 content: {
                     'application/json': {
-                        schema: { $ref: '#/components/schemas/UpdateProjectInput' }
+                        schema: { $ref: '#/components/schemas/UpdateModelInput' }
                     }
                 }
             },
             responses: {
                 '200': {
-                    description: 'Project updated',
+                    description: 'Model updated successfully',
                     content: {
                         'application/json': {
-                            schema: { $ref: '#/components/schemas/Project' }
+                            schema: { $ref: '#/components/schemas/Model' }
                         }
                     }
                 },

@@ -15,16 +15,21 @@ import swaggerUi from 'swagger-ui-express';
 
 import authRoutes from './auth';
 import projectRoutes from './projects';
+import modelsRoute from './models';
 import { moteurConfig } from '../../moteur.config';
 
 import { authSpecs } from './auth';
+import { projectsSpecs } from './projects';
+import { modelsSpecs } from './models';
 import { mergePluginSpecs } from '@/utils/mergePluginSpecs';
 
 const mergedApiSpecs = await mergePluginSpecs({
     ...baseSpec,
     paths: {
         ...baseSpec.paths,
-        ...authSpecs.paths
+        ...authSpecs.paths,
+        ...projectsSpecs.paths,
+        ...modelsSpecs.paths
     },
     components: {
         ...baseSpec.components,
@@ -55,6 +60,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(mergedApiSpecs));
 app.use(basePath, openapiRoute);
 app.use(basePath + '/auth', authRoutes);
 app.use(basePath + '/projects', projectRoutes);
+app.use(basePath + '/projects/:projectId/models', modelsRoute);
 
 const PORT = moteurConfig.api.port || process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,18 +1,18 @@
 import { Router } from 'express';
 import { requireAdmin } from '@/middlewares/auth';
-import { deleteProject } from '@/api/projects';
+import { deleteModelSchema } from '@/api/models';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
-router.delete('/:projectId', requireAdmin, (req: any, res: any) => {
-    const { projectId } = req.params;
-    if (!projectId) {
-        return res.status(400).json({ error: 'Missing projectId in path' });
+router.delete('/:modelId', requireAdmin, (req: any, res: any) => {
+    const { projectId, modelId } = req.params;
+    if (!projectId || !modelId) {
+        return res.status(400).json({ error: 'Missing projectId or modelId in path' });
     }
 
     try {
-        deleteProject(req.user!, projectId);
+        deleteModelSchema(req.user!, projectId, modelId);
         return res.status(204).send();
     } catch (err: any) {
         return res.status(404).json({ error: err.message });
@@ -20,13 +20,19 @@ router.delete('/:projectId', requireAdmin, (req: any, res: any) => {
 });
 
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
-    '/projects/{projectId}': {
+    '/projects/{projectId}/models/{modelId}': {
         delete: {
-            summary: 'Delete a project',
-            tags: ['Projects'],
+            summary: 'Delete a model from a project',
+            tags: ['Models'],
             parameters: [
                 {
                     name: 'projectId',
+                    in: 'path',
+                    required: true,
+                    schema: { type: 'string' }
+                },
+                {
+                    name: 'modelId',
                     in: 'path',
                     required: true,
                     schema: { type: 'string' }
@@ -34,10 +40,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             ],
             responses: {
                 '204': {
-                    description: 'Project deleted successfully'
+                    description: 'Model deleted successfully'
                 },
                 '404': {
-                    description: 'Project not found',
+                    description: 'Model not found',
                     content: {
                         'application/json': {
                             schema: {
