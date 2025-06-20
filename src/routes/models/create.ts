@@ -83,4 +83,26 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
     }
 };
 
+export const schemas: OpenAPIV3.ComponentsObject['schemas'] = {
+    NewModelInput: {
+        type: 'object',
+        required: ['id', 'label', 'fields'],
+        properties: {
+            id: { type: 'string' },
+            label: { type: 'string' },
+            description: { type: 'string' },
+            fields: {
+                type: 'object',
+                additionalProperties: {
+                    $ref: '#/components/schemas/Field'
+                }
+            },
+            meta: {
+                type: 'object',
+                additionalProperties: true
+            }
+        }
+    }
+};
+
 export default router;

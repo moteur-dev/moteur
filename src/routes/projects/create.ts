@@ -71,4 +71,25 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
     }
 };
 
+export const schemas: OpenAPIV3.ComponentsObject['schemas'] = {
+    NewProjectInput: {
+        type: 'object',
+        required: ['id', 'label'],
+        properties: {
+            id: { type: 'string' },
+            label: { type: 'string' },
+            description: { type: 'string' },
+            locale: { type: 'string' },
+            modules: {
+                type: 'array',
+                items: { type: 'string' }
+            },
+            plugins: {
+                type: 'array',
+                items: { type: 'string' }
+            }
+        }
+    }
+};
+
 export default router;
