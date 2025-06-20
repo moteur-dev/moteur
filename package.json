@@ -8,14 +8,14 @@
     "moteur": "dist/cli/moteur.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "vite build",
     "cli:dev": "tsx src/cli/moteur.ts",
-    "cli": "node dist/src/cli/moteur.js",
+    "cli": "node dist/cli.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "prepare": "husky",
     "server:dev": "tsx src/routes/index.ts",
-    "server": "node dist/src/routes/index.js",
+    "server": "node dist/api.js",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:ui": "vitest --ui",
@@ -51,13 +51,13 @@
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",
+    "vite": "^6.3.5",
     "vitest": "^3.1.4"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.826.0",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
-    "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "inquirer": "^12.6.3",
