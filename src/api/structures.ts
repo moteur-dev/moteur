@@ -3,13 +3,51 @@ import path from 'path';
 import { moteurConfig } from '../../moteur.config';
 import { StructureSchema } from '@/types/Structure';
 import { readJson, writeJson } from '@/utils/fileUtils';
-import { loadStructures } from '@/loaders/loadStructures';
 import { validateStructure } from '@/validators/validateStructure';
+import { normalizeType } from '@/utils/normalizeType';
 import { isValidId } from '@/utils/idUtils';
 
 /** List all structures for a given project (including global fallbacks) */
 export function listStructures(project?: string): Record<string, StructureSchema> {
-    return loadStructures(project);
+    const registry: Record<string, StructureSchema> = {};
+
+    for (const ns of moteurConfig.namespaces ?? ['core']) {
+        const nsDir = path.resolve('structures', ns);
+        loadFromDir(nsDir, registry);
+    }
+
+    if (project) {
+        const projectDir = path.resolve(
+            moteurConfig.projectRoot ?? 'projects',
+            project,
+            'structures'
+        );
+        loadFromDir(projectDir, registry);
+    }
+
+    return registry;
+}
+
+function loadFromDir(dirPath: string, registry: Record<string, StructureSchema>) {
+    if (!fs.existsSync(dirPath)) return;
+
+    const files = fs.readdirSync(dirPath).filter(f => f.endsWith('on'));
+
+    for (const file of files) {
+        try {
+            const raw = fs.readFileSync(path.join(dirPath, file), 'utf-8');
+            const schema = JSON.parse(raw) as StructureSchema;
+
+            if (!schema.type) {
+                console.warn(`[Moteur] Skipping invalid structure: ${file}`);
+                continue;
+            }
+
+            registry[normalizeType(schema.type)] = schema;
+        } catch (err) {
+            console.error(`[Moteur] Failed to load structure ${file}`, err);
+        }
+    }
 }
 
 /** Get a specific structure (project takes priority if provided) */
@@ -21,7 +59,7 @@ export function getStructure(id: string, project?: string): StructureSchema {
         throw new Error(`Invalid projectId: "${project}"`);
     }
     const type = id.endsWith('.json') ? id.replace(/\.json$/, '') : id;
-    const all = loadStructures(project);
+    const all = listStructures(project);
     const resolved = all[type];
     if (!resolved) {
         throw new Error(`Structure "${id}" not found`);

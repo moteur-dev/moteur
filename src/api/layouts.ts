@@ -3,7 +3,6 @@ import path from 'path';
 import { moteurConfig } from '../../moteur.config';
 import { Layout } from '../types/Layout';
 import { readJson, writeJson } from '../utils/fileUtils';
-import { loadLayouts } from '../loaders/loadLayouts';
 import { htmlRenderer } from '../renderers/html/htmlBlockRenderer';
 import { validateLayout } from '../validators/validateLayout';
 import { User } from '../types/User';
@@ -16,7 +15,25 @@ const rendererMap: Record<string, any> = {
 };
 
 export function listLayouts(user: User, project: string): Layout[] {
-    return loadLayouts(project);
+    const projectRoot = moteurConfig.projectRoot || 'data/projects';
+    const dir = path.resolve(`${projectRoot}/${project}/layouts`);
+    if (!fs.existsSync(dir)) return [];
+
+    return fs
+        .readdirSync(dir)
+        .filter(f => f.endsWith('on'))
+        .map(f => {
+            const filePath = path.join(dir, f);
+            try {
+                const raw = fs.readFileSync(filePath, 'utf-8');
+                const layout = JSON.parse(raw) as Layout;
+                return layout;
+            } catch (err) {
+                console.warn(`[Moteur] Failed to load layout ${f}`, err);
+                return null;
+            }
+        })
+        .filter((l): l is Layout => l !== null);
 }
 
 export function getLayout(user: User, project: string, id: string): Layout {
