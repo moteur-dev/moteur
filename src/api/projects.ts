@@ -1,14 +1,40 @@
 import fs from 'fs';
 import path from 'path';
 import { moteurConfig } from '../../moteur.config';
-import { ProjectSchema } from '../types/Project';
-import { loadProjects } from '../loaders/loadProjects';
-import { isValidId } from '../utils/idUtils';
-import { readJson, writeJson, isExistingProjectId } from '../utils/fileUtils';
-import { projectFilePath, projectDir } from '../utils/pathUtils';
-import { User } from '../types/User';
-import { assertUserCanAccessProject, assertUserCanCreateProject } from '../utils/access';
-import { triggerEvent } from '../utils/eventBus';
+import { ProjectSchema } from '@/types/Project';
+import { isValidId } from '@/utils/idUtils';
+import { readJson, writeJson, isExistingProjectId } from '@/utils/fileUtils';
+import { projectFilePath, projectDir } from '@/utils/pathUtils';
+import { User } from '@/types/User';
+import { assertUserCanAccessProject, assertUserCanCreateProject } from '@/utils/access';
+import { triggerEvent } from '@/utils/eventBus';
+import { validateProject } from '@/validators/validateProject';
+import { ValidationResult } from '@/types/ValidationResult';
+
+export function loadProjects(): ProjectSchema[] {
+    const root = path.resolve(moteurConfig.projectRoot ?? 'projects');
+
+    if (!fs.existsSync(root)) return [];
+
+    return fs
+        .readdirSync(root)
+        .filter(dir => {
+            const fullPath = path.join(root, dir, 'project.json');
+            return fs.existsSync(fullPath);
+        })
+        .map(dir => {
+            const configPath = path.join(root, dir, 'project.json');
+            try {
+                const raw = fs.readFileSync(configPath, 'utf-8');
+                const schema = JSON.parse(raw) as ProjectSchema;
+                return { ...schema, id: dir }; // enforce folder name as ID fallback
+            } catch (err) {
+                console.error(`[Moteur] Failed to load project config for "${dir}"`, err);
+                return null;
+            }
+        })
+        .filter((p): p is ProjectSchema => p !== null);
+}
 
 export function getProject(user: User, projectId: string): ProjectSchema {
     if (!isValidId(projectId)) {
@@ -35,12 +61,24 @@ export function listProjects(user: User): ProjectSchema[] {
     });
 }
 
-export function createProject(user: User, project: ProjectSchema): ProjectSchema {
+export function createProject(
+    user: User,
+    project: ProjectSchema
+): { project?: ProjectSchema; validation?: ValidationResult } {
     assertUserCanCreateProject(user);
+    if (!project || !project.id || !isValidId(project.id)) {
+        throw new Error(`Invalid project schema: "${JSON.stringify(project)}"`);
+    }
     if (isExistingProjectId(project.id)) {
         throw new Error(`Project with id "${project.id}" already exists`);
     }
 
+    const validationErrors = validateProject(project);
+    if (validationErrors.issues.length > 0) {
+        return { validation: validationErrors };
+    }
+
+    // Core plugins validate the project schema, assigns the user, add audit info, etc.
     triggerEvent('project.beforeCreate', { project, user });
 
     // @todo Move to a plugin
@@ -51,7 +89,7 @@ export function createProject(user: User, project: ProjectSchema): ProjectSchema
 
     writeJson(projectFilePath(project.id), project);
     triggerEvent('project.afterCreate', { project, user });
-    return project;
+    return { project };
 }
 
 export function updateProject(

@@ -1,50 +1,68 @@
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import dotenv from 'dotenv';
+
+// ESM-safe __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+console.log('Loading ', resolve(__dirname, '../../.env'));
+dotenv.config({ path: resolve(__dirname, '../../.env') });
+
 import express from 'express';
-import loginRoute from './login';
-import publicBlocks from './public/blocks';
-import publicFields from './public/fields';
-import adminBlocks from './admin/blocks';
-import adminFields from './admin/fields';
-import adminStructures from './admin/structures';
-import adminProjects from './admin/projects';
-import preview from './public/preview';
+import openapiRoute, { baseSpec } from './openapi';
+import swaggerUi from 'swagger-ui-express';
+
+import authRoutes from './auth';
+import projectRoutes from './projects';
+import modelsRoute from './models';
 import { moteurConfig } from '../../moteur.config';
+
+import { authSpecs } from './auth';
+import { projectsSpecs } from './projects';
+import { modelsSpecs } from './models';
+import { mergePluginSpecs } from '@/utils/mergePluginSpecs';
+
+const mergedApiSpecs = await mergePluginSpecs({
+    ...baseSpec,
+    paths: {
+        ...baseSpec.paths,
+        ...authSpecs.paths,
+        ...projectsSpecs.paths,
+        ...modelsSpecs.paths
+    },
+    components: {
+        ...baseSpec.components,
+        schemas: {
+            ...baseSpec.components?.schemas,
+            ...authSpecs.schemas
+        }
+    }
+});
+
+import '@/fields';
 
 const app = express();
 app.use(express.json());
 
-// Base API path from config
 const basePath = moteurConfig.api.basePath ?? '/api/moteur';
 
-// Request token
-app.use('/login', loginRoute);
+const router = express.Router();
+router.get('/openapi.json', async (req, res) => {
+    const spec = mergedApiSpecs;
 
-// Admin routes
-app.use(basePath + '/admin/blocks', adminBlocks);
-app.use(basePath + '/admin/fields', adminFields);
-app.use(basePath + '/admin/projects', adminProjects);
-app.use(basePath + '/admin/:project/structures', adminStructures);
+    res.json(spec);
+});
 
-// Public routes
-app.use(basePath + '/blocks', publicBlocks);
-app.use(basePath + '/fields', publicFields);
-app.use(basePath + '/preview', preview);
+app.use(basePath, router);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(mergedApiSpecs));
+
+app.use(basePath, openapiRoute);
+app.use(basePath + '/auth', authRoutes);
+app.use(basePath + '/projects', projectRoutes);
+app.use(basePath + '/projects/:projectId/models', modelsRoute);
 
 const PORT = moteurConfig.api.port || process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Moteur API running at http://localhost:${PORT}`);
-    const routes: { methods: string[]; path: string }[] = [];
-
-    const parseRoute = (def: any) => {
-        if (def.route) {
-            routes.push({ path: def.route.path, methods: Object.keys(def.route.methods) });
-        } else if (def.name === 'router') {
-            // nested route (sub router)..
-            def.handle.stack.forEach(parseRoute);
-        }
-    };
-
-    // loop over and parse routes
-    app._router.stack.forEach(parseRoute);
-
-    console.log(routes);
 });

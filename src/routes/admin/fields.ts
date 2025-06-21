@@ -1,17 +1,16 @@
 import express from 'express';
-import { FieldRegistry } from '../../registry/FieldRegistry';
+import fieldRegistry from '../../registry/FieldRegistry';
 
 const router = express.Router();
-const registry = new FieldRegistry();
 
 // GET all field types
 router.get('/', (req, res) => {
-    res.json(registry.all());
+    res.json(fieldRegistry.all());
 });
 
 // GET one field type
 router.get('/:id', (req, res) => {
-    res.json({ type: req.params.id });
+    res.json(fieldRegistry.get(req.params.id));
 });
 
 // POST new field type

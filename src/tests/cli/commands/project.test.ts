@@ -93,7 +93,7 @@ describe('projectsMenu commands', () => {
 
     await createProjectCommand({ data: JSON.stringify({ label: 'New Project' }), quiet: false });
 
-    expect(logSpy).toHaveBeenCalledWith('✅ Created project "p1"');
+    expect(logSpy).toHaveBeenCalledWith('✅ Created project');
   });
 
   it('patchProjectCommand logs patch message', async () => {

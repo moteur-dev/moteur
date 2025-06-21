@@ -1,7 +1,20 @@
 #!/usr/bin/env ts-node
 
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import dotenv from 'dotenv';
+
+// ESM-safe __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+dotenv.config({ path: resolve(__dirname, '../../.env') });
+
 import { cliRegistry } from '../registry/CommandRegistry';
 import { showMainMenu } from './menu/mainMenu';
+
+// Import all fields to ensure they are registered
+import '@/fields';
 
 // Import commands so they self-register
 import './commands/auth';

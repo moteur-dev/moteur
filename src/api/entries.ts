@@ -1,14 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import { moteurConfig } from '../../moteur.config';
-import { Entry } from '../types/Model';
-import { readJson, writeJson } from '../utils/fileUtils';
-import { isValidId } from '../utils/idUtils';
-import { isExistingEntryId } from '../utils/fileUtils';
-import { entryDir, entryFilePath } from '../utils/pathUtils';
-import { User } from '../types/User';
-import { getModelSchema } from './models';
-import { triggerEvent } from '../utils/eventBus';
+import { Entry } from '@/types/Model';
+import { readJson, writeJson } from '@/utils/fileUtils';
+import { isValidId } from '@/utils/idUtils';
+import { isExistingEntryId } from '@/utils/fileUtils';
+import { entryDir, entryFilePath } from '@/utils/pathUtils';
+import { User } from '@/types/User';
+import { getModelSchema } from '@/api/models';
+import { triggerEvent } from '@/utils/eventBus';
 
 export function listEntries(user: User, projectId: string, modelId: string): Entry[] {
     // This validates project access and model schema existence

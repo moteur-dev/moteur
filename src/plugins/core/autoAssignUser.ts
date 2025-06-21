@@ -1,6 +1,4 @@
-import { onEvent } from '../../utils/eventBus';
-import { User } from '../../types/User';
-import { ProjectSchema } from '../../types/Project';
+import { onEvent } from '@/utils/eventBus';
 
 onEvent('project.beforeCreate', async ({ project, user }) => {
     if (!project.users || project.users.length === 0) {

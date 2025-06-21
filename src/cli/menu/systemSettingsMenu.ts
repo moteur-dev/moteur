@@ -1,8 +1,8 @@
 // src/cli/menu/menus/systemSettingsMenu.ts
 import inquirer from 'inquirer';
-import { listFields } from '../../api/fields';
 import { listBlocks } from '../../api/blocks';
 import { table } from 'table';
+import fieldRegistry from '../../registry/FieldRegistry.js';
 
 export async function showSystemSettingsMenu() {
     console.clear();
@@ -24,7 +24,7 @@ export async function showSystemSettingsMenu() {
 
     switch (settingChoice) {
         case 'fields': {
-            const fields = await listFields();
+            const fields = fieldRegistry.all();
             console.log('\nAvailable field types:\n');
 
             for (const field of Object.values(fields)) {

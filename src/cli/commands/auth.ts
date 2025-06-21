@@ -2,10 +2,10 @@ import inquirer from 'inquirer';
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcrypt';
-import { loginUser } from '../../api/auth';
-import { createUser } from '../../api/users';
-import { cliRegistry } from '../../registry/CommandRegistry';
-import { showAuthMenu } from '../menu/authMenu';
+import { loginUser } from '@/api/auth';
+import { createUser } from '@/api/users';
+import { cliRegistry } from '@/registry/CommandRegistry';
+import { showAuthMenu } from '@/cli/menu/authMenu';
 
 const TOKEN_FILE = path.resolve(
     process.env.HOME || process.env.USERPROFILE || '.',
