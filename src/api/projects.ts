@@ -54,6 +54,7 @@ export function createProject(
         return { validation: validationErrors };
     }
 
+    // Core plugins validate the project schema, assigns the user, add audit info, etc.
     triggerEvent('project.beforeCreate', { project, user });
 
     // @todo Move to a plugin
