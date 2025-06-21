@@ -5,7 +5,7 @@ import { ModelSchema } from '@/types/Model.js';
 import { readJson, writeJson } from '@/utils/fileUtils.js';
 import { isValidId } from '@/utils/idUtils.js';
 import { isExistingModelSchema } from '@/utils/fileUtils.js';
-import { modelDir, modelFilePath } from '@/utils/pathUtils.js';
+import { baseModelsDir, modelDir, modelFilePath } from '@/utils/pathUtils.js';
 import { User } from '@/types/User.js';
 import { assertUserCanAccessProject } from '@/utils/access.js';
 import { getProject } from '@/api/projects.js';
@@ -20,13 +20,19 @@ export function listModelSchemas(user: User, projectId: string): ModelSchema[] {
     const project = getProject(user, projectId);
     assertUserCanAccessProject(user, project);
 
-    const base = path.join(moteurConfig.projectRoot, projectId, 'models');
-    if (!fs.existsSync(base)) return [];
+    const base = baseModelsDir(projectId);
+    if (!fs.existsSync(base)) {
+        return [];
+    }
 
     return fs
-        .readdirSync(base)
-        .filter(file => file.endsWith('.json'))
-        .map(file => readJson(path.join(base, file)) as ModelSchema);
+        .readdirSync(base, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory())
+        .map(dirent => {
+            const file = path.join(base, dirent.name, 'model.json');
+            return fs.existsSync(file) ? (readJson(file) as ModelSchema) : null;
+        })
+        .filter((schema): schema is ModelSchema => schema !== null);
 }
 
 export function getModelSchema(user: User, projectId: string, schemaId: string): ModelSchema {
@@ -52,14 +58,14 @@ export function createModelSchema(user: User, projectId: string, schema: ModelSc
     const project = getProject(user, projectId);
     assertUserCanAccessProject(user, project);
 
-    const base = path.join(moteurConfig.projectRoot, projectId, 'models');
-    const file = path.join(base, `${schema.id}.json`);
+    const dir = modelDir(projectId, schema.id);
+    const file = modelFilePath(projectId, schema.id);
 
+    // Core plugins validate the model schema, add audit info, etc.
     triggerEvent('model.beforeCreate', { model: schema, user });
 
     schema.fields = schema.fields || {};
-
-    fs.mkdirSync(base, { recursive: true });
+    fs.mkdirSync(dir, { recursive: true });
     writeJson(file, schema);
 
     triggerEvent('model.afterCreate', { model: schema, user });
