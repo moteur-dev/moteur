@@ -1,25 +1,23 @@
 {
   "name": "@moteur/api",
   "version": "0.1.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
-  "main": "dist/server.js",
-  "types": "dist/server.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -b"
   },
   "dependencies": {
     "@moteur/core": "workspace:*",
     "@moteur/types": "workspace:*",
-    "axios": "^1.10.0",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "swagger-ui-express": "^5.0.1"
+    "express": "^4.19.2"
   },
-  "devDependencies": {
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/swagger-ui-express": "^4.1.8",
-    "typescript": "^5.0.0"
-  }
+  "license": "MIT"
 }
