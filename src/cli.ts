@@ -1,1 +1,1 @@
-import '@moteur/cli/moteur.js'
+import '@moteur/cli/moteur.js';

@@ -25,7 +25,7 @@ import './commands/structures.js';
 import './commands/fields.js';
 import './commands/blocks.js';
 import './commands/entries.js';
-import {showHelp, showCommandHelp} from './commands/help';
+import { showHelp, showCommandHelp } from './commands/help';
 
 const [command, subcommand, ...rest] = process.argv.slice(2);
 const args = Object.fromEntries(

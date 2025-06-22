@@ -1,1 +1,1 @@
-import '@moteur/api/index.js'
+import '@moteur/api/index.js';
