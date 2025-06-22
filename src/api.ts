@@ -1,0 +1,1 @@
+import '@moteur/api/index.js'

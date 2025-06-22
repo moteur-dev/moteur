@@ -1,0 +1,20 @@
+{
+  "name": "@moteur/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "moteur": "dist/moteur.js"
+  },
+  "main": "dist/moteur.js",
+  "types": "dist/moteur.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@moteur/core": "*",
+    "@moteur/types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

@@ -14,8 +14,8 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        api: 'src/routes/index.ts',
-        cli: 'src/cli/moteur.ts'
+        api: 'src/api.ts',
+        cli: 'src/cli.ts'
       },
       output: {
         entryFileNames: '[name].js',
@@ -26,6 +26,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      '@moteur/types': path.resolve(__dirname, 'packages/types/src'),
+      '@moteur/core': path.resolve(__dirname, 'packages/core/src'),
+      '@moteur/cli': path.resolve(__dirname, 'packages/cli/src'),
+      '@moteur/api': path.resolve(__dirname, 'packages/api/src')
     },
   },
 });
