@@ -6,7 +6,7 @@ import create, { openapi as createSpec, schemas as createSchemas, schemas } from
 import update, { openapi as updateSpec } from './update';
 import remove, { openapi as deleteSpec } from './delete';
 
-const router = Router();
+const router: Router = Router();
 
 router.use(getAll);
 router.use(getOne);

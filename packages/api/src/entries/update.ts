@@ -5,7 +5,7 @@ import { validateEntry } from '@moteur/core/validators/validateEntry';
 import type { OpenAPIV3 } from 'openapi-types';
 import { requireProjectAccess } from '../middlewares/auth';
 
-const router = Router({ mergeParams: true });
+const router: Router = Router({ mergeParams: true });
 
 router.patch('/:entryId', requireProjectAccess, async (req: any, res: any) => {
     const { projectId, modelId, entryId } = req.params;

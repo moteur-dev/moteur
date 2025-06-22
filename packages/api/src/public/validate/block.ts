@@ -3,7 +3,7 @@ import { Router } from 'express';
 //import { listFields } from '../../../api/fields';
 //import { loadFieldValidators } from '../../../api/fieldValidators';
 
-const router = Router();
+const router: Router = Router();
 
 router.post('/block', async (req: any, res: any) => {
     const { block, schema } = req.body;

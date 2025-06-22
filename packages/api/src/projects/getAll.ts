@@ -3,7 +3,7 @@ import { requireAdmin } from '../middlewares/auth';
 import { listProjects } from '@moteur/core/projects';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/', requireAdmin, (req: any, res: any) => {
     const user = req.user;

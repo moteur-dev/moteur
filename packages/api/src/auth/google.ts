@@ -6,7 +6,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import { getUserByEmail, createUser } from '@moteur/core/users';
 import { User } from '@moteur/types/User';
 
-const googleAuthRoute = Router();
+const googleAuthRoute: Router = Router();
 
 //  Redirect to Google OAuth
 googleAuthRoute.get('/google', (req, res) => {

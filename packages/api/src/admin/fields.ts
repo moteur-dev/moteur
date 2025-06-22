@@ -1,7 +1,7 @@
-import express from 'express';
+import express, { Router } from 'express';
 import fieldRegistry from '@moteur/core/registry/FieldRegistry';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 // GET all field types
 router.get('/', (req, res) => {

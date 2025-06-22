@@ -36,7 +36,7 @@ export interface PluginModule {
     api?: any; // Optional developer API extension
     openapi?: any; // Optional OpenAPI spec
     routes?: {
-        router: import('express').Router;
+        //router: import('express').Router;
         spec: any /* Record<string, import('openapi-types').OpenAPIV3.PathItemObject>*/;
     };
     storage?: any; // Optional StorageAdapter export

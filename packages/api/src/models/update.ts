@@ -4,7 +4,7 @@ import { updateModelSchema } from '@moteur/core/models';
 import { validateModel } from '@moteur/core/validators/validateModel';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router({ mergeParams: true });
+const router: Router = Router({ mergeParams: true });
 
 router.patch('/:modelId', requireAdmin, (req: any, res: any) => {
     const { projectId, modelId } = req.params;

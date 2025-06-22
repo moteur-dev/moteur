@@ -7,7 +7,7 @@ import { generateJWT } from '@moteur/core/auth';
 import { User } from '@moteur/types/User';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const githubAuthRoute = Router();
+const githubAuthRoute: Router = Router();
 
 // Redirect to GitHub OAuth
 githubAuthRoute.get('/github', (req, res) => {

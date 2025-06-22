@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
 import { isGitHubEnabled, isGoogleEnabled } from '@moteur/core/utils/authProviders';
 
-const providersRoute = Router();
+const providersRoute: Router = Router();
 
 providersRoute.get('/providers', (req, res) => {
     const providers = [];

@@ -1,8 +1,8 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { loginUser } from '@moteur/core/auth';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 router.post('/login', async (req: any, res: any) => {
     const { username, password } = req.body;

@@ -1,8 +1,8 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { htmlRenderer } from '@moteur/core/renderers/html/htmlBlockRenderer';
 import { Block } from '@moteur/types/Block';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 const rendererMap: Record<string, any> = {
     html: htmlRenderer

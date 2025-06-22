@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 console.log('Loading ', resolve(__dirname, '../../.env'));
 dotenv.config({ path: resolve(__dirname, '../../.env') });
 
-import express from 'express';
+import express, { Router } from 'express';
 import openapiRoute, { baseSpec } from './openapi';
 import swaggerUi from 'swagger-ui-express';
 
@@ -48,7 +48,7 @@ app.use(express.json());
 
 const basePath = process.env.API_BASE_PATH || '';
 
-const router = express.Router();
+const router: Router = express.Router();
 router.get('/openapi.json', async (req, res) => {
     const spec = mergedApiSpecs;
 

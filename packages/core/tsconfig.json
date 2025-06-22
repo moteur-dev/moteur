@@ -1,14 +1,23 @@
 {
-  "extends": "../../tsconfig.json",
-  
   "compilerOptions": {
-    "outDir": "dist",
+    "composite": true,
     "declaration": true,
+    "declarationMap": true,
     "emitDeclarationOnly": false,
-    "composite": true
+    "outDir": "dist",
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "references": [
-    { "path": "../types" }
+    {
+      "path": "../types"
+    }
   ]
 }

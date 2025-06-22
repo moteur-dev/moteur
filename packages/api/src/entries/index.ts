@@ -6,7 +6,7 @@ import create, { openapi as createSpec } from './create.js';
 import update, { openapi as updateSpec } from './update.js';
 import remove, { openapi as deleteSpec } from './delete.js';
 
-const router = Router({ mergeParams: true });
+const router: Router = Router({ mergeParams: true });
 
 router.use(getAll);
 router.use(getOne);

@@ -4,7 +4,7 @@ import { createProject } from '@moteur/core/projects';
 import { validateProject } from '@moteur/core/validators/validateProject';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router();
+const router: Router = Router();
 
 router.post('/', requireAuth, (req: any, res: any) => {
     try {

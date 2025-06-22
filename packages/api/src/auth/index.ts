@@ -8,7 +8,7 @@ import github, { openapi as githubSpec } from './github';
 import google, { openapi as googleSpec } from './google';
 import { isGitHubEnabled, isGoogleEnabled } from '@moteur/core/utils/authProviders';
 
-const router = Router();
+const router: Router = Router();
 
 router.use(login);
 router.use(providers);

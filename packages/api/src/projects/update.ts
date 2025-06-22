@@ -4,7 +4,7 @@ import { updateProject } from '@moteur/core/projects';
 import { validateProject } from '@moteur/core/validators/validateProject';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router();
+const router: Router = Router();
 
 router.patch('/:projectId', requireAdmin, (req: any, res: any) => {
     const { projectId } = req.params;

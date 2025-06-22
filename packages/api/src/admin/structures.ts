@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Router, Request, Response } from 'express';
 import {
     listStructures,
     getStructure,
@@ -10,7 +10,7 @@ import {
 type StructureParams = { project: string };
 type StructureWithIdParams = { project: string; id: string };
 
-export const router = express.Router({ mergeParams: true });
+export const router: Router = express.Router({ mergeParams: true });
 
 router.get('/', (req: Request<StructureParams>, res: Response) => {
     const { project } = req.params;

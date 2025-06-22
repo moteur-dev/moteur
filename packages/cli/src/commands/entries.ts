@@ -16,7 +16,6 @@ import { modelSelectPrompt } from '../utils/modelSelectPrompt.js';
 import { entrySelectPrompt } from '../utils/entrySelectPrompt.js';
 import { validateEntry } from '@moteur/core/validators/validateEntry.js';
 import { ValidationResult } from '@moteur/types/ValidationResult.js';
-import e from 'express';
 import { cliLoadUser } from '../utils/auth.js';
 import { User } from '@moteur/types/User.js';
 import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';

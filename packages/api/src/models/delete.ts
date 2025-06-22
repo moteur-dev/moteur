@@ -3,7 +3,7 @@ import { requireAdmin } from '../middlewares/auth';
 import { deleteModelSchema } from '@moteur/core/models';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router({ mergeParams: true });
+const router: Router = Router({ mergeParams: true });
 
 router.delete('/:modelId', requireAdmin, (req: any, res: any) => {
     const { projectId, modelId } = req.params;

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middlewares/auth';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/me', requireAuth, (req: any, res: any) => {
     const user = req.user;

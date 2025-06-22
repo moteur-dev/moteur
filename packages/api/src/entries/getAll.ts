@@ -3,7 +3,7 @@ import { listEntries } from '@moteur/core/entries';
 import type { OpenAPIV3 } from 'openapi-types';
 import { requireProjectAccess } from '../middlewares/auth';
 
-const router = Router({ mergeParams: true });
+const router: Router = Router({ mergeParams: true });
 
 router.get('/', requireProjectAccess, async (req: any, res: any) => {
     const { projectId, modelId } = req.params;

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { BlockSchema } from '@moteur/types/Block.js';
+import { BlockSchema } from '@moteur/types/Block';
 //import { htmlRenderer } from '@/renderers/html/htmlBlockRenderer';
 import { isValidId } from './utils/idUtils';
 import { isExistingProjectId } from './utils/fileUtils';

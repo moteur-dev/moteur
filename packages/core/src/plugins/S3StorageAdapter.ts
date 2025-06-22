@@ -1,4 +1,4 @@
-import {
+/*import {
     S3Client,
     HeadBucketCommand,
     CreateBucketCommand,
@@ -6,7 +6,7 @@ import {
     PutObjectCommand,
     DeleteObjectCommand,
     ListObjectsV2Command
-} from '@aws-sdk/client-s3';
+} from '@aws-sdk/client-s3';*/
 import { StorageAdapter } from '@moteur/types/Storage';
 import { storageRegistry } from '../registry/StorageRegistry';
 import { Readable } from 'stream';
@@ -22,15 +22,15 @@ export interface S3StorageOptions {
 }
 
 export class S3StorageAdapter implements StorageAdapter {
-    private s3: S3Client;
+    //private s3: S3Client;
     private bucket: string;
     private prefix: string;
 
     constructor(options: S3StorageOptions) {
-        this.s3 = new S3Client({
+        /*this.s3 = new S3Client({
             region: options.region,
             credentials: options.credentials
-        });
+        });*/
         this.bucket = options.bucket;
         this.prefix = options.prefix ?? '';
     }
@@ -40,7 +40,8 @@ export class S3StorageAdapter implements StorageAdapter {
     }
 
     async get(key: string): Promise<Buffer | null> {
-        try {
+        return null;
+        /*try {
             const command = new GetObjectCommand({
                 Bucket: this.bucket,
                 Key: this.getKey(key)
@@ -75,28 +76,31 @@ export class S3StorageAdapter implements StorageAdapter {
 
             // Re-throw for other unexpected errors
             throw error;
-        }
+        }*/
     }
 
     async put(key: string, data: Buffer, options?: Record<string, any>): Promise<void> {
+        return;/*
         const command = new PutObjectCommand({
             Bucket: this.bucket,
             Key: this.getKey(key),
             Body: data,
             ...options // S3-specific options: e.g., ContentType, Metadata
         });
-        await this.s3.send(command);
+        await this.s3.send(command);*/
     }
 
     async delete(key: string): Promise<void> {
+        return;/*
         const command = new DeleteObjectCommand({
             Bucket: this.bucket,
             Key: this.getKey(key)
         });
-        await this.s3.send(command);
+        await this.s3.send(command);*/
     }
 
     async list(prefix?: string): Promise<string[]> {
+        return [];/*
         const fullPrefix = this.getKey(prefix ?? '');
         const command = new ListObjectsV2Command({
             Bucket: this.bucket,
@@ -110,10 +114,11 @@ export class S3StorageAdapter implements StorageAdapter {
                 key => key !== ''
             ) ?? [];
 
-        return keys;
+        return keys;*/
     }
 
     async prepare(projectId: string): Promise<void> {
+        return;/*
         try {
             await this.s3.send(new HeadBucketCommand({ Bucket: this.bucket }));
         } catch (err: any) {
@@ -129,7 +134,7 @@ export class S3StorageAdapter implements StorageAdapter {
         if (this.prefix) {
             const testKey = `${this.prefix}${projectId}/.init`;
             await this.put(testKey, Buffer.from(''));
-        }
+        }*/
     }
 }
 

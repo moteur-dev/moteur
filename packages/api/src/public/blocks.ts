@@ -1,7 +1,7 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { BlockRegistry } from '@moteur/core/registry/BlockRegistry';
 
-const router = express.Router();
+const router: Router = express.Router();
 const registry = new BlockRegistry();
 
 // GET /api/moteur/blocks

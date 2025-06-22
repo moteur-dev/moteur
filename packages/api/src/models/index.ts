@@ -5,7 +5,7 @@ import create, { openapi as createSpec, schemas as createSchemas } from './creat
 import update, { openapi as updateSpec } from './update';
 import remove, { openapi as deleteSpec } from './delete';
 
-const router = Router({ mergeParams: true });
+const router: Router = Router({ mergeParams: true });
 
 router.use(getAll);
 router.use(getModelById);

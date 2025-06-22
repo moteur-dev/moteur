@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { constants as fsConstants } from 'fs';
 import path from 'path';
-import { StorageAdapter } from '@moteur/types/Storage.js';
+import { StorageAdapter } from '@moteur/types/Storage';
 import { storageRegistry } from '../../registry/StorageRegistry.js';
 
 export interface LocalJsonStorageOptions {

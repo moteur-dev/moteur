@@ -5,7 +5,8 @@
     "outDir": "dist",
     "declaration": true,
     "emitDeclarationOnly": false,
-    "composite": true
+    "composite": true,
+    "types": ["node", "express"],   
   },
   "include": ["src"],
   "references": [

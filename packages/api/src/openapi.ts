@@ -111,7 +111,7 @@ export const baseSpec: OpenAPIV3.Document = {
     security: [{ bearerAuth: [] }]
 };
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/openapi.json', async (req: Request, res: Response) => {
     const mergedSpec = await mergePluginSpecs(baseSpec);

@@ -3,7 +3,7 @@ import { requireProjectAccess } from '../middlewares/auth';
 import { getModelSchema } from '@moteur/core/models';
 import type { OpenAPIV3 } from 'openapi-types';
 
-const router = Router({ mergeParams: true });
+const router: Router = Router({ mergeParams: true });
 
 router.get('/:modelId', requireProjectAccess, (req: any, res: any) => {
     const { projectId, modelId } = req.params;

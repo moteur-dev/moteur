@@ -1,14 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import { ModelSchema } from '@moteur/types/Model.js';
+import { ModelSchema } from '@moteur/types/Model';
 import { readJson, writeJson } from './utils/fileUtils.js';
 import { isValidId } from './utils/idUtils.js';
 import { isExistingModelSchema } from './utils/fileUtils.js';
 import { baseModelsDir, modelDir, modelFilePath } from './utils/pathUtils.js';
-import { User } from '@moteur/types/User.js';
+import { User } from '@moteur/types/User';
 import { assertUserCanAccessProject } from './utils/access.js';
 import { getProject } from './projects.js';
-import { validateModel } from './validators/validateModel.js';
 import { triggerEvent } from './utils/eventBus';
 
 export function listModelSchemas(user: User, projectId: string): ModelSchema[] {
