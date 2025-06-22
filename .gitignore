@@ -2,6 +2,11 @@
 # App config
 moteur.config.ts
 data/projects
+data/users.json
+
+packages/*/dist/
+packages/*/node_modules
+packages/*/tsconfig.tsbuildinfo
 
 # Node and npm
 /node_modules/

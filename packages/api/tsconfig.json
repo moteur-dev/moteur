@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "composite": true,
+    "types": ["node", "express"],   
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../types" },
+    { "path": "../core" }
+  ]
+}

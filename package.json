@@ -5,16 +5,26 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "moteur": "dist/cli/moteur.js"
+    "moteur": "dist/cli.js"
   },
+  "workspaces": [
+    "packages/types",
+    "packages/core",
+    "packages/cli",
+    "packages/api"
+  ],
   "scripts": {
     "build": "vite build",
-    "cli:dev": "tsx src/cli/moteur.ts",
+    "build:types": "tsc -p packages/types/tsconfig.json",
+    "build:core": "tsc -p packages/core/tsconfig.json",
+    "build:cli": "tsc -p packages/cli/tsconfig.json",
+    "build:api": "tsc -p packages/api/tsconfig.json",
+    "cli:dev": "tsx src/cli.ts",
     "cli": "node dist/cli.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "prepare": "husky",
-    "server:dev": "tsx src/routes/index.ts",
+    "server:dev": "tsx src/api.ts",
     "server": "node dist/api.js",
     "test": "vitest run",
     "test:watch": "vitest watch",

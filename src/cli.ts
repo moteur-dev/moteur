@@ -1,0 +1,1 @@
+import '@moteur/cli/moteur.js';
