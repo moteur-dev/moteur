@@ -17,14 +17,14 @@ import { showMainMenu } from './menu/mainMenu';
 import '@moteur/core/fields';
 
 // Import commands so they self-register
-import './commands/auth.js';
-import './commands/project.js';
-import './commands/models.js';
-import './commands/layout.js';
-import './commands/structures.js';
-import './commands/fields.js';
-import './commands/blocks.js';
-import './commands/entries.js';
+import './commands/auth';
+import './commands/project';
+import './commands/models';
+import './commands/layout';
+import './commands/structures';
+import './commands/fields';
+import './commands/blocks';
+import './commands/entries';
 import { showHelp, showCommandHelp } from './commands/help';
 
 const [command, subcommand, ...rest] = process.argv.slice(2);

@@ -62,7 +62,7 @@ app.use(basePath, openapiRoute);
 app.use(basePath + '/auth', authRoutes);
 app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
-app.use(basePath + '/projects/:projectId/entries', entriesRoute);
+app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

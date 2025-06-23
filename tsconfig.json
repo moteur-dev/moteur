@@ -1,40 +1,31 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    "module": "ESNext",                                /* Specify what module code is generated. */
-    "moduleResolution": "bundler",
-    "moduleDetection": "force",
-    "baseUrl": ".",              // required for "paths" to work
-    "paths": {
-      "@/*": ["src/*"], 
-      "@moteur/types/*": ["packages/types/src/*"],
-      "@moteur/core/*": ["packages/core/src/*"],
-      "@moteur/api/*": ["packages/api/src/*"],
-      "@moteur/cli/*": ["packages/cli/src/*"]
-    },
-    "types": ["node", "express"],                  
-    "resolveJsonModule": true,                           /* Enable importing .json files. */
-    "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
-    "outDir": "dist",                                   /* Specify an output folder for all emitted files. */
-    "allowSyntheticDefaultImports": true,             /* Allow 'import x from y' when a module doesn't have a default export. */
-    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
-
-    "strict": true,                                      /* Enable all strict type-checking options. */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-  },
-  "include": [
-    "src",
-    "packages/api/src",
-    "packages/cli/src",
-    "packages/core/src",
-    "packages/types/src",
-    "*.config.ts"
-  ],
-  "exclude": ["node_modules", "dist", "src/tests"],
   "files": [],
   "references": [
     { "path": "packages/types" },
-    { "path": "packages/core" }
-  ]
+    { "path": "packages/core" },
+    { "path": "packages/cli" },
+    { "path": "packages/api" }
+  ],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "composite": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@moteur/types/*": ["packages/types/dist/*"],
+      "@moteur/core/*": ["packages/core/dist/*"],
+      "@moteur/cli/*": ["packages/cli/dist/*"],
+      "@moteur/api/*": ["packages/api/dist/*"],
+      "@moteur/types": ["packages/types/src"],
+      "@moteur/core": ["packages/core/src"],
+      "@moteur/cli": ["packages/cli/src"],
+      "@moteur/api": ["packages/api/src"]
+    },
+    "outDir": "dist"
+  },
+  "include": ["src"]
 }

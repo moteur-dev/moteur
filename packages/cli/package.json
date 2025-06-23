@@ -3,23 +3,23 @@
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "moteur": "dist/moteur.js"
+    "moteur": "./dist/index.js"
   },
-  "main": "dist/moteur.js",
-  "types": "dist/moteur.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -b"
   },
   "dependencies": {
     "@moteur/core": "workspace:*",
-    "@moteur/types": "workspace:*",
-    "bcrypt": "^6.0.0",
-    "dotenv": "^16.5.0",
-    "inquirer": "^12.6.3",
-    "table": "^6.9.0"
+    "@moteur/types": "workspace:*"
   },
-  "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "typescript": "^5.0.0"
-  }
+  "license": "MIT"
 }
