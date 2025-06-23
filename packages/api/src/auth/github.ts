@@ -53,6 +53,7 @@ githubAuthRoute.get('/github/callback', async (req: any, res: any) => {
         const email = emailsRes.data.find((e: any) => e.primary && e.verified)?.email;
         if (!email) {
             res.status(401).json({ error: 'Error with github user' });
+            return;
         }
         const profile = userRes.data;
 

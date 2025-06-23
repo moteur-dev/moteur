@@ -47,6 +47,9 @@ googleAuthRoute.get('/google/callback', async (req: any, res: any) => {
         });
 
         const profile = userInfoRes.data;
+        if (!profile.email) {
+            return res.status(401).json({ error: 'Google user does not have an email' });
+        }
 
         let user = await getUserByEmail(profile.email);
 
@@ -64,15 +67,19 @@ googleAuthRoute.get('/google/callback', async (req: any, res: any) => {
             await createUser(user as User);
         }
 
-        const token = jwt.sign({ sub: user.id, email: user.email }, process.env.JWT_SECRET!, {
-            expiresIn: '1d'
-        });
+        const token = jwt.sign(
+            { sub: user.id, email: user.email },
+            process.env.JWT_SECRET || 'jwt-secret',
+            {
+                expiresIn: '1d'
+            }
+        );
 
         const redirectUrl = process.env.AUTH_REDIRECT_AFTER_LOGIN || '/auth/callback';
         res.redirect(`${redirectUrl}?token=${token}`);
     } catch (err) {
         console.error('Google auth error:', err);
-        res.status(500).json({ error: 'Google login failed' });
+        return res.status(500).json({ error: 'Google login failed' });
     }
 });
 
