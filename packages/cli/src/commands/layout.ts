@@ -51,7 +51,7 @@ export async function createLayoutCommand(args: {
     data?: string;
     quiet?: boolean;
 }) {
-    const user: User = cliLoadUser();
+    //const user: User = cliLoadUser();
     const input = await resolveInputData({
         file: args.file,
         data: args.data,

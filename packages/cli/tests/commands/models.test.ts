@@ -20,10 +20,7 @@ vi.mock('../../src/utils/editModelSchemaFields.js', () => ({
     editModelSchemaFields: vi.fn()
 }));
 
-
-
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
 
 import {
     listModelSchemasCommand,
@@ -37,12 +34,8 @@ import {
     listModelSchemas,
     getModelSchema,
     createModelSchema,
-    updateModelSchema,
-    deleteModelSchema
+    updateModelSchema
 } from '@moteur/core/models.js';
-
-
-
 
 describe('modelsMenu commands', () => {
     let logSpy: ReturnType<typeof vi.spyOn>;

@@ -1,4 +1,5 @@
-import { validateObjectField } from '../../..//validators/fields/core/validateObjectField.js';
+import { describe, it, expect } from 'vitest';
+import { validateObjectField } from '../../../../src/validators/fields/core/validateObjectField.js';
 import { Field } from '@moteur/types/Field.js';
 
 describe('validateObjectField', () => {

@@ -12,7 +12,7 @@ router.post('/refresh', requireAuth, async (req: any, res: any) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
         return res.json({ token: generateJWT(user) });
-    } catch (err: any) {
+    } catch (_err) {
         return res.status(401).json({ error: 'Invalid or expired token' });
     }
 });

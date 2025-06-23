@@ -7,7 +7,7 @@ export function renderColorField(value: any, options: RenderOptions, field: Fiel
     if (!hex) return '';
 
     const meta = value?.meta ?? {};
-    const attrs = renderAttributesFromMeta(field.meta);
+    const attrs = renderAttributesFromMeta(meta);
     const showSwatch = field.options?.showSwatch !== false;
 
     const swatch = showSwatch

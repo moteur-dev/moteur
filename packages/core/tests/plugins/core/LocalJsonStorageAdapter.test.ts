@@ -1,6 +1,6 @@
 // tests/plugins/LocalJsonStorageAdapter.test.ts
-
-import { LocalJsonStorageAdapter } from '../../plugins/LocalJsonStorageAdapter.js';
+import { beforeEach, afterEach, describe, it, expect } from 'vitest';
+import { LocalJsonStorageAdapter } from '../../../src/plugins/LocalJsonStorageAdapter.js';
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';

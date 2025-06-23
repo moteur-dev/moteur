@@ -9,8 +9,7 @@ export function getProjectStorage(projectId: string) {
     try {
         const data = readFileSync(projectPath, 'utf-8');
         projectConfig = JSON.parse(data);
-    } catch (err) {
-        // fallback to global local storage
+    } catch (_err) {
         return storageRegistry.create('local', {
             baseDir: `./data/${projectId}`,
             listMode: 'directory'

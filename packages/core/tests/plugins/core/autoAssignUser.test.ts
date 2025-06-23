@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import '../../../plugins/core/autoAssignUser';
-import { triggerEvent } from '../../../utils/eventBus';
-import { User } from '@mote@mote@moteur/types/User';
-import { ProjectSchema } from '@mote@mote@moteur/types/Project';
+import { triggerEvent } from '../../../src/utils/eventBus';
+import { User } from '@moteur/types/User';
+import { ProjectSchema } from '@moteur/types/Project';
 
 describe('coreAutoAssignUser plugin', () => {
     const user: User = { id: 'user1', email: '', password: '' } as any;

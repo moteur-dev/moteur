@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { validateNumberField } from '../../../../src/validators/fields/core/validateNumberField.js';
 import { Field } from '@moteur/types/Field.js';
 

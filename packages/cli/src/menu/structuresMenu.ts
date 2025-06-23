@@ -1,11 +1,5 @@
 import inquirer from 'inquirer';
-import {
-    listStructuresCommand,
-    getStructureCommand,
-    createStructureCommand,
-    patchStructureCommand,
-    deleteStructureCommand
-} from '../commands/structures.js';
+import { listStructuresCommand } from '../commands/structures.js';
 import { showWelcomeBanner } from '../utils/showWelcomeBanner.js';
 import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
 import { User } from '@moteur/types/User.js';
@@ -47,20 +41,20 @@ export async function showStructuresMenu(project?: string) {
             //await createStructureCommand( { project: project });
             break;
         case 'edit': {
-            const { structureId } = await inquirer.prompt({
+            /*const { structureId } = await inquirer.prompt({
                 type: 'input',
                 name: 'structureId',
                 message: 'Enter the structure ID to edit:'
-            });
+            });*/
             //await patchStructureCommand({ project: project, id: structureId });
             break;
         }
         case 'delete': {
-            const { structureId } = await inquirer.prompt({
+            /*const { structureId } = await inquirer.prompt({
                 type: 'input',
                 name: 'structureId',
                 message: 'Enter the structure ID to delete:'
-            });
+            });*/
             //await deleteStructureCommand({ project: project, id: structureId });
             break;
         }

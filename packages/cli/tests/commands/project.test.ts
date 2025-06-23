@@ -17,16 +17,7 @@ import {
     deleteProjectCommand
 } from '../../src/commands/project';
 
-import {
-    getProject,
-    listProjects,
-    createProject,
-    updateProject,
-    deleteProject
-} from '@moteur/core/projects.js';
-import { cliLoadAuthToken, cliLoadUser, cliRequireRole } from '../../src/utils/auth.js';
-
-
+import { getProject, listProjects, createProject, updateProject } from '@moteur/core/projects.js';
 
 describe('projectsMenu commands', () => {
     let logSpy: ReturnType<typeof vi.spyOn>;

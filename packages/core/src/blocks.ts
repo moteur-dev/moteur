@@ -10,9 +10,11 @@ import { normalizeType } from './utils/normalizeType';
     html: htmlRenderer
 };*/
 
-export function listBlocks(project?: string): Record<string, BlockSchema> {
+export function listBlocks(projectId?: string): Record<string, BlockSchema> {
     const registry: Record<string, BlockSchema> = {};
     const namespaces = ['core'];
+
+    console.log(`Loading blocks for project: ${projectId || 'all'}`);
 
     for (const namespace of namespaces) {
         const root = path.resolve(`data/${namespace}/blocks`);

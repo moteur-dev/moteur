@@ -12,6 +12,7 @@ import { triggerEvent } from './utils/eventBus';
 export function listEntries(user: User, projectId: string, modelId: string): Entry[] {
     // This validates project access and model schema existence
     const schema = getModelSchema(user, projectId, modelId);
+    console.log(`Listing entries for model "${schema.id}" in project "${projectId}"`);
 
     const dir = baseEntriesDir(projectId, modelId);
     if (!fs.existsSync(dir)) return [];
@@ -34,6 +35,7 @@ export function getEntry(user: User, projectId: string, modelId: string, entryId
 
     // This validates project access and model schema existence
     const schema = getModelSchema(user, projectId, modelId);
+    console.log(`Getting entry "${entryId}" from model "${schema.id}"`);
 
     const file = entryFilePath(projectId, modelId, entryId);
     return readJson(file) as Entry;
@@ -46,6 +48,7 @@ export function createEntry(user: User, projectId: string, modelId: string, entr
 
     // This validates project access and model schema existence
     const schema = getModelSchema(user, projectId, modelId);
+    console.log(`Creating entry "${entry.id}" in model "${schema.id}"`);
 
     const dir = entryDir(projectId, modelId, entry.id);
     const file = entryFilePath(projectId, modelId, entry.id);

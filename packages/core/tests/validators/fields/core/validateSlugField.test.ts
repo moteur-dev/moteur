@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { validateSlugField } from '../../../../src/validators/fields/core/validateSlugField.js';
 import { Field } from '@moteur/types/Field.js';
 

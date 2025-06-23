@@ -1,4 +1,5 @@
 // tests/plugins/S3StorageAdapter.test.ts
+import { beforeEach, describe, it, expect } from 'vitest';
 
 import {
     S3Client,
@@ -9,7 +10,7 @@ import {
     DeleteObjectCommand,
     ListObjectsV2Command
 } from '@aws-sdk/client-s3';
-import { S3StorageAdapter } from '../../plugins/S3StorageAdapter.js';
+import { S3StorageAdapter } from '../../src/plugins/S3StorageAdapter.js';
 import { mockClient } from 'aws-sdk-client-mock';
 import { Readable } from 'stream';
 

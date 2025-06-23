@@ -31,10 +31,16 @@ export default [
       prettier: prettierPlugin,
     },
     rules: {
-      'no-undef': 'warn',
-      'no-unused-vars': 'warn',
-      '@typescript-eslint/no-unused-vars': 'off',
-      'prettier/prettier': ['error', { semi: true, singleQuote: true }],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { 
+        argsIgnorePattern: '^_', 
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_'
+      }],
+      'prettier/prettier': ['error', { 
+        semi: true, 
+        singleQuote: true 
+      }],
     },
   },
 ];

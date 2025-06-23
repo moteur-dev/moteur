@@ -56,7 +56,6 @@ githubAuthRoute.get('/github/callback', async (req: any, res: any) => {
         }
         const profile = userRes.data;
 
-        const userId = `github:${profile.id}`;
         let user = await getUserByEmail(email);
 
         if (!user) {

@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import getAll, { openapi as getAllSpec } from './getAll';
 import getOne, { openapi as getOneSpec } from './getOne';
-import create, { openapi as createSpec, schemas as createSchemas, schemas } from './create';
+import create, { openapi as createSpec, schemas as createSchemas } from './create';
 import update, { openapi as updateSpec } from './update';
 import remove, { openapi as deleteSpec } from './delete';
 
@@ -18,7 +18,9 @@ export const projectsSpecs = {
     paths: {
         ...getAllSpec,
         ...getOneSpec,
-        ...createSpec
+        ...createSpec,
+        ...updateSpec,
+        ...deleteSpec
     },
     schemas: {
         ...createSchemas
