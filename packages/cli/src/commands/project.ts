@@ -149,7 +149,7 @@ export async function deleteProjectCommand(args: { id?: string; quiet?: boolean 
 cliRegistry.register('projects', {
     name: '', // default when you run `moteur projects`
     description: 'Interactive projects menu',
-    action: async (opts: {}) => {
+    action: async () => {
         await showProjectsMenu();
     }
 });

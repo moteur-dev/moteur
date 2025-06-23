@@ -70,7 +70,7 @@ export async function createUserCommand(): Promise<void> {
 cliRegistry.register('auth', {
     name: '',
     description: 'Interactive auth menu',
-    action: async opts => {
+    action: async () => {
         await showAuthMenu();
     }
 });

@@ -10,7 +10,7 @@ export function renderAccordionBlock(block: Block, opts: RenderOptions): string 
     const meta = block.meta ?? {};
 
     const items = data.subItems ?? [];
-    const multiOpen = data.multiOpen ?? false;
+    //const multiOpen = data.multiOpen ?? false;
     const blockId = meta.id ?? `accordion-${Math.random().toString(36).slice(2)}`;
     const title = resolveLocalizedValue(data.title, locale);
 

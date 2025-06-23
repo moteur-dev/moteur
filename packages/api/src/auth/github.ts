@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import { getUserByEmail, createUser } from '@moteur/core/users';
 import { randomUUID } from 'crypto';
 import { generateJWT } from '@moteur/core/auth';
@@ -57,7 +56,6 @@ githubAuthRoute.get('/github/callback', async (req: any, res: any) => {
         }
         const profile = userRes.data;
 
-        const userId = `github:${profile.id}`;
         let user = await getUserByEmail(email);
 
         if (!user) {

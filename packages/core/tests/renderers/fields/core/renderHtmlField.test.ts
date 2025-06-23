@@ -1,3 +1,5 @@
+import { describe, it, expect } from 'vitest';
+
 import { renderHtmlField } from '../../../../src/renderers/html/fields/core/renderHtmlField';
 import type { Field } from '@moteur/types/Field';
 import type { RenderOptions } from '@moteur/types/Renderer';

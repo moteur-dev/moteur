@@ -21,7 +21,7 @@ import entriesRoute from './entries';
 import { authSpecs } from './auth';
 import { projectsSpecs } from './projects';
 import { modelsSpecs } from './models';
-import { mergePluginSpecs } from '@moteur/core/utils/mergePluginSpecs';
+import { mergePluginSpecs } from './utils/mergePluginSpecs';
 
 // Make sure all fields are registered
 import '@moteur/core/fields';

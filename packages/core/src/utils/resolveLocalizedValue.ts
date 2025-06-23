@@ -1,7 +1,4 @@
-
-
 const DEFAULT_LOCALE = process.env.DEFAULT_LOCALE || 'en';
-
 
 export function resolveLocalizedValue(value: any, locale: string): string {
     if (typeof value === 'string') return value;
@@ -11,11 +8,7 @@ export function resolveLocalizedValue(value: any, locale: string): string {
 
         const fallbackStrategy = 'default';
 
-        if (
-            fallbackStrategy === 'default' &&
-            DEFAULT_LOCALE &&
-            value[DEFAULT_LOCALE]
-        ) {
+        if (fallbackStrategy === 'default' && DEFAULT_LOCALE && value[DEFAULT_LOCALE]) {
             return value[DEFAULT_LOCALE];
         }
 

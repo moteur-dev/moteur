@@ -1,3 +1,5 @@
+import { describe, it, expect } from 'vitest';
+
 import { renderImageField } from '../../../../src/renderers/html/fields/core/renderImageField';
 import type { Field } from '@moteur/types/Field';
 import type { RenderOptions } from '@moteur/types/Renderer';

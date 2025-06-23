@@ -6,7 +6,7 @@ import refresh, { openapi as refreshSpec } from './refresh';
 import me, { openapi as meSpec } from './me';
 import github, { openapi as githubSpec } from './github';
 import google, { openapi as googleSpec } from './google';
-import { isGitHubEnabled, isGoogleEnabled } from '@moteur/core/utils/authProviders';
+import { isGitHubEnabled, isGoogleEnabled } from '../utils/authProviders';
 
 const router: Router = Router();
 

@@ -2,7 +2,6 @@ import inquirer from 'inquirer';
 import { listLayouts } from '@moteur/core/layouts.js';
 import { showLayoutMenu } from './layoutMenu.js';
 import { showModelSchemasMenu } from './modelsMenu.js';
-import { editJsonInEditor } from '../utils/editJsonInEditor.js';
 import { patchProjectCommand, patchProjectJSONCommand } from '../commands/project.js';
 import { showWelcomeBanner } from '../utils/showWelcomeBanner.js';
 import { User } from '@moteur/types/User.js';

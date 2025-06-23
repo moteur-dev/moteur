@@ -1,19 +1,19 @@
 import fs from 'fs';
 import {
     projectDir,
-    trashProjectDir,
+    //trashProjectDir,
     projectFilePath,
     modelDir,
-    trashModelDir,
+    //trashModelDir,
     modelFilePath,
     entryDir,
-    trashEntryDir,
+    //trashEntryDir,
     entryFilePath,
     layoutDir,
-    trashLayoutDir,
+    //trashLayoutDir,
     layoutFilePath,
     structureDir,
-    trashStructureDir,
+    //trashStructureDir,
     structureFilePath
 } from './pathUtils';
 

@@ -27,7 +27,7 @@ export function validateStructureField(value: any, field: Field, path: string): 
         try {
             const sharedSchema = getStructure(structureId);
             schemaFields = sharedSchema.fields;
-        } catch (error) {
+        } catch (_error) {
             issues.push({
                 type: 'error',
                 code: 'STRUCTURE_SCHEMA_NOT_FOUND',

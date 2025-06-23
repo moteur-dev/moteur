@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
-import { isGitHubEnabled, isGoogleEnabled } from '@moteur/core/utils/authProviders';
+import { isGitHubEnabled, isGoogleEnabled } from '../utils/authProviders';
 
 const providersRoute: Router = Router();
 

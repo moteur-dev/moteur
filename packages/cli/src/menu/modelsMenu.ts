@@ -2,7 +2,6 @@
 import inquirer from 'inquirer';
 import {
     listModelSchemasCommand,
-    getModelSchemaCommand,
     createModelSchemaCommand,
     patchModelSchemaCommand,
     deleteModelSchemaCommand

@@ -12,12 +12,24 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
     "@moteur/core": "workspace:*",
     "@moteur/types": "workspace:*",
-    "express": "^4.19.2"
+    "axios": "^1.10.0",
+    "dotenv": "^16.5.0",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "openapi-types": "^12.1.3",
+    "swagger-ui-express": "^5.0.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/swagger-ui-express": "^4.1.8"
+  }
 }

@@ -80,7 +80,7 @@ export class S3StorageAdapter implements StorageAdapter {
     }
 
     async put(key: string, data: Buffer, options?: Record<string, any>): Promise<void> {
-        return;/*
+        return; /*
         const command = new PutObjectCommand({
             Bucket: this.bucket,
             Key: this.getKey(key),
@@ -91,7 +91,7 @@ export class S3StorageAdapter implements StorageAdapter {
     }
 
     async delete(key: string): Promise<void> {
-        return;/*
+        return; /*
         const command = new DeleteObjectCommand({
             Bucket: this.bucket,
             Key: this.getKey(key)
@@ -100,7 +100,7 @@ export class S3StorageAdapter implements StorageAdapter {
     }
 
     async list(prefix?: string): Promise<string[]> {
-        return [];/*
+        return []; /*
         const fullPrefix = this.getKey(prefix ?? '');
         const command = new ListObjectsV2Command({
             Bucket: this.bucket,
@@ -118,7 +118,7 @@ export class S3StorageAdapter implements StorageAdapter {
     }
 
     async prepare(projectId: string): Promise<void> {
-        return;/*
+        return; /*
         try {
             await this.s3.send(new HeadBucketCommand({ Bucket: this.bucket }));
         } catch (err: any) {

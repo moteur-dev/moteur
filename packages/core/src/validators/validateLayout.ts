@@ -1,7 +1,6 @@
 import { Layout } from '@moteur/types/Layout';
-import { Block, BlockSchema } from '@moteur/types/Block';
-import { Field, FieldSchema } from '@moteur/types/Field';
-import { ValidationResult, ValidationIssue } from '@moteur/types/ValidationResult';
+
+import { ValidationResult } from '@moteur/types/ValidationResult';
 import { createValidationResult, addIssue } from '../utils/validation';
 import { BlockRegistry } from '../registry/BlockRegistry';
 import fieldRegistry from '../registry/FieldRegistry';

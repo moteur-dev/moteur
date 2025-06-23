@@ -1,5 +1,4 @@
 import { StructureSchema } from '@moteur/types/Structure';
-import { Field } from '@moteur/types/Field';
 import { ValidationResult } from '@moteur/types/ValidationResult';
 import { createValidationResult, addIssue } from '../utils/validation';
 import fieldRegistry from '../registry/FieldRegistry';

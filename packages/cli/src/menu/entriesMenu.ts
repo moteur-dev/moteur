@@ -2,7 +2,6 @@
 import inquirer from 'inquirer';
 import {
     listEntriesCommand,
-    getEntryCommand,
     createEntryCommand,
     patchEntryCommand,
     deleteEntryCommand

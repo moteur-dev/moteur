@@ -40,7 +40,7 @@ googleAuthRoute.get('/google/callback', async (req: any, res: any) => {
             { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
         );
 
-        const { access_token, id_token } = tokenRes.data;
+        const { access_token } = tokenRes.data;
 
         const userInfoRes = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
             headers: { Authorization: `Bearer ${access_token}` }

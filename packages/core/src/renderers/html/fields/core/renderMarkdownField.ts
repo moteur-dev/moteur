@@ -9,7 +9,7 @@ export function renderMarkdownField(value: any, options: RenderOptions, field: F
     const raw = value?.markdown?.[options.locale] || '';
     if (!raw) return '';
 
-    const allowHTML = field.options?.allowHTML === true;
+    //const allowHTML = field.options?.allowHTML === true;
     const attrs = renderAttributesFromMeta(field.meta);
 
     let html = marked.parse(raw);

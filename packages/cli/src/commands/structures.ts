@@ -68,7 +68,7 @@ export async function patchStructureCommand(args: {
     file?: string;
     data?: string;
     quiet?: boolean;
-}) {
+}): Promise<StructureSchema> {
     const patch = await resolveInputData({
         file: args.file,
         data: args.data,
@@ -80,6 +80,7 @@ export async function patchStructureCommand(args: {
     if (!args.quiet) {
         console.log(`✅ Updated structure "${args.id}" in project "${args.project}"`);
     }
+    return updated;
 }
 
 export async function deleteStructureCommand(args: {

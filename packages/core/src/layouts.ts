@@ -61,7 +61,7 @@ export function createLayout(user: User, projectId: string, layout: Layout): Lay
     }
     if (hasLayout(projectId, layout.id)) {
         throw new Error(`Layout with ID "${layout.id}" already exists in project "${projectId}"`);
-    }   
+    }
     const file = layoutFilePath(projectId, layout.id);
     if (fs.existsSync(file)) {
         throw new Error(`Layout ${layout.id} already exists`);

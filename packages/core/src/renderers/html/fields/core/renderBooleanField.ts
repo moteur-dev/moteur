@@ -4,7 +4,7 @@ import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFrom
 
 export function renderBooleanField(value: any, options: RenderOptions, field: Field): string {
     const meta = value?.meta ?? {};
-    const attrs = renderAttributesFromMeta(field.meta);
+    const attrs = renderAttributesFromMeta(meta);
     const isChecked = value === true;
 
     const trueLabel = field.options?.trueLabel ?? 'Yes';

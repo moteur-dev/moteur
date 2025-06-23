@@ -12,7 +12,7 @@ router.get('/me', requireAuth, (req: any, res: any) => {
     }
 
     // Strip out any sensitive fields just in case
-    const { passwordHash, ...safeUser } = user;
+    const { passwordHash: _passwordHash, ...safeUser } = user;
     res.json({ user: safeUser });
 });
 
