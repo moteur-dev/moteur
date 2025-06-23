@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import type { Request, Response } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
-import { mergePluginSpecs } from '@moteur/core/utils/mergePluginSpecs';
+import { mergePluginSpecs } from './utils/mergePluginSpecs';
 
 const baseSchemas: OpenAPIV3.ComponentsObject['schemas'] = {
     User: {

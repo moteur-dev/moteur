@@ -1,3 +1,5 @@
+import { describe, it, expect } from 'vitest';
+
 import { renderColorField } from '../../../../src/renderers/html/fields/core/renderColorField';
 import type { Field } from '@moteur/types/Field';
 import type { RenderOptions } from '@moteur/types/Renderer';

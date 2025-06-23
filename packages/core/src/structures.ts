@@ -17,11 +17,7 @@ export function listStructures(project?: string): Record<string, StructureSchema
     }
 
     if (project) {
-        const projectDir = path.resolve(
-            baseProjectsDir(),
-            project,
-            'structures'
-        );
+        const projectDir = path.resolve(baseProjectsDir(), project, 'structures');
         loadFromDir(projectDir, registry);
     }
 

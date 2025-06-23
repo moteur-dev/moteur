@@ -2,20 +2,18 @@ import { validateObjectField } from '../../..//validators/fields/core/validateOb
 import { Field } from '@moteur/types/Field.js';
 
 describe('validateObjectField', () => {
-  const subField: Field = { type: 'core/text', label: 'Name' };
-  const field: Field = { type: 'core/object', label: 'Person', data: { name: subField } };
+    const subField: Field = { type: 'core/text', label: 'Name' };
+    const field: Field = { type: 'core/object', label: 'Person', data: { name: subField } };
 
-  it('validates object', () => {
-    const issues = validateObjectField({ name: 'John' }, field, 'data.person');
-    expect(issues).toEqual([]);
-  });
+    it('validates object', () => {
+        const issues = validateObjectField({ name: 'John' }, field, 'data.person');
+        expect(issues).toEqual([]);
+    });
 
-  it('errors for missing required subfield', () => {
-    const issues = validateObjectField({}, field, 'data.person');
-    expect(issues).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ type: 'error' })
-      ])
-    );
-  });
+    it('errors for missing required subfield', () => {
+        const issues = validateObjectField({}, field, 'data.person');
+        expect(issues).toEqual(
+            expect.arrayContaining([expect.objectContaining({ type: 'error' })])
+        );
+    });
 });

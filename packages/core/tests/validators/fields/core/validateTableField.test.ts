@@ -2,137 +2,136 @@ import { validateTableField } from '../../../../src/validators/fields/core/valid
 import { Field } from '@moteur/types/Field.js';
 
 describe('validateTableField', () => {
-  const baseField: Field = {
-    type: 'core/table',
-    label: 'Test Table',
-    options: {}
-  };
-
-  it('accepts valid table data (no schema, default options)', () => {
-    const value = [
-      [1, 2],
-      [3, 4]
-    ];
-
-    const issues = validateTableField(value, baseField, 'data.table');
-    expect(issues).toEqual([]);
-  });
-
-  it('rejects if rows is not an array', () => {
-    const issues = validateTableField('not-an-array', baseField, 'data.table');
-    expect(issues).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 'INVALID_TABLE_FORMAT' })
-      ])
-    );
-  });
-
-  it('checks minRows and maxRows', () => {
-    const field: Field = {
-      ...baseField,
-      options: { minRows: 3, maxRows: 4 }
+    const baseField: Field = {
+        type: 'core/table',
+        label: 'Test Table',
+        options: {}
     };
 
-    const tooFew = [[1]];
-    const tooMany = [[1], [2], [3], [4], [5]];
+    it('accepts valid table data (no schema, default options)', () => {
+        const value = [
+            [1, 2],
+            [3, 4]
+        ];
 
-    expect(validateTableField(tooFew, field, 'data.table')).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 'TABLE_TOO_FEW_ROWS' })
-      ])
-    );
+        const issues = validateTableField(value, baseField, 'data.table');
+        expect(issues).toEqual([]);
+    });
 
-    expect(validateTableField(tooMany, field, 'data.table')).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 'TABLE_TOO_MANY_ROWS' })
-      ])
-    );
-  });
+    it('rejects if rows is not an array', () => {
+        const issues = validateTableField('not-an-array', baseField, 'data.table');
+        expect(issues).toEqual(
+            expect.arrayContaining([expect.objectContaining({ code: 'INVALID_TABLE_FORMAT' })])
+        );
+    });
 
-  it('checks minCols and maxCols', () => {
-    const field: Field = {
-      ...baseField,
-      options: { minCols: 2, maxCols: 3 }
-    };
+    it('checks minRows and maxRows', () => {
+        const field: Field = {
+            ...baseField,
+            options: { minRows: 3, maxRows: 4 }
+        };
 
-    const tooFewCols = [[1]];
-    const tooManyCols = [[1, 2, 3, 4]];
+        const tooFew = [[1]];
+        const tooMany = [[1], [2], [3], [4], [5]];
 
-    expect(validateTableField(tooFewCols, field, 'data.table')).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 'TABLE_TOO_FEW_COLUMNS' })
-      ])
-    );
+        expect(validateTableField(tooFew, field, 'data.table')).toEqual(
+            expect.arrayContaining([expect.objectContaining({ code: 'TABLE_TOO_FEW_ROWS' })])
+        );
 
-    expect(validateTableField(tooManyCols, field, 'data.table')).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 'TABLE_TOO_MANY_COLUMNS' })
-      ])
-    );
-  });
+        expect(validateTableField(tooMany, field, 'data.table')).toEqual(
+            expect.arrayContaining([expect.objectContaining({ code: 'TABLE_TOO_MANY_ROWS' })])
+        );
+    });
 
-  it('validates cell schema with core/number', () => {
-    const field: Field = {
-      ...baseField,
-      options: {
-        validateCellSchema: { type: 'core/number', label: 'Cell' }
-      }
-    };
+    it('checks minCols and maxCols', () => {
+        const field: Field = {
+            ...baseField,
+            options: { minCols: 2, maxCols: 3 }
+        };
 
-    const valid = [[1, 2], [3, 4]];
-    const invalid = [[1, 'not-a-number']];
+        const tooFewCols = [[1]];
+        const tooManyCols = [[1, 2, 3, 4]];
 
-    expect(validateTableField(valid, field, 'data.table')).toEqual([]);
-    expect(validateTableField(invalid, field, 'data.table')).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          code: 'INVALID_NUMBER_TYPE',
-          path: 'data.table[0][1]'
-        })
-      ])
-    );
-  });
+        expect(validateTableField(tooFewCols, field, 'data.table')).toEqual(
+            expect.arrayContaining([expect.objectContaining({ code: 'TABLE_TOO_FEW_COLUMNS' })])
+        );
 
-  it('allows empty cells if allowEmptyCells is true', () => {
-    const field: Field = {
-      ...baseField,
-      options: {
-        validateCellSchema: { type: 'core/text', label: 'Cell' },
-        allowEmptyCells: true
-      }
-    };
+        expect(validateTableField(tooManyCols, field, 'data.table')).toEqual(
+            expect.arrayContaining([expect.objectContaining({ code: 'TABLE_TOO_MANY_COLUMNS' })])
+        );
+    });
 
-    const value = [['valid', ''], ['', null]];
+    it('validates cell schema with core/number', () => {
+        const field: Field = {
+            ...baseField,
+            options: {
+                validateCellSchema: { type: 'core/number', label: 'Cell' }
+            }
+        };
 
-    expect(validateTableField(value, field, 'data.table')).toEqual([]);
-  });
+        const valid = [
+            [1, 2],
+            [3, 4]
+        ];
+        const invalid = [[1, 'not-a-number']];
 
-  it('rejects empty cells if allowEmptyCells is false', () => {
-    const field: Field = {
-      ...baseField,
-      options: {
-        validateCellSchema: { type: 'core/text', label: 'Cell' },
-        allowEmptyCells: false
-      }
-    };
+        expect(validateTableField(valid, field, 'data.table')).toEqual([]);
+        expect(validateTableField(invalid, field, 'data.table')).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: 'INVALID_NUMBER_TYPE',
+                    path: 'data.table[0][1]'
+                })
+            ])
+        );
+    });
 
-    const value = [['valid', ''], ['', null]];
+    it('allows empty cells if allowEmptyCells is true', () => {
+        const field: Field = {
+            ...baseField,
+            options: {
+                validateCellSchema: { type: 'core/text', label: 'Cell' },
+                allowEmptyCells: true
+            }
+        };
 
-    const issues = validateTableField(value, field, 'data.table');
-    expect(issues).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          code: 'TEXT_INVALID_TYPE'
-        })
-      ])
-    );
-  });
+        const value = [
+            ['valid', ''],
+            ['', null]
+        ];
 
-  it('accepts table with no validateCellSchema', () => {
-    const field: Field = { ...baseField, options: {} };
-    const value = [['text', 42, true]];
+        expect(validateTableField(value, field, 'data.table')).toEqual([]);
+    });
 
-    const issues = validateTableField(value, field, 'data.table');
-    expect(issues).toEqual([]);
-  });
+    it('rejects empty cells if allowEmptyCells is false', () => {
+        const field: Field = {
+            ...baseField,
+            options: {
+                validateCellSchema: { type: 'core/text', label: 'Cell' },
+                allowEmptyCells: false
+            }
+        };
+
+        const value = [
+            ['valid', ''],
+            ['', null]
+        ];
+
+        const issues = validateTableField(value, field, 'data.table');
+        expect(issues).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    code: 'TEXT_INVALID_TYPE'
+                })
+            ])
+        );
+    });
+
+    it('accepts table with no validateCellSchema', () => {
+        const field: Field = { ...baseField, options: {} };
+        const value = [['text', 42, true]];
+
+        const issues = validateTableField(value, field, 'data.table');
+        expect(issues).toEqual([]);
+    });
 });

@@ -13,7 +13,7 @@ import { normalizeType } from './utils/normalizeType';
 export function listBlocks(project?: string): Record<string, BlockSchema> {
     const registry: Record<string, BlockSchema> = {};
     const namespaces = ['core'];
-    
+
     for (const namespace of namespaces) {
         const root = path.resolve(`data/${namespace}/blocks`);
 

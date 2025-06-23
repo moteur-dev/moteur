@@ -6,21 +6,33 @@
     "packages/*"
   ],
   "scripts": {
+    "build": "pnpm -r build && tsc -b",
+    "build:watch": "pnpm -r build && tsc -b --watch",
     "clean": "rimraf dist packages/*/dist",
-    "build": "tsc -b",
-    "build:watch": "tsc -b --watch",
     "cli": "node dist/src/cli.js",
-    "server": "node dist/src/api.js",
     "cli:dev": "tsx src/cli.ts",
-    "server:dev": "tsx src/api.ts"
+    "server": "node dist/src/api.js",
+    "server:dev": "tsx src/api.ts",
+    "lint": "pnpm -r lint && eslint . --ext .ts",
+    "lint:fix": "pnpm -r lint:fix && eslint . --ext .ts"
   },
   "dependencies": {
-    "@types/node": "^24.0.3",
-    "express": "^4.18.2",
-    "tsconfig-paths": "^4.2.0"
+    "@moteur/api": "workspace:*",
+    "@moteur/cli": "workspace:*",
+    "@moteur/core": "workspace:*",
+    "@moteur/types": "workspace:*"
   },
   "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/node": "^24.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.0",
+    "prettier": "^3.6.0",
     "rimraf": "^5.0.0",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.7.0",
     "typescript": "^5.4.5",
     "vitest": "^3.2.4"

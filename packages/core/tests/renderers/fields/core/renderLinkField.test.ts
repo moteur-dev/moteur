@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { renderLinkField } from '../../../../src/renderers/html/fields/core/renderLinkField';
 
 describe('renderLinkField', () => {

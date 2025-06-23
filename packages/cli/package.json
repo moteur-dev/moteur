@@ -15,11 +15,23 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "clean": "rimraf dist",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "test": "vitest run"
   },
   "dependencies": {
     "@moteur/core": "workspace:*",
-    "@moteur/types": "workspace:*"
+    "@moteur/types": "workspace:*",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^16.5.0",
+    "inquirer": "^12.6.3",
+    "sanitize-html": "^2.17.0",
+    "table": "^6.9.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2"
+  }
 }

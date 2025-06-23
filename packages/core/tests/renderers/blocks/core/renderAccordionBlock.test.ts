@@ -1,5 +1,6 @@
-import { renderAccordionBlock } from '../../../../renderers/html/blocks/core/renderAccordionBlock';
-import { Block } from '@mote@mote@moteur/types/Block.js';
+import { describe, it, expect } from 'vitest';
+import { renderAccordionBlock } from '../../../../src/renderers/html/blocks/core/renderAccordionBlock';
+import { Block } from '@moteur/types/Block.js';
 
 const opts = { locale: 'en' };
 

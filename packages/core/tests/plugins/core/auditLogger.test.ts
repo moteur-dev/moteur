@@ -1,35 +1,35 @@
-import { describe, it, expect } from "vitest";
-import "../../../plugins/core/auditLogger";
-import { triggerEvent } from "../../../utils/eventBus";
-import { User } from "@mote@mote@moteur/types/User";
-import { ProjectSchema } from "@mote@mote@moteur/types/Project";
+import { describe, it, expect } from 'vitest';
+import '../../../plugins/core/auditLogger';
+import { triggerEvent } from '../../../utils/eventBus';
+import { User } from '@mote@mote@moteur/types/User';
+import { ProjectSchema } from '@mote@mote@moteur/types/Project';
 
-describe("coreAuditLogger plugin", () => {
-  const user: User = { id: "user1", email: "", password: "" } as any;
+describe('coreAuditLogger plugin', () => {
+    const user: User = { id: 'user1', email: '', password: '' } as any;
 
-  it("should set audit fields on create", async () => {
-    const project: ProjectSchema = { id: "p1", label: "Test", meta: {}, defaultLocale: "en" };
+    it('should set audit fields on create', async () => {
+        const project: ProjectSchema = { id: 'p1', label: 'Test', meta: {}, defaultLocale: 'en' };
 
-    await triggerEvent("project.beforeCreate", { project, user });
+        await triggerEvent('project.beforeCreate', { project, user });
 
-    expect(project.meta!.audit).toMatchObject({
-      createdBy: user.id,
-      updatedBy: user.id,
-      revision: 1
+        expect(project.meta!.audit).toMatchObject({
+            createdBy: user.id,
+            updatedBy: user.id,
+            revision: 1
+        });
     });
-  });
 
-  it("should update audit fields on update", async () => {
-    const project: ProjectSchema = {
-      id: "p1",
-      label: "Test",
-      meta: { audit: { revision: 1, createdBy: "someone" } },
-      defaultLocale: "en"
-    };
+    it('should update audit fields on update', async () => {
+        const project: ProjectSchema = {
+            id: 'p1',
+            label: 'Test',
+            meta: { audit: { revision: 1, createdBy: 'someone' } },
+            defaultLocale: 'en'
+        };
 
-    await triggerEvent("project.beforeUpdate", { project, user });
+        await triggerEvent('project.beforeUpdate', { project, user });
 
-    expect(project.meta?.audit?.revision).toBe(2);
-    expect(project.meta?.audit?.updatedBy).toBe(user.id);
-  });
+        expect(project.meta?.audit?.revision).toBe(2);
+        expect(project.meta?.audit?.updatedBy).toBe(user.id);
+    });
 });

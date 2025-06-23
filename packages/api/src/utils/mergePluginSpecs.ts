@@ -1,11 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { loadPluginsForProject } from './loadPlugins';
+import { loadPluginsForProject } from '@moteur/core/utils/loadPlugins';
 
-/**
- * Merges OpenAPI specs from core and plugins.
- * @param baseSpec The base OpenAPI spec to extend
- * @param projectPluginIds Optional list of plugin IDs to load
- */
 export async function mergePluginSpecs(
     baseSpec: OpenAPIV3.Document,
     projectPluginIds: string[] = []

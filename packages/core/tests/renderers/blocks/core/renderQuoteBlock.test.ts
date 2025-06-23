@@ -1,5 +1,6 @@
-import { renderQuoteBlock } from '../../../../renderers/html/blocks/core/renderQuoteBlock';
-import { Block } from '@mote@mote@moteur/types/Block.js';
+import { describe, it, expect } from 'vitest';
+import { renderQuoteBlock } from '../../../../src/renderers/html/blocks/core/renderQuoteBlock';
+import { Block } from '@moteur/types/Block.js';
 
 const opts = { locale: 'en' };
 

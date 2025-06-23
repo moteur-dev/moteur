@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import { getUserByEmail, createUser } from '@moteur/core/users';
 import { randomUUID } from 'crypto';
 import { generateJWT } from '@moteur/core/auth';

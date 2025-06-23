@@ -10,7 +10,6 @@ import { assertUserCanAccessProject, assertUserCanCreateProject } from './utils/
 import { triggerEvent } from './utils/eventBus';
 import { validateProject } from './validators/validateProject';
 
-
 export function loadProjects(): ProjectSchema[] {
     const root = baseProjectsDir();
 
