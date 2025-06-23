@@ -41,6 +41,8 @@ beforeEach(() => {
     process.env.AUTH_GITHUB_CLIENT_ID = 'client-id';
     process.env.AUTH_GITHUB_CLIENT_SECRET = 'client-secret';
     process.env.AUTH_GITHUB_REDIRECT_URI = 'http://localhost/auth/github/callback';
+
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 describe('GET /auth/github', () => {

@@ -6,7 +6,6 @@ const providersRoute: Router = Router();
 
 providersRoute.get('/providers', (req, res) => {
     const providers = [];
-    console.log(process.env);
 
     if (isGitHubEnabled()) {
         providers.push({ id: 'github', label: 'GitHub' });

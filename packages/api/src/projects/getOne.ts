@@ -6,15 +6,19 @@ import type { OpenAPIV3 } from 'openapi-types';
 const router: Router = Router();
 
 router.get('/:projectId', requireProjectAccess, (req: any, res: any) => {
-    const { projectId } = req.params;
-    const user = req.user;
-    const project = getProject(user, projectId);
+    try {
+        const { projectId } = req.params;
+        const user = req.user;
+        const project = getProject(user, projectId);
 
-    if (!project || !project.id) {
-        return res.status(404).json({ error: 'Project not found' });
+        if (!project || !project.id) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+
+        res.json({ project });
+    } catch (err: any) {
+        res.status(404).json({ error: err.message || 'Project not found' });
     }
-
-    res.json({ project });
 });
 
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {

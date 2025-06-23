@@ -8,10 +8,11 @@ const app = express();
 app.use(express.json());
 app.use('/auth', authRouter);
 
+beforeEach(() => {
+    vi.restoreAllMocks();
+});
+
 describe('auth/index route wiring', () => {
-    beforeEach(() => {
-        vi.restoreAllMocks();
-    });
 
     it('should expose core routes like /auth/login and /auth/me', async () => {
         const loginRes = await request(app)

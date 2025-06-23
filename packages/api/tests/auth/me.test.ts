@@ -1,7 +1,7 @@
 import request from 'supertest';
 import express from 'express';
 import meRoute from '../../src/auth/me';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // 🧪 Mock the auth middleware
 vi.mock('../../src/middlewares/auth', () => ({

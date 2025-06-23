@@ -48,6 +48,8 @@ beforeEach(() => {
     process.env.AUTH_GOOGLE_REDIRECT_URI = 'http://localhost/auth/google/callback';
     process.env.JWT_SECRET = 'super-secret';
     process.env.AUTH_REDIRECT_AFTER_LOGIN = '/redirect-success';
+
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 describe('GET /auth/google', () => {
