@@ -7,9 +7,6 @@ const router: Router = Router();
 
 router.delete('/:projectId', requireAdmin, (req: any, res: any) => {
     const { projectId } = req.params;
-    if (!projectId) {
-        return res.status(400).json({ error: 'Missing projectId in path' });
-    }
 
     try {
         deleteProject(req.user!, projectId);

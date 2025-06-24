@@ -4,7 +4,7 @@ import { Field } from '@moteur/types/Field.js';
 import { getStructure } from '../../../../src/structures.js';
 
 // --- Mock getStructure ---
-vi.mock('../../../../../src/api/structures.js', () => ({
+vi.mock('../../../../src/structures.js', () => ({
     getStructure: vi.fn()
 }));
 

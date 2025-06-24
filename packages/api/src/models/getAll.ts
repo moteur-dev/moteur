@@ -15,7 +15,6 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
     }
 
     try {
-        console.log(`Loading models for project ${projectId} for user ${user.id}`);
         const models = await listModelSchemas(user, projectId);
         return res.json(models);
     } catch (err) {

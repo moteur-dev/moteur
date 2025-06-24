@@ -5,12 +5,11 @@ import type { OpenAPIV3 } from 'openapi-types';
 const router: Router = express.Router();
 
 router.post('/login', async (req: any, res: any) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Missing username or password' });
-    }
-
     try {
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ error: 'Missing username or password' });
+        }
         const { token, user } = await loginUser(username, password);
         return res.json({ token, user });
     } catch (err: any) {
