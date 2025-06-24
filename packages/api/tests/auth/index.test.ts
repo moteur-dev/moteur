@@ -13,7 +13,6 @@ beforeEach(() => {
 });
 
 describe('auth/index route wiring', () => {
-
     it('should expose core routes like /auth/login and /auth/me', async () => {
         const loginRes = await request(app)
             .post('/auth/login')

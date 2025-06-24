@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express from 'express';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 import projectsRouter, { projectsSpecs } from '../../src/projects';
 
@@ -37,7 +37,6 @@ describe('projects/index route wiring', () => {
 
         for (const { method, path } of endpoints) {
             const res = await request(app)[method](path).send({});
-            console.log(`Testing ${method.toUpperCase()} ${path} - Status: ${res.status}`);
             expect([200, 400, 404]).toContain(res.status);
         }
     });

@@ -8,9 +8,6 @@ const router: Router = Router();
 
 router.patch('/:projectId', requireAdmin, (req: any, res: any) => {
     const { projectId } = req.params;
-    if (!projectId) {
-        return res.status(400).json({ error: 'Missing projectId in path' });
-    }
 
     const validation = validateProject(req.body);
     if (!validation.valid) {
