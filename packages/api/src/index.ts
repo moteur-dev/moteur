@@ -2,17 +2,11 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import dotenv from 'dotenv';
 
-// ESM-safe __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-console.log('Loading ', resolve(__dirname, '../../.env'));
-dotenv.config({ path: resolve(__dirname, '../../.env') });
-
 import express, { Router } from 'express';
-import openapiRoute, { baseSpec } from './openapi';
+import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 
+import openapiRoute, { baseSpec } from './openapi';
 import authRoutes from './auth';
 import projectRoutes from './projects';
 import modelsRoute from './models';
@@ -23,36 +17,39 @@ import { projectsSpecs } from './projects';
 import { modelsSpecs } from './models';
 import { mergePluginSpecs } from './utils/mergePluginSpecs';
 
-// Make sure all fields are registered
-import '@moteur/core/fields';
+import { createPresenceServer } from '@moteur/presence';
 
-const mergedApiSpecs = await mergePluginSpecs({
-    ...baseSpec,
-    paths: {
-        ...baseSpec.paths,
-        ...authSpecs.paths,
-        ...projectsSpecs.paths,
-        ...modelsSpecs.paths
-    },
-    components: {
-        ...baseSpec.components,
-        schemas: {
-            ...baseSpec.components?.schemas,
-            ...authSpecs.schemas
-        }
-    }
-});
+// Load env
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: resolve(__dirname, '../../.env') });
 
+// Create Express app
 const app = express();
 app.use(express.json());
 
 const basePath = process.env.API_BASE_PATH || '';
 
+const mergedApiSpecs = await mergePluginSpecs({
+  ...baseSpec,
+  paths: {
+    ...baseSpec.paths,
+    ...authSpecs.paths,
+    ...projectsSpecs.paths,
+    ...modelsSpecs.paths
+  },
+  components: {
+    ...baseSpec.components,
+    schemas: {
+      ...baseSpec.components?.schemas,
+      ...authSpecs.schemas
+    }
+  }
+});
+
 const router: Router = express.Router();
 router.get('/openapi.json', async (req, res) => {
-    const spec = mergedApiSpecs;
-
-    res.json(spec);
+  res.json(mergedApiSpecs);
 });
 
 app.use(basePath, router);
@@ -64,7 +61,14 @@ app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
 
+// 🔧 Create HTTP server wrapper
+const httpServer = createServer(app);
+
+// ✅ Plug in presence socket engine
+createPresenceServer(httpServer);
+
+// 🟢 Start listening
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Moteur API running at http://localhost:${PORT}`);
+httpServer.listen(PORT, () => {
+  console.log(`Moteur API running at http://localhost:${PORT}`);
 });
