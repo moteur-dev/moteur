@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import '../../../plugins/core/autoAssignUser';
+import '../../../src/plugins/core/autoAssignUser';
 import { triggerEvent } from '../../../src/utils/eventBus';
 import { User } from '@moteur/types/User';
 import { ProjectSchema } from '@moteur/types/Project';
