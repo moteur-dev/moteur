@@ -4,7 +4,8 @@
     { "path": "packages/types" },
     { "path": "packages/core" },
     { "path": "packages/cli" },
-    { "path": "packages/api" }
+    { "path": "packages/api" },
+    { "path": "packages/presence" }
   ],
   "compilerOptions": {
     "target": "ESNext",
@@ -20,10 +21,12 @@
       "@moteur/core/*": ["packages/core/dist/*"],
       "@moteur/cli/*": ["packages/cli/dist/*"],
       "@moteur/api/*": ["packages/api/dist/*"],
+      "@moteur/presence/*": ["packages/presence/dist/*"],
       "@moteur/types": ["packages/types/src"],
       "@moteur/core": ["packages/core/src"],
       "@moteur/cli": ["packages/cli/src"],
-      "@moteur/api": ["packages/api/src"]
+      "@moteur/api": ["packages/api/src"],
+      "@moteur/presence": ["packages/presence/src"]
     },
     "outDir": "dist"
   },

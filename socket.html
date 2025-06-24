@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Moteur Presence Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    input { margin: 0.5rem 0; padding: 0.3rem; width: 100%; }
+    button { padding: 0.5rem 1rem; margin-top: 1rem; }
+    #users { margin-top: 2rem; }
+    .user {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f9f9f9;
+    }
+    .you {
+      background-color: #e1f7d5;
+      border-color: #a4e786;
+    }
+  </style>
+</head>
+<body>
+  <h1>Moteur Presence Debug</h1>
+
+  <label>
+    JWT Token:
+    <input type="text" id="token" placeholder="paste your token here" />
+  </label>
+
+  <label>
+    Project ID:
+    <input type="text" id="projectId" value="test-project" />
+  </label>
+
+  <label>
+    Screen ID:
+    <input type="text" id="screenId" value="entry:abc123" />
+  </label>
+
+  <button id="connectBtn">Connect</button>
+
+  <div id="status"></div>
+  <div id="users"></div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    let socket;
+    let myUserId = null;
+    const presenceMap = new Map();
+
+    document.getElementById('connectBtn').onclick = () => {
+      const token = document.getElementById('token').value.trim();
+      const projectId = document.getElementById('projectId').value.trim();
+      const screenId = document.getElementById('screenId').value.trim();
+
+      if (!token) {
+        alert('JWT token is required');
+        return;
+      }
+
+      if (socket) socket.disconnect();
+
+      socket = io('http://localhost:3000', {
+        auth: { token }
+      });
+
+      socket.on('connect', () => {
+        document.getElementById('status').textContent = '✅ Connected as ' + socket.id;
+        socket.emit('join', { projectId, screenId });
+      });
+
+      socket.on('connect_error', (err) => {
+        document.getElementById('status').textContent = '❌ Connection error: ' + err.message;
+        console.error('Connection error', err);
+      });
+
+      socket.on('presence:sync', ({ users }) => {
+        presenceMap.clear();
+        for (const user of users) {
+          presenceMap.set(user.userId, user);
+          if (socket.id === user.socketId) {
+            myUserId = user.userId;
+          }
+        }
+        renderUsers();
+      });
+
+      socket.on('presence:change', ({ userId, changes }) => {
+        if (changes === null) {
+          presenceMap.delete(userId);
+        } else {
+          const prev = presenceMap.get(userId) || {};
+          presenceMap.set(userId, { ...prev, ...changes, userId });
+        }
+        renderUsers();
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!socket || !socket.connected) return;
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        socket.emit('presence:update', { cursor: { x, y } });
+      });
+    };
+
+    function renderUsers() {
+      const div = document.getElementById('users');
+      div.innerHTML = Array.from(presenceMap.values()).map(u => {
+        const isSelf = u.userId === myUserId;
+        return `<div class="user ${isSelf ? 'you' : ''}">
+          👤 <strong>${u.name}</strong> ${isSelf ? '(you)' : ''}<br>
+          🆔 userId: ${u.userId}<br>
+          📄 screenId: ${u.screenId || '-'}<br>
+          🖱 cursor: ${u.cursor?.x?.toFixed(1) ?? '-'}, ${u.cursor?.y?.toFixed(1) ?? '-'}
+        </div>`;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
