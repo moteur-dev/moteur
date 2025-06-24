@@ -3,31 +3,37 @@ import { presenceStore } from '../PresenceStore';
 import type { PresenceUpdate } from '@moteur/types/Presence';
 
 export function registerJoinRoom(socket: Socket) {
-  socket.on('join', ({ projectId, screenId }: { projectId: string; screenId?: string }) => {
-    const user = socket.data.user;
+    socket.on('join', ({ projectId, screenId }: { projectId: string; screenId?: string }) => {
+        const user = socket.data.user;
 
-    if (!user?.userId || !user.name || !projectId) {
-      console.warn(`[presence] Invalid join attempt from ${socket.id}`);
-      return;
-    }
+        if (!user?.userId || !user.name || !projectId) {
+            console.warn(`[presence] Invalid join attempt from ${socket.id}`);
+            return;
+        }
 
-    socket.join(projectId);
+        socket.join(projectId);
 
-    // Initial presence state
-    const initial: PresenceUpdate = { screenId };
-    const presence = presenceStore.update(socket.id, user.userId, user.name, projectId, initial);
+        // Initial presence state
+        const initial: PresenceUpdate = { screenId };
+        const presence = presenceStore.update(
+            socket.id,
+            user.userId,
+            user.name,
+            projectId,
+            initial
+        );
 
-    console.log(`[presence] ${user.name} joined project ${projectId}`);
+        console.log(`[presence] ${user.name} joined project ${projectId}`);
 
-    // Send full presence list to this user
-    socket.emit('presence:sync', {
-      users: presenceStore.getByProject(projectId)
+        // Send full presence list to this user
+        socket.emit('presence:sync', {
+            users: presenceStore.getByProject(projectId)
+        });
+
+        // Notify others someone joined
+        socket.to(projectId).emit('presence:change', {
+            userId: presence.userId,
+            changes: initial
+        });
     });
-
-    // Notify others someone joined
-    socket.to(projectId).emit('presence:change', {
-      userId: presence.userId,
-      changes: initial
-    });
-  });
 }
