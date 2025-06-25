@@ -21,11 +21,12 @@ export default [
 
   // TypeScript-specific config
   {
-    files: ['src/**/*.ts'],
+    files: ['**/*.ts'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
         project: './tsconfig.json',
+        tsconfigRootDir: process.cwd(),
         sourceType: 'module',
         ecmaVersion: 'latest',
       },

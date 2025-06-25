@@ -16,12 +16,15 @@
 
 ## 🚀 Setup
 
+> This project uses pnpm to handle packages in a monorepo.
+`npm install -g pnpm`
+
 1. Clone the repo:
 
 ```bash
 git clone git@github.com:moteur-dev/moteur.git
 cd moteur
-npm install
+pnpm install
 ```
 
 2. Install Husky hooks:
@@ -38,10 +41,9 @@ npm run prepare
 ## 📦 Scripts
 
 Command	Description
-`npm run build`		TypeScript build (ESNext, ESM)
-`npm run lint:fix`	Lint and auto-fix code
-`npm run test`		Run unit tests (Vitest, single-run)
-`npm run test:watch`	Run tests in watch mode (for active development)
+`pnpm -r build`		TypeScript build (ESNext, ESM)
+`pnpm -r lint:fix`	Lint and auto-fix code
+`pnpm -r test`		Run unit tests (Vitest, single-run)
 
 ## 🤝 Thank You!
 
