@@ -7,14 +7,11 @@ import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 
 import openapiRoute, { baseSpec } from './openapi';
-import authRoutes from './auth';
-import projectRoutes from './projects';
-import modelsRoute from './models';
-import entriesRoute from './entries';
+import authRoutes, { authSpecs } from './auth';
+import projectRoutes, { projectsSpecs } from './projects';
+import modelsRoute, { modelsSpecs } from './models';
+import entriesRoute, { entriesSpecs } from './entries';
 
-import { authSpecs } from './auth';
-import { projectsSpecs } from './projects';
-import { modelsSpecs } from './models';
 import { mergePluginSpecs } from './utils/mergePluginSpecs';
 
 import { createPresenceServer } from '@moteur/presence';
@@ -36,13 +33,15 @@ const mergedApiSpecs = await mergePluginSpecs({
         ...baseSpec.paths,
         ...authSpecs.paths,
         ...projectsSpecs.paths,
-        ...modelsSpecs.paths
+        ...modelsSpecs.paths,
+        ...entriesSpecs.paths
     },
     components: {
         ...baseSpec.components,
         schemas: {
             ...baseSpec.components?.schemas,
-            ...authSpecs.schemas
+            ...authSpecs.schemas,
+            ...projectsSpecs.schemas
         }
     }
 });
