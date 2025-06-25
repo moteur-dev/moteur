@@ -8,5 +8,15 @@
     ],
     "projects": [],
     "isActive": true
+  },
+  {
+    "id": "admin2",
+    "isActive": true,
+    "email": "admin2@example.com",
+    "passwordHash": "$2b$10$18xBr39pJQTv0CcA1UgKGO1knMFTXWxdoeGuNd2wCPKHDwwHlFT.y",
+    "roles": [
+      "admin"
+    ],
+    "projects": []
   }
 ]

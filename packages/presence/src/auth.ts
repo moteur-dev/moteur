@@ -29,7 +29,7 @@ export function registerAuthMiddleware(io: import('socket.io').Server) {
             };
 
             next();
-        } catch (err) {
+        } catch (_err) {
             return next(new Error('Unauthorized: Invalid or expired token'));
         }
     });

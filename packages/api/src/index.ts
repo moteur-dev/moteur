@@ -31,25 +31,25 @@ app.use(express.json());
 const basePath = process.env.API_BASE_PATH || '';
 
 const mergedApiSpecs = await mergePluginSpecs({
-  ...baseSpec,
-  paths: {
-    ...baseSpec.paths,
-    ...authSpecs.paths,
-    ...projectsSpecs.paths,
-    ...modelsSpecs.paths
-  },
-  components: {
-    ...baseSpec.components,
-    schemas: {
-      ...baseSpec.components?.schemas,
-      ...authSpecs.schemas
+    ...baseSpec,
+    paths: {
+        ...baseSpec.paths,
+        ...authSpecs.paths,
+        ...projectsSpecs.paths,
+        ...modelsSpecs.paths
+    },
+    components: {
+        ...baseSpec.components,
+        schemas: {
+            ...baseSpec.components?.schemas,
+            ...authSpecs.schemas
+        }
     }
-  }
 });
 
 const router: Router = express.Router();
 router.get('/openapi.json', async (req, res) => {
-  res.json(mergedApiSpecs);
+    res.json(mergedApiSpecs);
 });
 
 app.use(basePath, router);
@@ -70,5 +70,5 @@ createPresenceServer(httpServer);
 // 🟢 Start listening
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
-  console.log(`Moteur API running at http://localhost:${PORT}`);
+    console.log(`Moteur API running at http://localhost:${PORT}`);
 });

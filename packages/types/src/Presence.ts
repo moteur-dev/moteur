@@ -11,6 +11,7 @@ export interface Presence {
     entryId?: string;
     fieldPath?: string;
     typing?: boolean;
+    textPreview?: string;
     cursor?: { x: number; y: number };
 
     // Metadata
@@ -22,6 +23,7 @@ export interface PresenceUpdate {
     entryId?: string;
     fieldPath?: string;
     typing?: boolean;
+    textPreview?: string;
     cursor?: {
         x: number; // percentage [0–100]
         y: number;

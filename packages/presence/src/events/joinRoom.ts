@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io';
 import { presenceStore } from '../PresenceStore';
 import type { PresenceUpdate } from '@moteur/types/Presence';
+import { formStateStore } from '../FormStateStore';
 
 export function registerJoinRoom(socket: Socket) {
     socket.on('join', ({ projectId, screenId }: { projectId: string; screenId?: string }) => {
@@ -22,6 +23,16 @@ export function registerJoinRoom(socket: Socket) {
             projectId,
             initial
         );
+
+        if (screenId) {
+            const values = formStateStore.get(screenId);
+            if (Object.keys(values).length > 0) {
+                socket.emit('form:sync', {
+                    screenId,
+                    values
+                });
+            }
+        }
 
         console.log(`[presence] ${user.name} joined project ${projectId}`);
 
