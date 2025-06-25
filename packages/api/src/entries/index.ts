@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import { mergePathSpecs } from '../utils/mergePathSpecs.js';
+
 import getAll, { openapi as getAllSpec } from './getAll.js';
 import getOne, { openapi as getOneSpec } from './getOne.js';
 import create, { openapi as createSpec } from './create.js';
@@ -14,14 +16,8 @@ router.use(create);
 router.use(update);
 router.use(remove);
 
-export const modelsSpecs = {
-    paths: {
-        ...getAllSpec,
-        ...getOneSpec,
-        ...createSpec,
-        ...updateSpec,
-        ...deleteSpec
-    },
+export const entriesSpecs = {
+    paths: mergePathSpecs(getAllSpec, getOneSpec, createSpec, updateSpec, deleteSpec),
     schemas: {}
 };
 

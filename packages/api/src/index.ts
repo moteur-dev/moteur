@@ -7,14 +7,11 @@ import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 
 import openapiRoute, { baseSpec } from './openapi';
-import authRoutes from './auth';
-import projectRoutes from './projects';
-import modelsRoute from './models';
-import entriesRoute from './entries';
+import authRoutes, { authSpecs } from './auth';
+import projectRoutes, { projectsSpecs } from './projects';
+import modelsRoute, { modelsSpecs } from './models';
+import entriesRoute, { entriesSpecs } from './entries';
 
-import { authSpecs } from './auth';
-import { projectsSpecs } from './projects';
-import { modelsSpecs } from './models';
 import { mergePluginSpecs } from './utils/mergePluginSpecs';
 
 import { createPresenceServer } from '@moteur/presence';
@@ -31,25 +28,27 @@ app.use(express.json());
 const basePath = process.env.API_BASE_PATH || '';
 
 const mergedApiSpecs = await mergePluginSpecs({
-  ...baseSpec,
-  paths: {
-    ...baseSpec.paths,
-    ...authSpecs.paths,
-    ...projectsSpecs.paths,
-    ...modelsSpecs.paths
-  },
-  components: {
-    ...baseSpec.components,
-    schemas: {
-      ...baseSpec.components?.schemas,
-      ...authSpecs.schemas
+    ...baseSpec,
+    paths: {
+        ...baseSpec.paths,
+        ...authSpecs.paths,
+        ...projectsSpecs.paths,
+        ...modelsSpecs.paths,
+        ...entriesSpecs.paths
+    },
+    components: {
+        ...baseSpec.components,
+        schemas: {
+            ...baseSpec.components?.schemas,
+            ...authSpecs.schemas,
+            ...projectsSpecs.schemas
+        }
     }
-  }
 });
 
 const router: Router = express.Router();
 router.get('/openapi.json', async (req, res) => {
-  res.json(mergedApiSpecs);
+    res.json(mergedApiSpecs);
 });
 
 app.use(basePath, router);
@@ -70,5 +69,5 @@ createPresenceServer(httpServer);
 // 🟢 Start listening
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
-  console.log(`Moteur API running at http://localhost:${PORT}`);
+    console.log(`Moteur API running at http://localhost:${PORT}`);
 });

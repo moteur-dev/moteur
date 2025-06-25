@@ -2,11 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Moteur Presence Test</title>
+  <title>Moteur Presence Demo</title>
   <style>
     body { font-family: sans-serif; padding: 2rem; }
-    input { margin: 0.5rem 0; padding: 0.3rem; width: 100%; }
-    button { padding: 0.5rem 1rem; margin-top: 1rem; }
+    input, select {
+      margin: 0.5rem 0;
+      padding: 0.3rem;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    input.locked, select.locked {
+      border-color: red;
+      background: #ffe6e6;
+    }
+    label { display: block; margin-top: 1rem; }
     #users { margin-top: 2rem; }
     .user {
       margin-bottom: 1rem;
@@ -19,10 +29,22 @@
       background-color: #e1f7d5;
       border-color: #a4e786;
     }
+    .remote-cursor {
+      position: fixed;
+      pointer-events: none;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border-radius: 4px;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
-  <h1>Moteur Presence Debug</h1>
+  <h1>Moteur Presence Demo</h1>
 
   <label>
     JWT Token:
@@ -31,92 +53,254 @@
 
   <label>
     Project ID:
-    <input type="text" id="projectId" value="test-project" />
+    <input type="text" id="projectId" value="demo-project" />
   </label>
 
   <label>
     Screen ID:
-    <input type="text" id="screenId" value="entry:abc123" />
+    <input type="text" id="screenId" value="entry:demo123" />
   </label>
 
   <button id="connectBtn">Connect</button>
 
   <div id="status"></div>
+
+  <div id="form">
+    <label data-field="hero.title">
+      Title:
+      <input type="text" id="titleField" />
+    </label>
+
+    <label data-field="hero.description">
+      Description:
+      <select id="descField">
+        <option value="">Choose...</option>
+        <option value="short">Short</option>
+        <option value="long">Long</option>
+      </select>
+    </label>
+  </div>
+
   <div id="users"></div>
+  <div id="cursors"></div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script>
-    let socket;
-    let myUserId = null;
-    const presenceMap = new Map();
+  <!-- Everything above is the same as before -->
 
-    document.getElementById('connectBtn').onclick = () => {
-      const token = document.getElementById('token').value.trim();
-      const projectId = document.getElementById('projectId').value.trim();
-      const screenId = document.getElementById('screenId').value.trim();
+<script>
+  let socket;
+  let myUserId = null;
 
-      if (!token) {
-        alert('JWT token is required');
-        return;
+  const presenceMap = new Map();
+  const myFieldValues = new Map();
+  const lockedFieldValues = new Map();
+
+  document.getElementById('connectBtn').onclick = () => {
+    const token = document.getElementById('token').value.trim();
+    const projectId = document.getElementById('projectId').value.trim();
+    const screenId = document.getElementById('screenId').value.trim();
+
+    if (!token) return alert('Token is required');
+    if (socket) socket.disconnect();
+
+    socket = io('http://localhost:3000', { auth: { token } });
+
+    socket.on('connect', () => {
+      document.getElementById('status').textContent = '✅ Connected as ' + socket.id;
+      socket.emit('join', { projectId, screenId });
+    });
+
+    socket.on('connect_error', (err) => {
+      document.getElementById('status').textContent = '❌ ' + err.message;
+    });
+
+    socket.on('presence:sync', ({ users }) => {
+      presenceMap.clear();
+      users.forEach(user => presenceMap.set(user.userId, user));
+      updateUI();
+    });
+
+    socket.on('presence:change', ({ userId, changes }) => {
+      if (changes === null) {
+        presenceMap.delete(userId);
+      } else {
+        const prev = presenceMap.get(userId) || {};
+        const next = { ...prev, ...changes, userId };
+        presenceMap.set(userId, next);
+
+        if (next.fieldPath && next.textPreview) {
+          const clean = getPreviewValue(next.textPreview);
+          lockedFieldValues.set(next.fieldPath, clean);
+        }
       }
+      updateUI();
+    });
 
-      if (socket) socket.disconnect();
+    socket.on('form:sync', ({ screenId, values }) => {
+  for (const [fieldPath, value] of Object.entries(values)) {
+    myFieldValues.set(fieldPath, value);
 
-      socket = io('http://localhost:3000', {
-        auth: { token }
+    const el = document.querySelector(`[data-field="${fieldPath}"]`);
+    if (!el) continue;
+
+    const input = el.querySelector('input, select');
+    if (!input) continue;
+
+    input.value = value;
+  }
+
+  updateUI(); // make sure locked fields get properly rendered too
+});
+
+    window.addEventListener('mousemove', (e) => {
+      if (!socket || !socket.connected) return;
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      socket.emit('presence:update', { cursor: { x, y } });
+    });
+
+    attachFieldHandlers();
+  };
+function attachFieldHandlers() {
+  document.querySelectorAll('[data-field]').forEach(el => {
+    const fieldPath = el.getAttribute('data-field');
+    const input = el.querySelector('input, select');
+
+    input.addEventListener('input', (e) => {
+      const value = e.target.value;
+      myFieldValues.set(fieldPath, value);
+      socket.emit('presence:update', {
+        fieldPath,
+        textPreview: `Entered: ${value}`,
+        typing: true
       });
+    });
 
-      socket.on('connect', () => {
-        document.getElementById('status').textContent = '✅ Connected as ' + socket.id;
-        socket.emit('join', { projectId, screenId });
+    input.addEventListener('change', (e) => {
+      const value = e.target.value;
+      myFieldValues.set(fieldPath, value);
+      socket.emit('presence:update', {
+        fieldPath,
+        textPreview: `Selected: ${value}`,
+        typing: false
       });
+    });
 
-      socket.on('connect_error', (err) => {
-        document.getElementById('status').textContent = '❌ Connection error: ' + err.message;
-        console.error('Connection error', err);
-      });
+    const blurTimers = new Map();
 
-      socket.on('presence:sync', ({ users }) => {
-        presenceMap.clear();
-        for (const user of users) {
-          presenceMap.set(user.userId, user);
-          if (socket.id === user.socketId) {
-            myUserId = user.userId;
-          }
-        }
-        renderUsers();
-      });
+input.addEventListener('blur', () => {
+  // Get current value before blur clears DOM
+  const value = input.value;
+  myFieldValues.set(fieldPath, value);
 
-      socket.on('presence:change', ({ userId, changes }) => {
-        if (changes === null) {
-          presenceMap.delete(userId);
-        } else {
-          const prev = presenceMap.get(userId) || {};
-          presenceMap.set(userId, { ...prev, ...changes, userId });
-        }
-        renderUsers();
-      });
+  if (blurTimers.has(fieldPath)) clearTimeout(blurTimers.get(fieldPath));
 
-      window.addEventListener('mousemove', (e) => {
-        if (!socket || !socket.connected) return;
-        const x = (e.clientX / window.innerWidth) * 100;
-        const y = (e.clientY / window.innerHeight) * 100;
-        socket.emit('presence:update', { cursor: { x, y } });
-      });
-    };
+  const timer = setTimeout(() => {
+    socket.emit('presence:update', {
+      fieldPath: null,
+      textPreview: `Entered: ${value}`,
+      typing: false
+    });
+    blurTimers.delete(fieldPath);
+  }, 400);
 
-    function renderUsers() {
-      const div = document.getElementById('users');
-      div.innerHTML = Array.from(presenceMap.values()).map(u => {
-        const isSelf = u.userId === myUserId;
-        return `<div class="user ${isSelf ? 'you' : ''}">
-          👤 <strong>${u.name}</strong> ${isSelf ? '(you)' : ''}<br>
-          🆔 userId: ${u.userId}<br>
-          📄 screenId: ${u.screenId || '-'}<br>
-          🖱 cursor: ${u.cursor?.x?.toFixed(1) ?? '-'}, ${u.cursor?.y?.toFixed(1) ?? '-'}
-        </div>`;
-      }).join('');
+  blurTimers.set(fieldPath, timer);
+});
+
+input.addEventListener('focus', () => {
+  // cancel pending unlock if user comes back quickly
+  if (blurTimers.has(fieldPath)) {
+    clearTimeout(blurTimers.get(fieldPath));
+    blurTimers.delete(fieldPath);
+  }
+  socket.emit('presence:update', { fieldPath });
+});
+  });
+}
+
+  function getPreviewValue(preview) {
+    return preview?.replace(/^Entered: |^Selected: /, '');
+  }
+
+function getActiveLocker(fieldPath) {
+  for (const [userId, p] of presenceMap.entries()) {
+    if (userId !== myUserId && p.fieldPath === fieldPath) {
+      return userId;
     }
-  </script>
+  }
+  return null;
+}
+
+  function updateUI() {
+    updateFormLocks();
+    renderPresenceList();
+    renderCursors();
+  }
+
+  function updateFormLocks() {
+  document.querySelectorAll('[data-field]').forEach(el => {
+    const fieldPath = el.getAttribute('data-field');
+    const input = el.querySelector('input, select');
+
+    // Find if anyone (not you) is editing this field right now
+    const editingUser = Array.from(presenceMap.values()).find(
+      u => u.userId !== myUserId && u.fieldPath === fieldPath
+    );
+
+    const lockedBy = editingUser?.userId ?? null;
+
+    if (lockedBy) {
+      // Field is actively locked by someone else
+      input.classList.add('locked');
+      input.disabled = true;
+
+      // Use the live preview or last known remote value
+      const val = getPreviewValue(editingUser?.textPreview) ?? lockedFieldValues.get(fieldPath);
+      if (val !== undefined) input.value = val;
+    } else {
+      // Field is not actively locked — restore to your value or remembered preview
+      input.classList.remove('locked');
+      input.disabled = false;
+
+      const myVal = myFieldValues.get(fieldPath);
+      const lastKnown = lockedFieldValues.get(fieldPath);
+
+      if (myVal !== undefined) {
+        input.value = myVal;
+      } else if (lastKnown !== undefined) {
+        input.value = lastKnown;
+      } else {
+        input.value = '';
+      }
+    }
+  });
+}
+
+  function renderPresenceList() {
+    const users = document.getElementById('users');
+    users.innerHTML = Array.from(presenceMap.values()).map(u => {
+      const isSelf = u.userId === myUserId;
+      return `<div class="user ${isSelf ? 'you' : ''}">
+        👤 <strong>${u.name}</strong> ${isSelf ? '(you)' : ''}<br>
+        ✍️ field: ${u.fieldPath ?? '-'}<br>
+        💬 preview: ${u.textPreview ?? '-'}<br>
+      </div>`;
+    }).join('');
+  }
+
+  function renderCursors() {
+    const container = document.getElementById('cursors');
+    container.innerHTML = '';
+    for (const u of presenceMap.values()) {
+      if (u.userId === myUserId || !u.cursor) continue;
+      const div = document.createElement('div');
+      div.className = 'remote-cursor';
+      div.style.left = `${u.cursor.x}%`;
+      div.style.top = `${u.cursor.y}%`;
+      div.innerText = u.name;
+      container.appendChild(div);
+    }
+  }
+</script>
 </body>
 </html>

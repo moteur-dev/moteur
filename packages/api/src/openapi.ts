@@ -87,6 +87,30 @@ const baseSchemas: OpenAPIV3.ComponentsObject['schemas'] = {
                 }
             }
         }
+    },
+    Presence: {
+        type: 'object',
+        properties: {
+            userId: { type: 'string' },
+            name: { type: 'string' },
+            avatarUrl: { type: 'string', nullable: true },
+            projectId: { type: 'string' },
+            screenId: { type: 'string', nullable: true },
+            entryId: { type: 'string', nullable: true },
+            fieldPath: { type: 'string', nullable: true },
+            typing: { type: 'boolean', nullable: true },
+            textPreview: { type: 'string', nullable: true },
+            cursor: {
+                type: 'object',
+                nullable: true,
+                properties: {
+                    x: { type: 'number' },
+                    y: { type: 'number' }
+                }
+            },
+            updatedAt: { type: 'number' }
+        },
+        required: ['userId', 'name', 'projectId', 'updatedAt']
     }
 };
 
