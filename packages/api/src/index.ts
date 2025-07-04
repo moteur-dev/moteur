@@ -2,7 +2,13 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import dotenv from 'dotenv';
 
+// Load env
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: resolve(__dirname, '../../.env') });
+
 import express, { Router } from 'express';
+import cors from 'cors';
 import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 
@@ -16,14 +22,16 @@ import { mergePluginSpecs } from './utils/mergePluginSpecs';
 
 import { createPresenceServer } from '@moteur/presence';
 
-// Load env
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-dotenv.config({ path: resolve(__dirname, '../../.env') });
-
 // Create Express app
 const app = express();
 app.use(express.json());
+app.use(
+    cors({
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization']
+    })
+);
 
 const basePath = process.env.API_BASE_PATH || '';
 

@@ -6,32 +6,47 @@ import { writeJson } from './utils/fileUtils';
 
 const USERS_FILE = path.resolve(process.env.AUTH_USERS_FILE || 'data/users.json');
 
-export function getUsers(): User[] {
-    if (!fs.existsSync(USERS_FILE)) {
-        throw new Error('Users file not found');
+let cachedUsers: User[] | null = null;
+
+export function getCachedUsers(): User[] {
+    if (!cachedUsers) {
+        if (!fs.existsSync(USERS_FILE)) {
+            throw new Error('Users file not found');
+        }
+        const data = fs.readFileSync(USERS_FILE, 'utf-8');
+        cachedUsers = JSON.parse(data);
     }
-    const data = fs.readFileSync(USERS_FILE, 'utf-8');
-    return JSON.parse(data);
+    return cachedUsers ?? [];
+}
+
+export function listUsers(): User[] {
+    return getCachedUsers();
 }
 
 export function getUserByEmail(email: string): User | undefined {
-    return getUsers().find(u => u.email === email);
+    return getCachedUsers().find(u => u.email === email);
 }
 
 export function getUserById(id: string): User | undefined {
-    return getUsers().find(u => u.id === id);
+    return getCachedUsers().find(u => u.id === id);
+}
+
+export function getProjectUsers(projectId: string): User[] {
+    return getCachedUsers().filter(user => user.projects?.includes(projectId));
 }
 
 export function createUser(user: User): User {
-    const users = getUsers();
+    const users = getCachedUsers();
     if (users.some(u => u.email === user.email)) {
         throw new Error('User with this email already exists');
     }
     users.push(user);
     writeJson(USERS_FILE, users);
+    cachedUsers = null; // Invalidate cache after write
     return user;
 }
 
-export function listUsers(): User[] {
-    return getUsers();
+// Optional: expose for debugging or forced reloads
+export function reloadUsers(): void {
+    cachedUsers = null;
 }

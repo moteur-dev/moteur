@@ -1,31 +1,30 @@
 import { Router } from 'express';
-import { requireProjectAccess } from '../middlewares/auth';
-import { getProject } from '@moteur/core/projects';
 import type { OpenAPIV3 } from 'openapi-types';
+import { requireProjectAccess } from '../middlewares/auth';
+import { getProjectUsers } from '@moteur/core/users';
 
-const router: Router = Router();
+const router: Router = Router({ mergeParams: true });
 
-router.get('/:projectId', requireProjectAccess, (req: any, res: any) => {
+router.get('/:projectId/users', requireProjectAccess, (req: any, res: any) => {
+    const { projectId } = req.params;
+
+    if (!projectId) {
+        return res.status(400).json({ error: 'Missing projectId' });
+    }
+
     try {
-        const { projectId } = req.params;
-        const user = req.user;
-        const project = getProject(user, projectId);
-
-        if (!project || !project.id) {
-            return res.status(404).json({ error: 'Project not found' });
-        }
-
-        res.status(200).json({ project });
+        const users = getProjectUsers(projectId);
+        return res.json({ users });
     } catch (err: any) {
-        res.status(404).json({ error: err.message || 'Project not found' });
+        return res.status(500).json({ error: err.message });
     }
 });
 
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
-    '/projects/{projectId}': {
+    '/projects/{projectId}/users': {
         get: {
-            summary: 'Get a single project by ID',
-            tags: ['Projects'],
+            summary: 'List users with access to a project',
+            tags: ['Users'],
             parameters: [
                 {
                     name: 'projectId',
@@ -36,20 +35,23 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             ],
             responses: {
                 '200': {
-                    description: 'The requested project',
+                    description: 'List of users for the project',
                     content: {
                         'application/json': {
                             schema: {
                                 type: 'object',
                                 properties: {
-                                    project: { $ref: '#/components/schemas/Project' }
+                                    users: {
+                                        type: 'array',
+                                        items: { $ref: '#/components/schemas/User' }
+                                    }
                                 }
                             }
                         }
                     }
                 },
-                '404': {
-                    description: 'Project not found',
+                '400': {
+                    description: 'Missing project ID',
                     content: {
                         'application/json': {
                             schema: {
@@ -60,6 +62,9 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                             }
                         }
                     }
+                },
+                '500': {
+                    description: 'Internal server error'
                 }
             }
         }

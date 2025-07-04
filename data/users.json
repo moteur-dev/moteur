@@ -2,21 +2,25 @@
   {
     "id": "admin",
     "email": "admin@example.com",
+    "name": "Johnny Admin",
     "passwordHash": "$2b$10$hqYvthqdyuGBzp/fXPJ/P.mlVNxtXdo8HogInAURMyTTjq4Nb7dXy",
     "roles": [
       "admin"
     ],
-    "projects": [],
-    "isActive": true
+    "projects": ["testy"],
+    "isActive": true,
+    "avatar": "/avatars/64/tv-person.png"
   },
   {
     "id": "admin2",
+    "name": "Jo Content",
     "isActive": true,
     "email": "admin2@example.com",
-    "passwordHash": "$2b$10$18xBr39pJQTv0CcA1UgKGO1knMFTXWxdoeGuNd2wCPKHDwwHlFT.y",
+    "passwordHash": "$2b$10$.2VFXiGWq4pf01Yw175/5.GIodEYhBSzP4.NowCQjIKzjK6fp0va2",
     "roles": [
       "admin"
     ],
-    "projects": []
+    "projects": ["testy"],
+    "avatar": "/avatars/64/lion.png"
   }
 ]
