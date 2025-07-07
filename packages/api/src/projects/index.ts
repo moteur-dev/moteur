@@ -7,6 +7,7 @@ import getOne, { openapi as getOneSpec } from './getOne';
 import create, { openapi as createSpec, schemas as createSchemas } from './create';
 import update, { openapi as updateSpec } from './update';
 import remove, { openapi as deleteSpec } from './delete';
+import users, { openapi as usersSpec } from './users';
 
 import presenceFormState, { openapi as presenceFormStateSpec } from './presence/formState';
 import debug, { openapi as debugSpec } from './presence/debug';
@@ -18,6 +19,7 @@ router.use(getOne);
 router.use(create);
 router.use(update);
 router.use(remove);
+router.use(users);
 router.use(presenceFormState);
 router.use(debug);
 
@@ -28,6 +30,7 @@ export const projectsSpecs = {
         createSpec,
         updateSpec,
         deleteSpec,
+        usersSpec,
         presenceFormStateSpec,
         debugSpec
     ),
