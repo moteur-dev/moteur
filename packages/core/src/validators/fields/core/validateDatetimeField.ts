@@ -1,6 +1,6 @@
 import { ValidationIssue } from '@moteur/types/ValidationResult';
 import { Field } from '@moteur/types/Field';
-import fieldRegistry from '../../../registry/FieldRegistry';
+import fieldRegistry from '../../../registry/FieldRegistry.js';
 
 export function validateDateTimeField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];

@@ -1,6 +1,6 @@
-import { storageRegistry } from '../registry/StorageRegistry';
+import { storageRegistry } from '../registry/StorageRegistry.js';
 import { readFileSync } from 'fs';
-import { projectFilePath } from './pathUtils';
+import { projectFilePath } from './pathUtils.js';
 
 export function getProjectStorage(projectId: string) {
     const projectPath = projectFilePath(projectId);

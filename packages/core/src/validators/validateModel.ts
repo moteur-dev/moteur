@@ -1,6 +1,6 @@
 import { ModelSchema } from '@moteur/types/Model';
 import { ValidationResult } from '@moteur/types/ValidationResult';
-import { createValidationResult, addIssue } from '../utils/validation';
+import { createValidationResult, addIssue } from '../utils/validation.js';
 
 export function validateModel(model: ModelSchema): ValidationResult {
     const result = createValidationResult();

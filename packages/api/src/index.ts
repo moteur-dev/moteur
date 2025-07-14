@@ -12,14 +12,14 @@ import cors from 'cors';
 import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 
-import openapiRoute, { baseSpec } from './openapi';
-import aiRoutes, { aiSpecs } from './ai';
-import authRoutes, { authSpecs } from './auth';
-import projectRoutes, { projectsSpecs } from './projects';
-import modelsRoute, { modelsSpecs } from './models';
-import entriesRoute, { entriesSpecs } from './entries';
+import openapiRoute, { baseSpec } from './openapi.js';
+import aiRoutes, { aiSpecs } from './ai/index.js';
+import authRoutes, { authSpecs } from './auth/index.js';
+import projectRoutes, { projectsSpecs } from './projects/index.js';
+import modelsRoute, { modelsSpecs } from './models/index.js';
+import entriesRoute, { entriesSpecs } from './entries/index.js';
 
-import { mergePluginSpecs } from './utils/mergePluginSpecs';
+import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
 import { createPresenceServer } from '@moteur/presence';
 

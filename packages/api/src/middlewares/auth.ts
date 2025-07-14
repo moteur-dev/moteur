@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyJWT } from '@moteur/core/auth';
-import { getUserById } from '@moteur/core/users';
-import { getProject } from '@moteur/core/projects';
+import { verifyJWT } from '@moteur/core/auth.js';
+import { getUserById } from '@moteur/core/users.js';
+import { getProject } from '@moteur/core/projects.js';
 
 export function requireAuth(req: any, res: any, next: NextFunction) {
     const token = req.headers.authorization?.replace('Bearer ', '');

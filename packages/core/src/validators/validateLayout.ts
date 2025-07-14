@@ -1,9 +1,9 @@
 import { Layout } from '@moteur/types/Layout';
 
 import { ValidationResult } from '@moteur/types/ValidationResult';
-import { createValidationResult, addIssue } from '../utils/validation';
-import { BlockRegistry } from '../registry/BlockRegistry';
-import fieldRegistry from '../registry/FieldRegistry';
+import { createValidationResult, addIssue } from '../utils/validation.js';
+import { BlockRegistry } from '../registry/BlockRegistry.js';
+import fieldRegistry from '../registry/FieldRegistry.js';
 
 const blockRegistry = new BlockRegistry();
 

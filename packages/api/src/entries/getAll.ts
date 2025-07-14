@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { listEntries } from '@moteur/core/entries';
+import { listEntries } from '@moteur/core/entries.js';
 import type { OpenAPIV3 } from 'openapi-types';
-import { requireProjectAccess } from '../middlewares/auth';
+import { requireProjectAccess } from '../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
 

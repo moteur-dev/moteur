@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { requireAdmin } from '../middlewares/auth';
-import { updateModelSchema } from '@moteur/core/models';
-import { validateModel } from '@moteur/core/validators/validateModel';
+import { requireAdmin } from '../middlewares/auth.js';
+import { updateModelSchema } from '@moteur/core/models.js';
+import { validateModel } from '@moteur/core/validators/validateModel.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });

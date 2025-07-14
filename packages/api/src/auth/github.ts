@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import axios from 'axios';
-import { getUserByEmail, createUser } from '@moteur/core/users';
+import { getUserByEmail, createUser } from '@moteur/core/users.js';
 import { randomUUID } from 'crypto';
-import { generateJWT } from '@moteur/core/auth';
-import { User } from '@moteur/types/User';
+import { generateJWT } from '@moteur/core/auth.js';
+import { User } from '@moteur/types/User.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const githubAuthRoute: Router = Router();

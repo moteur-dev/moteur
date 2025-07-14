@@ -1,8 +1,8 @@
 // src/routes/models/getAll.ts
 //import { Request, Response } from 'express';
 import { Router } from 'express';
-import { listModelSchemas } from '@moteur/core/models';
-import { requireProjectAccess } from '../middlewares/auth';
+import { listModelSchemas } from '@moteur/core/models.js';
+import { requireProjectAccess } from '../middlewares/auth.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { requireProjectAccess } from '../middlewares/auth';
-import { getProject } from '@moteur/core/projects';
+import { requireProjectAccess } from '../middlewares/auth.js';
+import { getProject } from '@moteur/core/projects.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router();

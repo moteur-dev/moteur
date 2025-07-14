@@ -1,6 +1,6 @@
 import { Field } from '@moteur/types/Field';
 import { ValidationIssue } from '@moteur/types/ValidationResult';
-import fieldRegistry from '../../../registry/FieldRegistry';
+import fieldRegistry from '../../../registry/FieldRegistry.js';
 
 export function validateSlugField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];

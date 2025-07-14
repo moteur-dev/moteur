@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import generateFields, { openapi as generateFieldsSpec } from './generateFields';
-import generateEntry, { openapi as generateEntrySpec } from './generateEntry';
-import generateImage from './generateImage';
-import { mergePathSpecs } from '../utils/mergePathSpecs';
+import generateFields, { openapi as generateFieldsSpec } from './generateFields.js';
+import generateEntry, { openapi as generateEntrySpec } from './generateEntry.js';
+import generateImage from './generateImage.js';
+import { mergePathSpecs } from '../utils/mergePathSpecs.js';
 
 const router: Router = Router();
 

@@ -1,8 +1,8 @@
 import express, { Router } from 'express';
-import fieldRegistry from '@moteur/core/registry/FieldRegistry';
+import fieldRegistry from '@moteur/core/registry/FieldRegistry.js';
 import { OpenAPIV3 } from 'openapi-types';
 import { OpenAI } from 'openai';
-import { requireAdmin } from '../middlewares/auth';
+import { requireAdmin } from '../middlewares/auth.js';
 
 const router: Router = express.Router();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });

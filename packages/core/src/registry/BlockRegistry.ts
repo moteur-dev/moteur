@@ -1,5 +1,5 @@
 import { BlockSchema } from '@moteur/types/Block';
-import { listBlocks } from '../blocks';
+import { listBlocks } from '../blocks.js';
 
 export class BlockRegistry {
     private schemas: Record<string, BlockSchema>;
