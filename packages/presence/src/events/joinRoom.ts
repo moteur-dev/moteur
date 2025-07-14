@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
-import { presenceStore } from '../PresenceStore';
+import { presenceStore } from '../PresenceStore.js';
 import type { PresenceUpdate } from '@moteur/types/Presence';
-import { formStateStore } from '../FormStateStore';
+import { formStateStore } from '../FormStateStore.js';
 
 export function registerJoinRoom(socket: Socket) {
     socket.on('join', ({ projectId, screenId }: { projectId: string; screenId?: string }) => {

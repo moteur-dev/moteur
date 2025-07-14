@@ -2,7 +2,7 @@ import process from 'node:process';
 import fs from 'fs';
 import path from 'path';
 import { User } from '@moteur/types/User';
-import { writeJson } from './utils/fileUtils';
+import { writeJson } from './utils/fileUtils.js';
 
 const USERS_FILE = path.resolve(process.env.AUTH_USERS_FILE || 'data/users.json');
 

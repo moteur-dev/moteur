@@ -1,12 +1,12 @@
 import { Router } from 'express';
 
-import login, { openapi as loginSpec, schemas as loginSchemas } from './login';
-import providers, { openapi as providersSpec, schemas as providersSchemas } from './providers';
-import refresh, { openapi as refreshSpec } from './refresh';
-import me, { openapi as meSpec } from './me';
-import github, { openapi as githubSpec } from './github';
-import google, { openapi as googleSpec } from './google';
-import { isGitHubEnabled, isGoogleEnabled } from '../utils/authProviders';
+import login, { openapi as loginSpec, schemas as loginSchemas } from './login.js';
+import providers, { openapi as providersSpec, schemas as providersSchemas } from './providers.js';
+import refresh, { openapi as refreshSpec } from './refresh.js';
+import me, { openapi as meSpec } from './me.js';
+import github, { openapi as githubSpec } from './github.js';
+import google, { openapi as googleSpec } from './google.js';
+import { isGitHubEnabled, isGoogleEnabled } from '../utils/authProviders.js';
 
 const router: Router = Router();
 

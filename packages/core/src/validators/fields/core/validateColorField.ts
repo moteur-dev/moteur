@@ -1,5 +1,5 @@
 import { ValidationIssue } from '@moteur/types/ValidationResult';
-import fieldRegistry from '../../../registry/FieldRegistry';
+import fieldRegistry from '../../../registry/FieldRegistry.js';
 import { Field } from '@moteur/types/Field';
 
 export function validateColorField(value: any, field: Field, path: string): ValidationIssue[] {

@@ -1,3 +1,3 @@
-export * from 'authProviders';
-export * from 'mergePathSpecs';
-export * from 'mergePluginSpecs';
+export * from 'authProviders.js';
+export * from 'mergePathSpecs.js';
+export * from 'mergePluginSpecs.js';

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
-import { formStateStore } from '@moteur/presence/FormStateStore';
+import { formStateStore } from '@moteur/presence/FormStateStore.js';
 
 const router: Router = Router({ mergeParams: true });
 

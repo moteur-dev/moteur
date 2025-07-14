@@ -1,6 +1,6 @@
 import { ProjectSchema } from '@moteur/types/Project';
 import { ValidationResult } from '@moteur/types/ValidationResult';
-import { createValidationResult, addIssue } from '../utils/validation';
+import { createValidationResult, addIssue } from '../utils/validation.js';
 
 export function validateProject(project: ProjectSchema): ValidationResult {
     const result = createValidationResult();

@@ -3,12 +3,12 @@ import path from 'path';
 import { ProjectSchema } from '@moteur/types/Project';
 import { User } from '@moteur/types/User';
 import { ValidationResult } from '@moteur/types/ValidationResult';
-import { isValidId } from './utils/idUtils';
-import { readJson, writeJson, isExistingProjectId } from './utils/fileUtils';
-import { projectFilePath, projectDir, baseProjectsDir } from './utils/pathUtils';
-import { assertUserCanAccessProject, assertUserCanCreateProject } from './utils/access';
-import { triggerEvent } from './utils/eventBus';
-import { validateProject } from './validators/validateProject';
+import { isValidId } from './utils/idUtils.js';
+import { readJson, writeJson, isExistingProjectId } from './utils/fileUtils.js';
+import { projectFilePath, projectDir, baseProjectsDir } from './utils/pathUtils.js';
+import { assertUserCanAccessProject, assertUserCanCreateProject } from './utils/access.js';
+import { triggerEvent } from './utils/eventBus.js';
+import { validateProject } from './validators/validateProject.js';
 
 export function loadProjects(): ProjectSchema[] {
     const root = baseProjectsDir();

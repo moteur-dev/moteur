@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { createEntry } from '@moteur/core/entries';
-import { validateEntry } from '@moteur/core/validators/validateEntry';
+import { createEntry } from '@moteur/core/entries.js';
+import { validateEntry } from '@moteur/core/validators/validateEntry.js';
 import type { OpenAPIV3 } from 'openapi-types';
-import { getModelSchema } from '@moteur/core/models';
-import { requireProjectAccess } from '../middlewares/auth';
+import { getModelSchema } from '@moteur/core/models.js';
+import { requireProjectAccess } from '../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
 
