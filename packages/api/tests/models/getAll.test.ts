@@ -37,7 +37,7 @@ describe('GET /projects/:projectId/models', () => {
         const res = await request(app).get('/projects/demo/models');
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({models: mockModels});
+        expect(res.body).toEqual({ models: mockModels });
         expect(listModelSchemas).toHaveBeenCalledWith({ id: 'editor1', role: 'editor' }, 'demo');
     });
 
