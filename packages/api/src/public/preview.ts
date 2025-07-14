@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
-import { htmlRenderer } from '@moteur/core/renderers/html/htmlBlockRenderer';
-import { Block } from '@moteur/types/Block';
+import { htmlRenderer } from '@moteur/core/renderers/html/htmlBlockRenderer.js';
+import { Block } from '@moteur/types/Block.js';
 
 const router: Router = express.Router();
 

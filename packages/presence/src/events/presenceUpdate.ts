@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import type { PresenceUpdate } from '@moteur/types/Presence';
-import { presenceStore } from '../PresenceStore';
+import { presenceStore } from '../PresenceStore.js';
 
 export function registerPresenceUpdate(socket: Socket) {
     socket.on('presence:update', (update: PresenceUpdate) => {

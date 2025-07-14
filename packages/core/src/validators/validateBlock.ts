@@ -1,7 +1,7 @@
 import { BlockSchema } from '@moteur/types/Block';
 import { Field } from '@moteur/types/Field';
 import { ValidationResult } from '@moteur/types/ValidationResult';
-import { createValidationResult, addIssue } from '../utils/validation';
+import { createValidationResult, addIssue } from '../utils/validation.js';
 
 type FieldRegistry = Record<string, Field>;
 

@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { presenceStore } from '../PresenceStore';
+import { presenceStore } from '../PresenceStore.js';
 
 export function registerDisconnect(socket: Socket) {
     socket.on('disconnect', () => {

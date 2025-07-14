@@ -1,6 +1,6 @@
 import { Entry } from '@moteur/types/Model';
 import { ModelSchema } from '@moteur/types/Model';
-import { validateFieldValue } from './validateFieldValue';
+import { validateFieldValue } from './validateFieldValue.js';
 import { ValidationResult, ValidationIssue } from '@moteur/types/ValidationResult';
 
 export function validateEntry(entry: Entry, schema: ModelSchema): ValidationResult {

@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { BlockSchema } from '@moteur/types/Block';
-//import { htmlRenderer } from '@/renderers/html/htmlBlockRenderer';
-import { isValidId } from './utils/idUtils';
-import { isExistingProjectId } from './utils/fileUtils';
-import { normalizeType } from './utils/normalizeType';
+import { BlockSchema } from '@moteur/types/Block.js';
+//import { htmlRenderer } from '@/renderers/html/htmlBlockRenderer.js';
+import { isValidId } from './utils/idUtils.js';
+import { isExistingProjectId } from './utils/fileUtils.js';
+import { normalizeType } from './utils/normalizeType.js';
 
 /*const rendererMap: Record<string, any> = {
     html: htmlRenderer

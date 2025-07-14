@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import fieldRegistry from '@moteur/core/registry/FieldRegistry';
+import fieldRegistry from '@moteur/core/registry/FieldRegistry.js';
 
 const router: Router = express.Router();
 

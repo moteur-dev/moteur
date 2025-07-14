@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { StructureSchema } from '@moteur/types/Structure';
-import { readJson, writeJson } from './utils/fileUtils';
-import { validateStructure } from './validators/validateStructure';
-import { normalizeType } from './utils/normalizeType';
-import { isValidId } from './utils/idUtils';
-import { baseProjectsDir, baseStructuresDir, structureFilePath } from './utils/pathUtils';
+import { readJson, writeJson } from './utils/fileUtils.js';
+import { validateStructure } from './validators/validateStructure.js';
+import { normalizeType } from './utils/normalizeType.js';
+import { isValidId } from './utils/idUtils.js';
+import { baseProjectsDir, baseStructuresDir, structureFilePath } from './utils/pathUtils.js';
 
 /** List all structures for a given project (including global fallbacks) */
 export function listStructures(project?: string): Record<string, StructureSchema> {

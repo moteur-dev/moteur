@@ -8,7 +8,7 @@ import { baseModelsDir, modelDir, modelFilePath } from './utils/pathUtils.js';
 import { User } from '@moteur/types/User';
 import { assertUserCanAccessProject } from './utils/access.js';
 import { getProject } from './projects.js';
-import { triggerEvent } from './utils/eventBus';
+import { triggerEvent } from './utils/eventBus.js';
 
 export function listModelSchemas(user: User, projectId: string): ModelSchema[] {
     if (!isValidId(projectId)) {

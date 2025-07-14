@@ -3,8 +3,8 @@ import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { randomUUID } from 'crypto';
 import type { OpenAPIV3 } from 'openapi-types';
-import { getUserByEmail, createUser } from '@moteur/core/users';
-import { User } from '@moteur/types/User';
+import { getUserByEmail, createUser } from '@moteur/core/users.js';
+import { User } from '@moteur/types/User.js';
 
 const googleAuthRoute: Router = Router();
 

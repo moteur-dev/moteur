@@ -1,10 +1,10 @@
 import express, { Router } from 'express';
 import { OpenAI } from 'openai';
 import { OpenAPIV3 } from 'openapi-types';
-import { getProject } from '@moteur/core/projects';
-import { getModelSchema } from '@moteur/core/models';
-import { validateEntry } from '@moteur/core/validators/validateEntry';
-import { requireProjectAccess } from '../middlewares/auth';
+import { getProject } from '@moteur/core/projects.js';
+import { getModelSchema } from '@moteur/core/models.js';
+//import { validateEntry } from '@moteur/core/validators/validateEntry.js';
+import { requireProjectAccess } from '../middlewares/auth.js';
 
 const router: Router = express.Router();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });

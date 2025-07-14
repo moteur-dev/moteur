@@ -1,7 +1,7 @@
 import { StructureSchema } from '@moteur/types/Structure';
 import { ValidationResult } from '@moteur/types/ValidationResult';
-import { createValidationResult, addIssue } from '../utils/validation';
-import fieldRegistry from '../registry/FieldRegistry';
+import { createValidationResult, addIssue } from '../utils/validation.js';
+import fieldRegistry from '../registry/FieldRegistry.js';
 
 export function validateStructure(structure: StructureSchema): ValidationResult {
     const result = createValidationResult();

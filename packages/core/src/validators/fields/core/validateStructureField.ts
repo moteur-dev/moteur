@@ -1,7 +1,7 @@
 import { Field } from '@moteur/types/Field';
 import { ValidationIssue } from '@moteur/types/ValidationResult';
-import { getStructure } from '../../../structures';
-import { validateFieldValue } from '../../validateFieldValue';
+import { getStructure } from '../../../structures.js';
+import { validateFieldValue } from '../../validateFieldValue.js';
 
 export function validateStructureField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];

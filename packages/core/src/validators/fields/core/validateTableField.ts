@@ -1,6 +1,6 @@
 import { Field } from '@moteur/types/Field';
 import { ValidationIssue } from '@moteur/types/ValidationResult';
-import { validateFieldValue } from '../../validateFieldValue';
+import { validateFieldValue } from '../../validateFieldValue.js';
 
 /**
  * Validates a core/table field.

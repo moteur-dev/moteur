@@ -1,4 +1,4 @@
-import fieldRegistry from '../../registry/FieldRegistry';
+import fieldRegistry from '../../registry/FieldRegistry.js';
 
 fieldRegistry.register({
     type: 'core/object',

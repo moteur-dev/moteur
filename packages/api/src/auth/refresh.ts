@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
-import { generateJWT } from '@moteur/core/auth';
-import { requireAuth } from '../middlewares/auth';
+import { generateJWT } from '@moteur/core/auth.js';
+import { requireAuth } from '../middlewares/auth.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = express.Router();

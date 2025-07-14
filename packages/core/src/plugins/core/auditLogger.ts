@@ -1,4 +1,4 @@
-import { onEvent } from '../../utils/eventBus';
+import { onEvent } from '../../utils/eventBus.js';
 import { Audit } from '@moteur/types/Audit';
 import { User } from '@moteur/types/User';
 

@@ -1,7 +1,7 @@
 import path from 'path';
 import { pathToFileURL } from 'url';
 import { PluginManifest, PluginModule } from '@moteur/types/Plugin';
-import { pluginRegistry } from '../registry/PluginRegistry';
+import { pluginRegistry } from '../registry/PluginRegistry.js';
 
 export async function loadPluginsForProject(pluginIds: string[]): Promise<PluginModule[]> {
     const loaded: PluginModule[] = [];

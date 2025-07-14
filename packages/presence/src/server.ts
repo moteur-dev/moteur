@@ -1,10 +1,10 @@
 import { Server as IOServer, Socket } from 'socket.io';
 import type { Server as HTTPServer } from 'http';
-import { registerAuthMiddleware } from './auth';
-import { registerJoinRoom } from './events/joinRoom';
-import { registerLeaveRoom } from './events/leaveRoom';
-import { registerPresenceUpdate } from './events/presenceUpdate';
-import { registerDisconnect } from './events/disconnect';
+import { registerAuthMiddleware } from './auth.js';
+import { registerJoinRoom } from './events/joinRoom.js';
+import { registerLeaveRoom } from './events/leaveRoom.js';
+import { registerPresenceUpdate } from './events/presenceUpdate.js';
+import { registerDisconnect } from './events/disconnect.js';
 
 export function createPresenceServer(httpServer: HTTPServer): IOServer {
     const io = new IOServer(httpServer, {
