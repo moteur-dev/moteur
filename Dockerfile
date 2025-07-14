@@ -28,11 +28,11 @@ COPY . .
 RUN pnpm install --frozen-lockfile
 
 # Build only the core package and its deps
-RUN pnpm -r build
+RUN npm run build
 
 # Prune dev deps for production
 #RUN pnpm prune --prod
-RUN ls -l /app/packages/api/dist
+RUN ls -l /app/dist/src
 
 # -------- Final stage --------
 FROM base
