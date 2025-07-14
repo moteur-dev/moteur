@@ -13,6 +13,7 @@ import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 
 import openapiRoute, { baseSpec } from './openapi';
+import aiRoutes, { aiSpecs } from './ai';
 import authRoutes, { authSpecs } from './auth';
 import projectRoutes, { projectsSpecs } from './projects';
 import modelsRoute, { modelsSpecs } from './models';
@@ -39,6 +40,7 @@ const mergedApiSpecs = await mergePluginSpecs({
     ...baseSpec,
     paths: {
         ...baseSpec.paths,
+        ...aiSpecs.paths,
         ...authSpecs.paths,
         ...projectsSpecs.paths,
         ...modelsSpecs.paths,
@@ -64,6 +66,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(mergedApiSpecs));
 
 app.use(basePath, openapiRoute);
 app.use(basePath + '/auth', authRoutes);
+app.use(basePath + '/ai', aiRoutes);
 app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
