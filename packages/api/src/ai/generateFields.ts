@@ -111,7 +111,6 @@ ${availableFieldTypes}
     }
 });
 
-
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
     '/generate-fields': {
         post: {

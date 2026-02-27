@@ -1,4 +1,8 @@
 import js from '@eslint/js';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import prettierPlugin from 'eslint-plugin-prettier';
@@ -7,26 +11,28 @@ export default [
   // Base JS config
   js.configs.recommended,
 
-  // Global ignores
+  // Global ignores (packages are linted by pnpm -r lint)
   {
     ignores: [
       'dist/**',
       'node_modules/**',
       'coverage/**',
+      'packages/**',
       'vitest.config.js',
+      'vitest.config.ts',
       'src/tests/**',
       'html/**'
     ],
   },
 
-  // TypeScript-specific config
+  // TypeScript-specific config (root only; packages use pnpm -r lint)
   {
     files: ['**/*.ts'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: process.cwd(),
+        tsconfigRootDir: __dirname,
         sourceType: 'module',
         ecmaVersion: 'latest',
       },
