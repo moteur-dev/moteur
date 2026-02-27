@@ -242,12 +242,6 @@ importers:
         specifier: ^3.6.0
         version: 3.6.0
 
-  swagger-docs:
-    dependencies:
-      swagger-ui-dist:
-        specifier: ^5.26.2
-        version: 5.26.2
-
 packages:
 
   '@ampproject/remapping@2.3.0':
@@ -2134,9 +2128,6 @@ packages:
 
   swagger-ui-dist@5.25.2:
     resolution: {integrity: sha512-V4JyoygUe5nCbn7bAD0fVKSC0yNcL3ROIQtGC7M0NATKuyosCSmMU6T0yDZIIuGpSxjsjZh/D2Ejb8lnF2jjxw==}
-
-  swagger-ui-dist@5.26.2:
-    resolution: {integrity: sha512-WmMS9iMlHQejNm/Uw5ZTo4e3M2QMmEavRz7WLWVsq7Mlx4PSHJbY+VCrLsAz9wLxyHVgrJdt7N8+SdQLa52Ykg==}
 
   swagger-ui-express@5.0.1:
     resolution: {integrity: sha512-SrNU3RiBGTLLmFU8GIJdOdanJTl4TOmT27tt3bWWHppqYmAZ6IDuEuBvMU6nZq0zLEe6b/1rACXCgLZqO6ZfrA==}
@@ -4276,10 +4267,6 @@ snapshots:
       has-flag: 4.0.0
 
   swagger-ui-dist@5.25.2:
-    dependencies:
-      '@scarf/scarf': 1.4.0
-
-  swagger-ui-dist@5.26.2:
     dependencies:
       '@scarf/scarf': 1.4.0
 

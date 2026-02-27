@@ -12,7 +12,7 @@
     "cli": "node dist/src/cli.js",
     "cli:dev": "tsx src/cli.ts",
     "server": "node dist/src/api.js",
-    "server:dev": "tsx src/api.ts",
+    "server:dev": "tsx packages/api/src/index.ts",
     "lint": "pnpm -r lint && eslint . --ext .ts",
     "lint:fix": "pnpm -r lint:fix && eslint . --ext .ts"
   },

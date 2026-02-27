@@ -12,6 +12,7 @@ export interface TemplateSchema {
 export interface Page {
     id: string;
     type: string; // references TemplateSchema.id
+    routePattern?: string;
     data: Record<string, any>;
 }
 export const templateSchemaFields: Record<string, Field> = {
