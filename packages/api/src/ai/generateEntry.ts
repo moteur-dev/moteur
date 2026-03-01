@@ -47,8 +47,8 @@ router.post('/generate-entry', requireProjectAccess, async (req: any, res: any) 
     }
 
     try {
-        const _project = getProject(req.user, projectId);
-        const model = getModelSchema(req.user, projectId, modelId);
+        const _project = await getProject(req.user!, projectId);
+        const model = await getModelSchema(req.user!, projectId, modelId);
 
         const fieldList = formatFieldListForPrompt(model.fields);
 
