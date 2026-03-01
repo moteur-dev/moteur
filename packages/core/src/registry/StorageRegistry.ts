@@ -1,6 +1,29 @@
-import { StorageAdapter } from '@moteur/types/Storage';
+import {
+    StorageAdapter,
+    StorageOptions,
+    LocalStorageOptions,
+    S3StorageOptions,
+    isLocalStorageOptions,
+    isS3StorageOptions
+} from '@moteur/types/Storage.js';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- adapters take specific option types; we validate before create
 type AdapterFactory = new (options: any) => StorageAdapter;
+
+function validateLocalOptions(options: LocalStorageOptions): void {
+    if (!options.baseDir || typeof options.baseDir !== 'string') {
+        throw new Error('Storage adapter "local" requires a non-empty baseDir.');
+    }
+}
+
+function validateS3Options(options: S3StorageOptions): void {
+    if (!options.bucket || typeof options.bucket !== 'string') {
+        throw new Error('Storage adapter "s3" requires a non-empty bucket.');
+    }
+    if (!options.region || typeof options.region !== 'string') {
+        throw new Error('Storage adapter "s3" requires a non-empty region.');
+    }
+}
 
 export class StorageRegistry {
     private adapters: Record<string, AdapterFactory> = {};
@@ -29,7 +52,12 @@ export class StorageRegistry {
         return this.adapters;
     }
 
-    create(id: string, options: any): StorageAdapter {
+    create(id: string, options: StorageOptions): StorageAdapter {
+        if (isLocalStorageOptions(options)) {
+            validateLocalOptions(options);
+        } else if (isS3StorageOptions(options)) {
+            validateS3Options(options);
+        }
         const AdapterClass = this.get(id);
         return new AdapterClass(options);
     }

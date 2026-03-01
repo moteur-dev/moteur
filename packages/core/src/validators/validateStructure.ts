@@ -1,5 +1,5 @@
-import { StructureSchema } from '@moteur/types/Structure';
-import { ValidationResult } from '@moteur/types/ValidationResult';
+import { StructureSchema } from '@moteur/types/Structure.js';
+import { ValidationResult } from '@moteur/types/ValidationResult.js';
 import { createValidationResult, addIssue } from '../utils/validation.js';
 import fieldRegistry from '../registry/FieldRegistry.js';
 

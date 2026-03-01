@@ -1,98 +1,99 @@
 import fs from 'fs';
 import path from 'path';
-import { ModelSchema } from '@moteur/types/Model';
-import { readJson, writeJson } from './utils/fileUtils.js';
+import { ModelSchema } from '@moteur/types/Model.js';
 import { isValidId } from './utils/idUtils.js';
-import { isExistingModelSchema } from './utils/fileUtils.js';
-import { baseModelsDir, modelDir, modelFilePath } from './utils/pathUtils.js';
-import { User } from '@moteur/types/User';
+import { baseModelsDir } from './utils/pathUtils.js';
+import { User } from '@moteur/types/User.js';
 import { assertUserCanAccessProject } from './utils/access.js';
 import { getProject } from './projects.js';
 import { triggerEvent } from './utils/eventBus.js';
+import { getProjectStorage } from './utils/getProjectStorage.js';
+import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
+import { modelKey, modelListPrefix } from './utils/storageKeys.js';
 
-export function listModelSchemas(user: User, projectId: string): ModelSchema[] {
+export async function listModelSchemas(user: User, projectId: string): Promise<ModelSchema[]> {
     if (!isValidId(projectId)) {
         throw new Error(`Invalid projectId: "${projectId}"`);
     }
 
-    const project = getProject(user, projectId);
-    assertUserCanAccessProject(user, project);
+    await getProject(user, projectId);
+    const storage = getProjectStorage(projectId);
+    const ids = await storage.list(modelListPrefix());
+    const schemas: ModelSchema[] = [];
 
-    const base = baseModelsDir(projectId);
-    if (!fs.existsSync(base)) {
-        return [];
+    for (const id of ids) {
+        const key = modelKey(id);
+        const schema = await getJson<ModelSchema>(storage, key);
+        if (schema) schemas.push(schema);
     }
-
-    return fs
-        .readdirSync(base, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => {
-            const file = path.join(base, dirent.name, 'model.json');
-            return fs.existsSync(file) ? (readJson(file) as ModelSchema) : null;
-        })
-        .filter((schema): schema is ModelSchema => schema !== null);
+    return schemas;
 }
 
-export function getModelSchema(user: User, projectId: string, schemaId: string): ModelSchema {
+export async function getModelSchema(
+    user: User,
+    projectId: string,
+    schemaId: string
+): Promise<ModelSchema> {
     if (!isValidId(schemaId)) {
         throw new Error(`Invalid model schemaId: "${schemaId}"`);
     }
-    if (!isExistingModelSchema(projectId, schemaId)) {
+
+    const project = await getProject(user, projectId);
+    assertUserCanAccessProject(user, project);
+
+    const storage = getProjectStorage(projectId);
+    const schema = await getJson<ModelSchema>(storage, modelKey(schemaId));
+    if (!schema) {
         throw new Error(`Model schema "${schemaId}" not found in project "${projectId}".`);
     }
-
-    const project = getProject(user, projectId);
-    assertUserCanAccessProject(user, project);
-
-    const file = modelFilePath(projectId, schemaId);
-    return readJson(file) as ModelSchema;
-}
-
-export function createModelSchema(user: User, projectId: string, schema: ModelSchema): ModelSchema {
-    if (isExistingModelSchema(projectId, schema.id)) {
-        throw new Error(`Model schema "${schema.id}" already exists in project "${projectId}".`);
-    }
-
-    const project = getProject(user, projectId);
-    assertUserCanAccessProject(user, project);
-
-    const dir = modelDir(projectId, schema.id);
-    const file = modelFilePath(projectId, schema.id);
-
-    // Core plugins validate the model schema, add audit info, etc.
-    triggerEvent('model.beforeCreate', { model: schema, user });
-
-    schema.fields = schema.fields || {};
-    fs.mkdirSync(dir, { recursive: true });
-    writeJson(file, schema);
-
-    triggerEvent('model.afterCreate', { model: schema, user });
-
     return schema;
 }
 
-export function updateModelSchema(
+export async function createModelSchema(
+    user: User,
+    projectId: string,
+    schema: ModelSchema
+): Promise<ModelSchema> {
+    const project = await getProject(user, projectId);
+    assertUserCanAccessProject(user, project);
+
+    const storage = getProjectStorage(projectId);
+    const exists = await hasKey(storage, modelKey(schema.id));
+    if (exists) {
+        throw new Error(`Model schema "${schema.id}" already exists in project "${projectId}".`);
+    }
+
+    triggerEvent('model.beforeCreate', { model: schema, user });
+
+    schema.fields = schema.fields || {};
+    await putJson(storage, modelKey(schema.id), schema);
+
+    triggerEvent('model.afterCreate', { model: schema, user });
+    return schema;
+}
+
+export async function updateModelSchema(
     user: User,
     projectId: string,
     schemaId: string,
     patch: Partial<ModelSchema>
-): ModelSchema {
-    if (!isExistingModelSchema(projectId, schemaId)) {
-        throw new Error(`Model schema "${schemaId}" not found in project "${projectId}".`);
-    }
-
-    const current = getModelSchema(user, projectId, schemaId);
+): Promise<ModelSchema> {
+    const current = await getModelSchema(user, projectId, schemaId);
     const updated = { ...current, ...patch };
 
     triggerEvent('model.beforeUpdate', { model: updated, user });
-    writeJson(modelFilePath(projectId, schemaId), updated);
+    const storage = getProjectStorage(projectId);
+    await putJson(storage, modelKey(schemaId), updated);
     triggerEvent('model.afterUpdate', { model: updated, user });
     return updated;
 }
 
-export function deleteModelSchema(user: User, projectId: string, schemaId: string): void {
-    // This ensure current model schema exists and can be accessed by the user
-    const current = getModelSchema(user, projectId, schemaId);
+export async function deleteModelSchema(
+    user: User,
+    projectId: string,
+    schemaId: string
+): Promise<void> {
+    const current = await getModelSchema(user, projectId, schemaId);
 
     triggerEvent('model.beforeDelete', { model: current, user });
 

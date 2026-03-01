@@ -1,5 +1,5 @@
-import { ModelSchema } from '@moteur/types/Model';
-import { ValidationResult } from '@moteur/types/ValidationResult';
+import { ModelSchema } from '@moteur/types/Model.js';
+import { ValidationResult } from '@moteur/types/ValidationResult.js';
 import { createValidationResult, addIssue } from '../utils/validation.js';
 
 export function validateModel(model: ModelSchema): ValidationResult {

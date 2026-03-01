@@ -1,6 +1,6 @@
-import { Layout } from '@moteur/types/Layout';
+import { Layout } from '@moteur/types/Layout.js';
 
-import { ValidationResult } from '@moteur/types/ValidationResult';
+import { ValidationResult } from '@moteur/types/ValidationResult.js';
 import { createValidationResult, addIssue } from '../utils/validation.js';
 import { BlockRegistry } from '../registry/BlockRegistry.js';
 import fieldRegistry from '../registry/FieldRegistry.js';

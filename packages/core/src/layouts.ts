@@ -1,52 +1,59 @@
 import fs from 'fs';
 import path from 'path';
-import { Layout } from '@moteur/types/Layout';
-import { readJson, writeJson } from './utils/fileUtils';
-import { htmlRenderer } from './renderers/html/htmlBlockRenderer';
-import { validateLayout } from './validators/validateLayout';
-import { User } from '@moteur/types/User';
+import { Layout } from '@moteur/types/Layout.js';
+import { htmlRenderer } from './renderers/html/htmlBlockRenderer.js';
+import { validateLayout } from './validators/validateLayout.js';
+import { User } from '@moteur/types/User.js';
 import { isValidId } from './utils/idUtils.js';
 import { assertUserCanAccessProject } from './utils/access.js';
 import { getProject } from './projects.js';
-import { baseLayoutsDir, layoutFilePath, trashLayoutDir } from './utils/pathUtils';
+import { layoutFilePath, trashLayoutDir } from './utils/pathUtils.js';
+import { getProjectStorage } from './utils/getProjectStorage.js';
+import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
+import { layoutKey, layoutListPrefix } from './utils/storageKeys.js';
 
 const rendererMap: Record<string, any> = {
     html: htmlRenderer
 };
 
-export function listLayouts(user: User, project: string): Layout[] {
-    const dir = baseLayoutsDir(project);
-    if (!fs.existsSync(dir)) return [];
+export async function listLayouts(user: User, projectId: string): Promise<Layout[]> {
+    await getProject(user, projectId);
+    const storage = getProjectStorage(projectId);
+    const ids = await storage.list(layoutListPrefix());
+    const layouts: Layout[] = [];
 
-    return fs
-        .readdirSync(dir)
-        .filter(f => f.endsWith('on'))
-        .map(f => {
-            const filePath = path.join(dir, f);
-            try {
-                const raw = fs.readFileSync(filePath, 'utf-8');
-                const layout = JSON.parse(raw) as Layout;
-                return layout;
-            } catch (err) {
-                console.warn(`[Moteur] Failed to load layout ${f}`, err);
-                return null;
-            }
-        })
-        .filter((l): l is Layout => l !== null);
+    for (const id of ids) {
+        const layout = await getJson<Layout>(storage, layoutKey(id));
+        if (layout) layouts.push(layout);
+    }
+    return layouts;
 }
 
-export function getLayout(user: User, project: string, id: string): Layout {
-    const file = layoutFilePath(project, id);
-    return readJson(file);
+export async function getLayout(
+    user: User,
+    projectId: string,
+    id: string
+): Promise<Layout> {
+    await getProject(user, projectId);
+    const storage = getProjectStorage(projectId);
+    const layout = await getJson<Layout>(storage, layoutKey(id));
+    if (!layout) {
+        throw new Error(`Layout ${id} not found in project ${projectId}`);
+    }
+    return layout;
 }
 
-export function hasLayout(project: string, id: string): boolean {
-    const file = layoutFilePath(project, id);
-    return fs.existsSync(file);
+export async function hasLayout(projectId: string, id: string): Promise<boolean> {
+    const storage = getProjectStorage(projectId);
+    return hasKey(storage, layoutKey(id));
 }
 
-export function createLayout(user: User, projectId: string, layout: Layout): Layout {
-    const project = getProject(user, projectId);
+export async function createLayout(
+    user: User,
+    projectId: string,
+    layout: Layout
+): Promise<Layout> {
+    const project = await getProject(user, projectId);
     assertUserCanAccessProject(user, project);
 
     if (!layout.id || !isValidId(layout.id)) {
@@ -59,51 +66,52 @@ export function createLayout(user: User, projectId: string, layout: Layout): Lay
             `Layout validation failed: ${result.issues.map(issue => issue.message).join(', ')}`
         );
     }
-    if (hasLayout(projectId, layout.id)) {
+
+    const storage = getProjectStorage(projectId);
+    const exists = await hasKey(storage, layoutKey(layout.id));
+    if (exists) {
         throw new Error(`Layout with ID "${layout.id}" already exists in project "${projectId}"`);
     }
-    const file = layoutFilePath(projectId, layout.id);
-    if (fs.existsSync(file)) {
-        throw new Error(`Layout ${layout.id} already exists`);
-    }
-    writeJson(file, layout);
+
+    await putJson(storage, layoutKey(layout.id), layout);
     return layout;
 }
 
-export function updateLayout(
+export async function updateLayout(
     user: User,
     projectId: string,
     id: string,
     patch: Partial<Layout>
-): Layout {
-    const project = getProject(user, projectId);
-    assertUserCanAccessProject(user, project);
+): Promise<Layout> {
+    await getProject(user, projectId);
 
     if (!id || !isValidId(id)) {
         throw new Error(`Invalid layout ID: ${id}`);
     }
 
-    const file = layoutFilePath(projectId, id);
-    if (!fs.existsSync(file)) {
+    const storage = getProjectStorage(projectId);
+    const current = await getJson<Layout>(storage, layoutKey(id));
+    if (!current) {
         throw new Error(`Layout ${id} does not exist in project ${projectId}`);
     }
-    try {
-        const current = readJson(file);
-        const updated = { ...current, ...patch };
-        updated.meta.audit.revision = (current.meta?.audit?.revision || 0) + 1;
-        writeJson(file, updated);
-        return updated;
-    } catch (error) {
-        throw new Error(`Failed to read or update layout ${id} in project ${projectId}: ${error}`);
+    const updated = { ...current, ...patch };
+    if (updated.meta?.audit) {
+        updated.meta.audit.revision = (current.meta?.audit?.revision ?? 0) + 1;
     }
+    await putJson(storage, layoutKey(id), updated);
+    return updated;
 }
 
-export function deleteLayout(user: User, project: string, id: string): void {
-    const source = layoutFilePath(project, id);
-    const destDir = trashLayoutDir(project, id);
-    const dest = path.join(destDir, `${id}.json`);
+export async function deleteLayout(
+    user: User,
+    projectId: string,
+    id: string
+): Promise<void> {
+    await getLayout(user, projectId, id);
 
-    if (!fs.existsSync(source)) throw new Error('Layout not found');
+    const source = layoutFilePath(projectId, id);
+    const destDir = trashLayoutDir(projectId, id);
+    const dest = path.join(destDir, `${id}.json`);
 
     fs.mkdirSync(destDir, { recursive: true });
     fs.renameSync(source, dest);

@@ -3,7 +3,7 @@ import { listModelSchemas } from '@moteur/core/models.js';
 import { User } from '@moteur/types/User.js';
 
 export async function modelSelectPrompt(user: User, projectId: string) {
-    const models = listModelSchemas(user, projectId);
+    const models = await listModelSchemas(user, projectId);
     if (models.length === 0) {
         console.log('❌ No models available. Please create a model schema first.');
         return null;

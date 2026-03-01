@@ -23,6 +23,20 @@ The Moteur CLI allows you to manage projects, layouts, structures, blocks, and f
 > Note that only one of `file` or `data` is permitted. Scripts are expected to break if both are pased to a single command at the same time.
 ---
 
+## 🔐 Auth
+
+| Command                                    | Description                                                |
+|--------------------------------------------|------------------------------------------------------------|
+| `auth login`                               | Log in and save JWT token                                   |
+| `auth logout`                              | Log out and remove JWT token                               |
+| `auth create-user`                         | Create a new user (interactive; no login required)         |
+| `auth list`                                | List all users and their roles/permissions (admin only)     |
+| `auth list --json`                         | List users as JSON (admin only)                             |
+| `auth list --quiet`                        | Suppress human-readable output                             |
+| `auth list --project=site1`                | List only users with access to the given project (admin)   |
+
+---
+
 
 ## 📁 Projects
 

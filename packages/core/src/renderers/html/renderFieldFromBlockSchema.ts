@@ -1,7 +1,7 @@
-import { Block } from '@moteur/types/Block';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { BlockRegistry } from '../../registry/BlockRegistry';
-import { renderField } from './htmlFieldRenderer';
+import { Block } from '@moteur/types/Block.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { BlockRegistry } from '../../registry/BlockRegistry.js';
+import { renderField } from './htmlFieldRenderer.js';
 
 const blockRegistry = new BlockRegistry();
 

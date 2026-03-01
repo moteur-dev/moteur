@@ -1,97 +1,109 @@
 import fs from 'fs';
 import path from 'path';
 import { Entry } from '@moteur/types/Model.js';
-import { readJson, writeJson } from './utils/fileUtils.js';
 import { isValidId } from './utils/idUtils.js';
-import { isExistingEntryId } from './utils/fileUtils.js';
-import { baseEntriesDir, entryDir, entryFilePath, trashEntryDir } from './utils/pathUtils.js';
+import { entryFilePath, trashEntryDir } from './utils/pathUtils.js';
 import { User } from '@moteur/types/User.js';
 import { getModelSchema } from './models.js';
 import { triggerEvent } from './utils/eventBus.js';
+import { getProjectStorage } from './utils/getProjectStorage.js';
+import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
+import { entryKey, entryListPrefix } from './utils/storageKeys.js';
 
-export function listEntries(user: User, projectId: string, modelId: string): Entry[] {
-    // This validates project access and model schema existence
-    const schema = getModelSchema(user, projectId, modelId);
-    console.log(`Listing entries for model "${schema.id}" in project "${projectId}"`);
+export async function listEntries(
+    user: User,
+    projectId: string,
+    modelId: string
+): Promise<Entry[]> {
+    const _schema = await getModelSchema(user, projectId, modelId);
 
-    const dir = baseEntriesDir(projectId, modelId);
-    if (!fs.existsSync(dir)) return [];
+    const storage = getProjectStorage(projectId);
+    const ids = await storage.list(entryListPrefix(modelId));
+    const entries: Entry[] = [];
 
-    return fs
-        .readdirSync(dir)
-        .filter(file => file.endsWith('.json'))
-        .map(file => readJson(path.join(dir, file)) as Entry);
+    for (const id of ids) {
+        const key = entryKey(modelId, id);
+        const entry = await getJson<Entry>(storage, key);
+        if (entry) entries.push(entry);
+    }
+    return entries;
 }
 
-export function getEntry(user: User, projectId: string, modelId: string, entryId: string): Entry {
+export async function getEntry(
+    user: User,
+    projectId: string,
+    modelId: string,
+    entryId: string
+): Promise<Entry> {
     if (!entryId || !isValidId(entryId)) {
         throw new Error(`Invalid entry ID: ${entryId}`);
     }
-    if (!isExistingEntryId(projectId, modelId, entryId)) {
+
+    await getModelSchema(user, projectId, modelId);
+
+    const storage = getProjectStorage(projectId);
+    const entry = await getJson<Entry>(storage, entryKey(modelId, entryId));
+    if (!entry) {
         throw new Error(
             `Entry "${entryId}" not found in model "${modelId}" of project "${projectId}".`
         );
     }
-
-    // This validates project access and model schema existence
-    const schema = getModelSchema(user, projectId, modelId);
-    console.log(`Getting entry "${entryId}" from model "${schema.id}"`);
-
-    const file = entryFilePath(projectId, modelId, entryId);
-    return readJson(file) as Entry;
+    return entry;
 }
 
-export function createEntry(user: User, projectId: string, modelId: string, entry: Entry): Entry {
+export async function createEntry(
+    user: User,
+    projectId: string,
+    modelId: string,
+    entry: Entry
+): Promise<Entry> {
     if (!entry || !entry.id || !isValidId(entry.id)) {
         throw new Error('Entry ID is required to create an entry.');
     }
 
-    // This validates project access and model schema existence
-    const schema = getModelSchema(user, projectId, modelId);
-    console.log(`Creating entry "${entry.id}" in model "${schema.id}"`);
+    await getModelSchema(user, projectId, modelId);
 
-    const dir = entryDir(projectId, modelId, entry.id);
-    const file = entryFilePath(projectId, modelId, entry.id);
-
-    if (isExistingEntryId(projectId, modelId, entry.id)) {
+    const storage = getProjectStorage(projectId);
+    const exists = await hasKey(storage, entryKey(modelId, entry.id));
+    if (exists) {
         throw new Error(`Entry "${entry.id}" already exists in model "${modelId}".`);
     }
 
     triggerEvent('entry.beforeCreate', { entry, user });
-    fs.mkdirSync(dir, { recursive: true });
-    writeJson(file, entry);
+    await putJson(storage, entryKey(modelId, entry.id), entry);
     triggerEvent('entry.afterCreate', { entry, user });
 
     return entry;
 }
 
-export function updateEntry(
+export async function updateEntry(
     user: User,
     projectId: string,
     modelId: string,
     entryId: string,
     patch: Partial<Entry>
-): Entry {
+): Promise<Entry> {
     if (!entryId || !isValidId(entryId)) {
         throw new Error(`Invalid entry ID: ${entryId}`);
     }
-    if (!isExistingEntryId(projectId, modelId, entryId)) {
-        throw new Error(
-            `Entry "${entryId}" not found in model "${modelId}" of project "${projectId}".`
-        );
-    }
 
-    const current = getEntry(user, projectId, modelId, entryId);
+    const current = await getEntry(user, projectId, modelId, entryId);
     const updated = { ...current, ...patch };
 
     triggerEvent('entry.beforeUpdate', { entry: updated, user });
-    writeJson(entryFilePath(projectId, modelId, entryId), updated);
+    const storage = getProjectStorage(projectId);
+    await putJson(storage, entryKey(modelId, entryId), updated);
     triggerEvent('entry.afterUpdate', { entry: updated, user });
     return updated;
 }
 
-export function deleteEntry(user: User, projectId: string, modelId: string, entryId: string): void {
-    const entry = getEntry(user, projectId, modelId, entryId);
+export async function deleteEntry(
+    user: User,
+    projectId: string,
+    modelId: string,
+    entryId: string
+): Promise<void> {
+    const entry = await getEntry(user, projectId, modelId, entryId);
 
     triggerEvent('entry.beforeDelete', { entry, user });
 

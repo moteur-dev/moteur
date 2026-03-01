@@ -9,10 +9,28 @@ const TOKEN_FILE = path.resolve(
 );
 
 export function cliLoadAuthToken(): string {
-    if (fs.existsSync(TOKEN_FILE)) {
-        return JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf-8')).token;
+    if (!fs.existsSync(TOKEN_FILE)) {
+        throw new Error('❌ Not authenticated. Please run `cli auth login`.');
     }
-    throw new Error('❌ Not authenticated. Please run `cli auth login`.');
+    let token: unknown;
+    try {
+        const data = JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf-8'));
+        token = data?.token;
+        // Backward compat: file was previously saved with full loginUser result as .token
+        if (token && typeof token === 'object' && 'token' in token && typeof (token as { token: unknown }).token === 'string') {
+            token = (token as { token: string }).token;
+        }
+    } catch {
+        throw new Error(
+            '❌ Invalid token file. Please run `cli auth login` again.'
+        );
+    }
+    if (typeof token !== 'string' || !token) {
+        throw new Error(
+            '❌ Invalid or missing token in session file. Please run `cli auth login` again.'
+        );
+    }
+    return token;
 }
 
 export function cliLoadUser(): User {

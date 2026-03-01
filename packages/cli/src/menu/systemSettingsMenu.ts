@@ -1,6 +1,6 @@
 // src/cli/menu/menus/systemSettingsMenu.ts
 import inquirer from 'inquirer';
-import { listBlocks } from '@moteur/core/blocks';
+import { listBlocks } from '@moteur/core/blocks.js';
 import { table } from 'table';
 import fieldRegistry from '@moteur/core/registry/FieldRegistry.js';
 

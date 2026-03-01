@@ -17,7 +17,7 @@ export async function listStructuresCommand(args: {
     json?: boolean;
     quiet?: boolean;
 }) {
-    const structures = listStructures(args.project as string);
+    const structures = await listStructures(args.project as string);
     if (args.json) {
         console.log(JSON.stringify(structures, null, 2));
     } else if (!args.quiet) {
@@ -34,7 +34,7 @@ export async function getStructureCommand(args: {
     json?: boolean;
     quiet?: boolean;
 }) {
-    const structure = getStructure(args.id as string, args.project as string);
+    const structure = await getStructure(args.id as string, args.project as string);
     if (args.json) {
         console.log(JSON.stringify(structure, null, 2));
     } else if (!args.quiet) {
@@ -55,7 +55,7 @@ export async function createStructureCommand(args: {
         interactiveFields: ['type', 'label']
     });
 
-    const result = createStructure(args.project as string, input as StructureSchema);
+    const result = await createStructure(args.project as string, input as StructureSchema);
 
     if (!args.quiet) {
         console.log(`✅ Created structure "${result.type}" in project "${args.project}"`);
@@ -75,7 +75,7 @@ export async function patchStructureCommand(args: {
         interactiveFields: ['label']
     });
 
-    const updated = updateStructure(args.project as string, args.id as string, patch);
+    const updated = await updateStructure(args.project as string, args.id as string, patch);
 
     if (!args.quiet) {
         console.log(`✅ Updated structure "${args.id}" in project "${args.project}"`);
@@ -88,7 +88,7 @@ export async function deleteStructureCommand(args: {
     id?: string;
     quiet?: boolean;
 }) {
-    deleteStructure(args.project as string, args.id as string);
+    await deleteStructure(args.project as string, args.id as string);
     if (!args.quiet) {
         console.log(`🗑️ Moved structure "${args.id}" to trash in project "${args.project}"`);
     }

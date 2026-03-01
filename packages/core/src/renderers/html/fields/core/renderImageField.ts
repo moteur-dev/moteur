@@ -1,6 +1,6 @@
-import { Field } from '@moteur/types/Field';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta';
+import { Field } from '@moteur/types/Field.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta.js';
 
 export function renderImageField(value: any, options: RenderOptions, field: Field): string {
     if (!value?.src) return '';

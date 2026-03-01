@@ -1,4 +1,4 @@
-import { cliRegistry } from '@moteur/core/registry/CommandRegistry';
+import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
 
 // Show full help
 export function showHelp() {

@@ -1,8 +1,8 @@
-import { Field } from '@moteur/types/Field';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { StructureRegistry } from '../../../../registry/StructureRegistry';
-import { renderField } from '../../htmlFieldRenderer';
-import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta';
+import { Field } from '@moteur/types/Field.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { StructureRegistry } from '../../../../registry/StructureRegistry.js';
+import { renderField } from '../../htmlFieldRenderer.js';
+import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta.js';
 
 const structureRegistry = new StructureRegistry();
 

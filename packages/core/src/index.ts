@@ -11,6 +11,10 @@ import './plugins/core/auditLogger.js';
 import './plugins/core/autoAssignUser.js';
 import './plugins/core/validation.js';
 
+// Storage adapters (self-register on import)
+import './plugins/LocalJsonStorageAdapter.js';
+import './plugins/S3StorageAdapter.js';
+
 import './fields/index.js';
 
 export const Moteur: MoteurAPI = {
