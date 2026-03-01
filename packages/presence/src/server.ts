@@ -6,10 +6,19 @@ import { registerLeaveRoom } from './events/leaveRoom.js';
 import { registerPresenceUpdate } from './events/presenceUpdate.js';
 import { registerDisconnect } from './events/disconnect.js';
 
+function getCorsOrigin(): string | string[] {
+    const env = process.env.PRESENCE_CORS_ORIGINS ?? process.env.CORS_ORIGINS;
+    if (!env || !env.trim()) return '*';
+    return env
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+}
+
 export function createPresenceServer(httpServer: HTTPServer): IOServer {
     const io = new IOServer(httpServer, {
         cors: {
-            origin: '*' // TODO: restrict this in prod
+            origin: getCorsOrigin()
         }
     });
 
