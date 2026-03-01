@@ -25,9 +25,7 @@ export interface S3StorageOptions {
 
 export type StorageOptions = LocalStorageOptions | S3StorageOptions;
 
-export function isLocalStorageOptions(
-    options: StorageOptions
-): options is LocalStorageOptions {
+export function isLocalStorageOptions(options: StorageOptions): options is LocalStorageOptions {
     return 'baseDir' in options && typeof (options as LocalStorageOptions).baseDir === 'string';
 }
 
