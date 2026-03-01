@@ -18,7 +18,6 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { getModelSchema } from '@moteur/core/models';
 import { createEntry } from '@moteur/core/entries';
 import { validateEntry } from '@moteur/core/validators/validateEntry';
-import { requireProjectAccess } from '../../src/middlewares/auth';
 
 vi.mock('@moteur/core/models', () => ({
     getModelSchema: vi.fn()

@@ -22,8 +22,6 @@ import entriesRoute, { entriesSpecs } from './entries/index.js';
 import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
 import { createPresenceServer } from '@moteur/presence';
-import { exit } from 'process';
-
 // Create Express app
 const app = express();
 app.use(express.json());

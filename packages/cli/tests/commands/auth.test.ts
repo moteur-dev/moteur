@@ -60,12 +60,8 @@ describe('auth list command', () => {
         await listUsersCommand({});
 
         expect(logSpy).toHaveBeenCalledWith('👤 Users:');
-        expect(logSpy).toHaveBeenCalledWith(
-            expect.stringContaining('u1')
-        );
-        expect(logSpy).toHaveBeenCalledWith(
-            expect.stringContaining('a@test.com')
-        );
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('u1'));
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('a@test.com'));
     });
 
     it('listUsersCommand with --quiet outputs nothing for human-readable', async () => {
@@ -80,7 +76,13 @@ describe('auth list command', () => {
 
     it('listUsersCommand with --project filters by project', async () => {
         (getProjectUsers as vi.Mock).mockReturnValue([
-            { id: 'u2', email: 'b@test.com', isActive: true, roles: ['editor'], projects: ['site1'] }
+            {
+                id: 'u2',
+                email: 'b@test.com',
+                isActive: true,
+                roles: ['editor'],
+                projects: ['site1']
+            }
         ]);
 
         await listUsersCommand({ project: 'site1' });

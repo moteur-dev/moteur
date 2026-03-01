@@ -17,13 +17,16 @@ export function cliLoadAuthToken(): string {
         const data = JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf-8'));
         token = data?.token;
         // Backward compat: file was previously saved with full loginUser result as .token
-        if (token && typeof token === 'object' && 'token' in token && typeof (token as { token: unknown }).token === 'string') {
+        if (
+            token &&
+            typeof token === 'object' &&
+            'token' in token &&
+            typeof (token as { token: unknown }).token === 'string'
+        ) {
             token = (token as { token: string }).token;
         }
     } catch {
-        throw new Error(
-            '❌ Invalid token file. Please run `cli auth login` again.'
-        );
+        throw new Error('❌ Invalid token file. Please run `cli auth login` again.');
     }
     if (typeof token !== 'string' || !token) {
         throw new Error(

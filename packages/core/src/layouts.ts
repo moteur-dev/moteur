@@ -29,11 +29,7 @@ export async function listLayouts(user: User, projectId: string): Promise<Layout
     return layouts;
 }
 
-export async function getLayout(
-    user: User,
-    projectId: string,
-    id: string
-): Promise<Layout> {
+export async function getLayout(user: User, projectId: string, id: string): Promise<Layout> {
     await getProject(user, projectId);
     const storage = getProjectStorage(projectId);
     const layout = await getJson<Layout>(storage, layoutKey(id));
@@ -48,11 +44,7 @@ export async function hasLayout(projectId: string, id: string): Promise<boolean>
     return hasKey(storage, layoutKey(id));
 }
 
-export async function createLayout(
-    user: User,
-    projectId: string,
-    layout: Layout
-): Promise<Layout> {
+export async function createLayout(user: User, projectId: string, layout: Layout): Promise<Layout> {
     const project = await getProject(user, projectId);
     assertUserCanAccessProject(user, project);
 
@@ -102,11 +94,7 @@ export async function updateLayout(
     return updated;
 }
 
-export async function deleteLayout(
-    user: User,
-    projectId: string,
-    id: string
-): Promise<void> {
+export async function deleteLayout(user: User, projectId: string, id: string): Promise<void> {
     await getLayout(user, projectId, id);
 
     const source = layoutFilePath(projectId, id);

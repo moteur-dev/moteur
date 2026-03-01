@@ -1,5 +1,4 @@
 import { Socket } from 'socket.io';
-import type { PresenceUpdate } from '@moteur/types/Presence';
 import { presenceStore } from '../PresenceStore.js';
 import { formStateStore } from '../FormStateStore.js';
 import { validatePresenceUpdate } from '../validate.js';
@@ -42,7 +41,7 @@ export function registerPresenceUpdate(socket: Socket) {
         const prevField = prev?.fieldPath;
         const nextField = update.fieldPath;
 
-        const next = presenceStore.update(socket.id, user.userId, user.name, projectId, update);
+        const _next = presenceStore.update(socket.id, user.userId, user.name, projectId, update);
 
         // Handle field locking
         if (prevField && prevField !== nextField) {
