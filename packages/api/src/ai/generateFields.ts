@@ -1,11 +1,18 @@
 import express, { Router } from 'express';
 import fieldRegistry from '@moteur/core/registry/FieldRegistry.js';
 import { OpenAPIV3 } from 'openapi-types';
-import { OpenAI } from 'openai';
 import { requireAdmin } from '../middlewares/auth.js';
 
 const router: Router = express.Router();
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+
+/** Lazy loader for OpenAI client */
+async function getOpenAI() {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) return null;
+
+    const { OpenAI } = await import('openai');
+    return new OpenAI({ apiKey });
+}
 
 /** Reduce full field definitions to essentials */
 function formatFieldSchemasForPrompt(fields: Record<string, any>): string {
@@ -30,6 +37,15 @@ router.post('/generate-fields', requireAdmin, async (req: any, res: any) => {
 
     if (!prompt || typeof currentFields !== 'object') {
         return res.status(400).json({ error: 'Missing or invalid prompt / currentFields' });
+    }
+
+    // Soft dependency check
+    const openai = await getOpenAI();
+    if (!openai) {
+        console.warn('[AI] OpenAI disabled: no OPENAI_API_KEY found.');
+        return res.status(503).json({
+            error: 'AI generation is disabled (missing OPENAI_API_KEY)'
+        });
     }
 
     try {
@@ -69,7 +85,6 @@ Your response should ONLY be a valid JSON object like:
 Available field types:
 ${availableFieldTypes}
 `;
-        console.log('System prompt:', systemPrompt);
 
         const completion = await openai.chat.completions.create({
             model: 'gpt-4',

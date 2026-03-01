@@ -1,14 +1,22 @@
 import express, { Router } from 'express';
-import { OpenAI } from 'openai';
 import { OpenAPIV3 } from 'openapi-types';
 import { getProject } from '@moteur/core/projects.js';
 import { getModelSchema } from '@moteur/core/models.js';
-//import { validateEntry } from '@moteur/core/validators/validateEntry.js';
+// import { validateEntry } from '@moteur/core/validators/validateEntry.js';
 import { requireProjectAccess } from '../middlewares/auth.js';
 
 const router: Router = express.Router();
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
+/** Lazy loader for OpenAI client */
+async function getOpenAI() {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) return null;
+
+    const { OpenAI } = await import('openai');
+    return new OpenAI({ apiKey });
+}
+
+/** Format model fields into a list for prompt context */
 function formatFieldListForPrompt(fields: Record<string, any>): string {
     return Object.entries(fields)
         .map(([key, def]) => {
@@ -27,6 +35,15 @@ router.post('/generate-entry', requireProjectAccess, async (req: any, res: any) 
         return res
             .status(400)
             .json({ error: 'Missing required parameters: prompt, projectId, modelId' });
+    }
+
+    // Soft dependency check
+    const openai = await getOpenAI();
+    if (!openai) {
+        console.warn('[AI] OpenAI disabled: no OPENAI_API_KEY found.');
+        return res.status(503).json({
+            error: 'AI entry generation is disabled (missing OPENAI_API_KEY)'
+        });
     }
 
     try {
@@ -71,21 +88,21 @@ ${fieldList}
             temperature: 0.6
         });
 
-        console.log(prompt);
         const content = completion.choices[0]?.message?.content;
         if (!content) throw new Error('Empty response from AI');
 
         const parsed = JSON.parse(content);
-        console.log(parsed);
         parsed.type = modelId;
 
-        /*const validation = validateEntry(parsed, model);
-    if (!validation.valid) {
-      return res.status(400).json({
-        error: 'Invalid AI-generated entry',
-        issues: validation.issues
-      });
-    }*/
+        /* Optionally validate:
+        const validation = validateEntry(parsed, model);
+        if (!validation.valid) {
+            return res.status(400).json({
+                error: 'Invalid AI-generated entry',
+                issues: validation.issues
+            });
+        }
+        */
 
         return res.json({ success: true, entry: parsed });
     } catch (err: any) {

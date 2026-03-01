@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 // Load env
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-dotenv.config({ path: resolve(__dirname, '../../.env') });
+dotenv.config({ path: resolve(__dirname, '../../../.env') });
 
 import express, { Router } from 'express';
 import cors from 'cors';
@@ -22,6 +22,7 @@ import entriesRoute, { entriesSpecs } from './entries/index.js';
 import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
 import { createPresenceServer } from '@moteur/presence';
+import { exit } from 'process';
 
 // Create Express app
 const app = express();
