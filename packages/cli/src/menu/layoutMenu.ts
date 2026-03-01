@@ -1,10 +1,10 @@
 // src/cli/menu/layoutMenu.ts
 import inquirer from 'inquirer';
-import { getLayout, updateLayout } from '@moteur/core/layouts';
-import { renderCliField } from '../field-renderers/renderCliField';
-import { listBlocks } from '@moteur/core/blocks';
-import { cliLoadUser } from '../utils/auth';
-import { User } from '@moteur/types/User';
+import { getLayout, updateLayout } from '@moteur/core/layouts.js';
+import { renderCliField } from '../field-renderers/renderCliField.js';
+import { listBlocks } from '@moteur/core/blocks.js';
+import { cliLoadUser } from '../utils/auth.js';
+import { User } from '@moteur/types/User.js';
 
 export async function addBlockToLayout(projectId: string, layoutId: string) {
     const user: User = cliLoadUser();

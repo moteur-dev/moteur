@@ -1,26 +1,26 @@
+import type { LocalStorageOptions, StorageOptions } from '@moteur/types/Storage.js';
 import { storageRegistry } from '../registry/StorageRegistry.js';
 import { readFileSync } from 'fs';
-import { projectFilePath } from './pathUtils.js';
+import { projectFilePath, projectDir } from './pathUtils.js';
+
+const defaultLocalOptions = (projectId: string): LocalStorageOptions => ({
+    baseDir: projectDir(projectId),
+    listMode: 'directory'
+});
 
 export function getProjectStorage(projectId: string) {
     const projectPath = projectFilePath(projectId);
 
-    let projectConfig: any;
+    let projectConfig: { storage?: string; storageOptions?: StorageOptions };
     try {
         const data = readFileSync(projectPath, 'utf-8');
-        projectConfig = JSON.parse(data);
+        projectConfig = JSON.parse(data) as { storage?: string; storageOptions?: StorageOptions };
     } catch (_err) {
-        return storageRegistry.create('local', {
-            baseDir: `./data/${projectId}`,
-            listMode: 'directory'
-        });
+        return storageRegistry.create('local', defaultLocalOptions(projectId));
     }
 
     const storageId = projectConfig.storage || 'local';
-    const storageOptions = projectConfig.storageOptions || {
-        baseDir: `./data/${projectId}`,
-        listMode: 'directory'
-    };
+    const storageOptions: StorageOptions = projectConfig.storageOptions ?? defaultLocalOptions(projectId);
 
     return storageRegistry.create(storageId, storageOptions);
 }

@@ -1,5 +1,5 @@
-import { Field } from '@moteur/types/Field';
-import { ValidationIssue } from '@moteur/types/ValidationResult';
+import { Field } from '@moteur/types/Field.js';
+import { ValidationIssue } from '@moteur/types/ValidationResult.js';
 import { validateFieldValue } from '../../validateFieldValue.js';
 
 export function validateListField(value: any, field: Field, path: string): ValidationIssue[] {

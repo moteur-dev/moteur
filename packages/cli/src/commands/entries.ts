@@ -28,7 +28,7 @@ export async function listEntriesCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const entries = listEntries(user, args.projectId as string, args.model as string);
+    const entries = await listEntries(user, args.projectId as string, args.model as string);
     if (entries.length === 0) {
         if (!args.quiet) {
             console.log('📂 No entries found for this model.');
@@ -50,7 +50,7 @@ export async function getEntryCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const entry = getEntry(user, args.projectId as string, args.model as string, args.id as string);
+    const entry = await getEntry(user, args.projectId as string, args.model as string, args.id as string);
     if (args.json) return console.log(JSON.stringify(entry, null, 2));
     if (!args.quiet) {
         console.log(`📁 Entry "${args.id}" in model "${args.model}":`);
@@ -77,7 +77,7 @@ export async function createEntryCommand(args: {
         return;
     }
 
-    const modelSchema = getModelSchema(user, args.projectId as string, args.model as string);
+    const modelSchema = await getModelSchema(user, args.projectId as string, args.model as string);
 
     const { editMode } = await inquirer.prompt({
         type: 'list',
@@ -139,7 +139,7 @@ export async function createEntryCommand(args: {
     }
 
     // Create the entry in the store
-    const created = createEntry(user, args.projectId, args.model, entry as Entry);
+    const created = await createEntry(user, args.projectId, args.model, entry as Entry);
     if (!args.quiet) {
         console.log(
             `✅ Created entry "${created.id}" in model "${args.model}" and project "${args.projectId}".`
@@ -172,7 +172,7 @@ export async function patchEntryCommand(args: {
         return;
     }
 
-    const entry = getEntry(user, args.projectId, args.model, args.id);
+    const entry = await getEntry(user, args.projectId, args.model, args.id);
 
     if (args.file || args.data) {
         const patch = await resolveInputData({
@@ -180,7 +180,7 @@ export async function patchEntryCommand(args: {
             data: args.data,
             interactiveFields: []
         });
-        const updated = updateEntry(user, args.projectId, args.model, args.id, patch);
+        const updated = await updateEntry(user, args.projectId, args.model, args.id, patch);
         if (!args.quiet) {
             console.log(
                 `🔧 Patched entry "${args.id}" in model "${args.model}" and project "${args.projectId}".`
@@ -190,7 +190,7 @@ export async function patchEntryCommand(args: {
     }
 
     // Interactive mode: load model schema
-    const schema = getModelSchema(user, args.projectId, args.model);
+    const schema = await getModelSchema(user, args.projectId, args.model);
     const patch: Partial<Entry> = {};
     patch.data = entry.data || {};
 
@@ -218,7 +218,7 @@ export async function deleteEntryCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    deleteEntry(user, args.projectId as string, args.model as string, args.id as string);
+    await deleteEntry(user, args.projectId as string, args.model as string, args.id as string);
     if (!args.quiet) {
         console.log(
             `🗑️ Moved entry "${args.id}" to trash in model "${args.model}" and project "${args.projectId}".`
@@ -277,14 +277,14 @@ async function validateSingleEntry(args: {
     quiet?: boolean;
 }): Promise<ValidationResult> {
     const user: User = cliLoadUser();
-    const entry = getEntry(user, args.projectId as string, args.model as string, args.id as string);
+    const entry = await getEntry(user, args.projectId as string, args.model as string, args.id as string);
     if (!entry) {
         throw new Error(
             `❌ Entry "${args.id}" not found in model "${args.model}" and project "${args.projectId}".`
         );
     }
 
-    const modelSchema = getModelSchema(user, args.projectId as string, args.model as string);
+    const modelSchema = await getModelSchema(user, args.projectId as string, args.model as string);
     if (!modelSchema) {
         throw new Error(
             `❌ Model schema "${args.model}" not found in project "${args.projectId}".`
@@ -317,14 +317,14 @@ async function validateAllEntries(args: {
     quiet?: boolean;
 }): Promise<ValidationResult[] | undefined> {
     const user: User = cliLoadUser();
-    const modelSchema = getModelSchema(user, args.projectId as string, args.model as string);
+    const modelSchema = await getModelSchema(user, args.projectId as string, args.model as string);
     if (!modelSchema) {
         throw new Error(
             `❌ Model schema "${args.model}" not found in project "${args.projectId}".`
         );
     }
 
-    const entries = listEntries(user, args.projectId as string, args.model as string);
+    const entries = await listEntries(user, args.projectId as string, args.model as string);
     if (entries.length === 0) {
         console.log('📂 No entries found for this model.');
         return;

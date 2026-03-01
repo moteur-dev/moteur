@@ -1,5 +1,5 @@
-import { ValidationIssue } from '@moteur/types/ValidationResult';
-import { Field } from '@moteur/types/Field';
+import { ValidationIssue } from '@moteur/types/ValidationResult.js';
+import { Field } from '@moteur/types/Field.js';
 import fieldRegistry from '../../../registry/FieldRegistry.js';
 
 export function validateDateTimeField(value: any, field: Field, path: string): ValidationIssue[] {

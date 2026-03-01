@@ -3,8 +3,8 @@ import { listEntries } from '@moteur/core/entries.js';
 import { User } from '@moteur/types/User.js';
 
 export async function entrySelectPrompt(user: User, projectId: string, modelId: string) {
-    const models = listEntries(user, projectId, modelId);
-    if (models.length === 0) {
+    const entries = await listEntries(user, projectId, modelId);
+    if (entries.length === 0) {
         console.log('❌ No models available. Please create a model schema first.');
         return null;
     }
@@ -13,7 +13,7 @@ export async function entrySelectPrompt(user: User, projectId: string, modelId: 
         type: 'list',
         name: 'selectedModel',
         message: 'Select a model:',
-        choices: models.map(m => ({ name: `(${m.id})`, value: m.id }))
+        choices: entries.map(m => ({ name: `(${m.id})`, value: m.id }))
     });
 
     return selectedModel;

@@ -10,22 +10,23 @@ const __dirname = dirname(__filename);
 
 dotenv.config({ path: resolve(__dirname, '../../.env') });
 
-import { cliRegistry } from '@moteur/core/registry/CommandRegistry';
-import { showMainMenu } from './menu/mainMenu';
+import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
+import { validateStorageConfig } from '@moteur/core/config/storageConfig.js';
+import { showMainMenu } from './menu/mainMenu.js';
 
 // Import all fields to ensure they are registered
-import '@moteur/core/fields';
+import '@moteur/core/fields/index.js';
 
 // Import commands so they self-register
-import './commands/auth';
-import './commands/project';
-import './commands/models';
-import './commands/layout';
-import './commands/structures';
-import './commands/fields';
-import './commands/blocks';
-import './commands/entries';
-import { showHelp, showCommandHelp } from './commands/help';
+import './commands/auth.js';
+import './commands/project.js';
+import './commands/models.js';
+import './commands/layout.js';
+import './commands/structures.js';
+import './commands/fields.js';
+import './commands/blocks.js';
+import './commands/entries.js';
+import { showHelp, showCommandHelp } from './commands/help.js';
 
 const [command, subcommand, ...rest] = process.argv.slice(2);
 const args = Object.fromEntries(
@@ -37,6 +38,8 @@ const args = Object.fromEntries(
 
 export async function runCli() {
     try {
+        validateStorageConfig();
+
         // No command → show main menu
         if (!command) {
             await showMainMenu();

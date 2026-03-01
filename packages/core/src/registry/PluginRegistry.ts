@@ -1,6 +1,6 @@
 // src/registry/PluginRegistry.ts
 
-import type { PluginManifest } from '@moteur/types/Plugin';
+import type { PluginManifest } from '@moteur/types/Plugin.js';
 
 export class PluginRegistry {
     private plugins: Record<string, PluginManifest> = {};

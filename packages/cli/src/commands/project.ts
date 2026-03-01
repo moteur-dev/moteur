@@ -4,16 +4,16 @@ import {
     createProject,
     updateProject,
     deleteProject
-} from '@moteur/core/projects';
-import { resolveInputData } from '../utils/resolveInputData';
-import { editJsonInEditor } from '../utils/editJsonInEditor';
-import { ProjectSchema, projectSchemaFields } from '@moteur/types/Project';
-import { renderCliField } from '../field-renderers/renderCliField';
-import { projectSelectPrompt } from '../utils/projectSelectPrompt';
-import { cliRequireRole, cliLoadUser } from '../utils/auth';
-import { User } from '@moteur/types/User';
-import { cliRegistry } from '@moteur/core/registry/CommandRegistry';
-import { showProjectsMenu } from '../menu/projectsMenu';
+} from '@moteur/core/projects.js';
+import { resolveInputData } from '../utils/resolveInputData.js';
+import { editJsonInEditor } from '../utils/editJsonInEditor.js';
+import { ProjectSchema, projectSchemaFields } from '@moteur/types/Project.js';
+import { renderCliField } from '../field-renderers/renderCliField.js';
+import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
+import { cliRequireRole, cliLoadUser } from '../utils/auth.js';
+import { User } from '@moteur/types/User.js';
+import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
+import { showProjectsMenu } from '../menu/projectsMenu.js';
 
 export async function listProjectsCommand(args: { json?: boolean; quiet?: boolean }) {
     const user: User = cliLoadUser();
@@ -51,7 +51,6 @@ export async function createProjectCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    console.log(user);
     const adminUser = cliRequireRole('admin');
     console.log(`🔑 Authenticated as admin: ${adminUser.email}\n`);
 

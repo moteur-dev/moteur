@@ -1,8 +1,8 @@
 // src/core/PluginManager.ts
 
-import { PluginModule } from '@moteur/types/Plugin';
-import { pluginRegistry } from '../registry/PluginRegistry';
-import { loadPluginsForProject } from '../utils/loadPlugins';
+import { PluginModule } from '@moteur/types/Plugin.js';
+import { pluginRegistry } from '../registry/PluginRegistry.js';
+import { loadPluginsForProject } from '../utils/loadPlugins.js';
 
 export class PluginManager {
     private projectId: string;

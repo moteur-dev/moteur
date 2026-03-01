@@ -1,5 +1,5 @@
-import { BlockRenderer, RenderOptions } from '@moteur/types/Renderer';
-import { Block } from '@moteur/types/Block';
+import { BlockRenderer, RenderOptions } from '@moteur/types/Renderer.js';
+import { Block } from '@moteur/types/Block.js';
 import { renderAccordionBlock } from './blocks/core/renderAccordionBlock.js';
 import { renderHeroBlock } from './blocks/core/renderHeroBlock.js';
 import { renderQuoteBlock } from './blocks/core/renderQuoteBlock.js';

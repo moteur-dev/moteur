@@ -58,6 +58,9 @@ export function verifyJWT(token: string): JwtPayload {
     if (!JWT_SECRET) {
         throw new Error('Missing JWT_SECRET in environment');
     }
+    if (typeof token !== 'string' || !token.trim()) {
+        throw new Error('Invalid or expired token [ jwt must be a string ]');
+    }
 
     try {
         const decoded: JwtPayload = jwt.verify(token, JWT_SECRET as Secret) as JwtPayload;

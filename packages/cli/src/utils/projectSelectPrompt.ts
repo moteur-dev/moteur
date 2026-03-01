@@ -1,6 +1,6 @@
 import inquirer from 'inquirer';
-import { listProjects } from '@moteur/core/projects';
-import { User } from '@moteur/types/User';
+import { listProjects } from '@moteur/core/projects.js';
+import { User } from '@moteur/types/User.js';
 
 export async function projectSelectPrompt(user: User): Promise<string> {
     const projects = listProjects(user);

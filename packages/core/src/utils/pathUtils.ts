@@ -1,7 +1,8 @@
 import path from 'path';
+import { storageConfig } from '../config/storageConfig.js';
 
 export function baseProjectsDir(): string {
-    return path.join(process.env.PROJECTS_DIR || 'data/projects');
+    return storageConfig.projectsDir;
 }
 export function baseModelsDir(projectId: string): string {
     return path.join(projectDir(projectId), 'models');

@@ -1,6 +1,6 @@
-import { Field } from '@moteur/types/Field';
-import { ValidationIssue } from '@moteur/types/ValidationResult';
-import { getStructure } from '../../../structures.js';
+import { Field } from '@moteur/types/Field.js';
+import { ValidationIssue } from '@moteur/types/ValidationResult.js';
+import { getStructureFromCore } from '../../../structures.js';
 import { validateFieldValue } from '../../validateFieldValue.js';
 
 export function validateStructureField(value: any, field: Field, path: string): ValidationIssue[] {
@@ -25,7 +25,7 @@ export function validateStructureField(value: any, field: Field, path: string): 
     let schemaFields: Record<string, any> | undefined;
     if (structureId) {
         try {
-            const sharedSchema = getStructure(structureId);
+            const sharedSchema = getStructureFromCore(structureId);
             schemaFields = sharedSchema.fields;
         } catch (_error) {
             issues.push({

@@ -1,4 +1,4 @@
-import { StructureSchema } from '@moteur/types/Structure';
+import { StructureSchema } from '@moteur/types/Structure.js';
 
 export class StructureRegistry {
     private structures: Record<string, StructureSchema> = {};

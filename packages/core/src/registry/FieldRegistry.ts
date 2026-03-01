@@ -1,4 +1,4 @@
-import { FieldSchema } from '@moteur/types/Field';
+import { FieldSchema } from '@moteur/types/Field.js';
 
 class FieldRegistry {
     private fieldTypes: Record<string, FieldSchema> = {};

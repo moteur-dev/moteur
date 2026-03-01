@@ -1,5 +1,5 @@
-import { Block } from '@moteur/types/Block';
-import { RenderOptions } from '@moteur/types/Renderer';
+import { Block } from '@moteur/types/Block.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
 
 export function renderFallbackBlock(block: Block, _opts: RenderOptions): string {
     return `

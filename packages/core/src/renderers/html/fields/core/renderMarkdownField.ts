@@ -1,6 +1,6 @@
-import { Field } from '@moteur/types/Field';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta';
+import { Field } from '@moteur/types/Field.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta.js';
 import { marked } from 'marked';
 // @ts-expect-error - sanitize-html has no default export
 import sanitizeHtml from 'sanitize-html';

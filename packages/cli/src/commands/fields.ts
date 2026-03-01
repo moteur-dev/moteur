@@ -1,4 +1,4 @@
-import fieldRegistry from '@moteur/core/registry/FieldRegistry';
+import fieldRegistry from '@moteur/core/registry/FieldRegistry.js';
 
 export async function listFieldsCommand(args: { json?: boolean; quiet?: boolean }) {
     const fields = fieldRegistry.all();

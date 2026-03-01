@@ -1,5 +1,5 @@
-import { Field } from '@moteur/types/Field';
-import { RenderOptions } from '@moteur/types/Renderer';
+import { Field } from '@moteur/types/Field.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
 // @ts-expect-error - sanitize-html has no default export
 import sanitizeHtml from 'sanitize-html';
 
