@@ -37,7 +37,7 @@ describe('projects/index route wiring', () => {
 
         for (const { method, path } of endpoints) {
             const res = await request(app)[method](path).send({});
-            expect([200, 400, 404]).toContain(res.status);
+            expect([200, 204, 400, 404]).toContain(res.status); // 200/204 success, 400/404 client error
         }
     });
 });

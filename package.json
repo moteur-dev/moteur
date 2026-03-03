@@ -13,6 +13,8 @@
     "cli:dev": "tsx src/cli.ts",
     "server": "node dist/src/api.js",
     "server:dev": "tsx packages/api/src/index.ts",
+    "test": "pnpm -r run test",
+    "test:watch": "pnpm -r run test -- --watch",
     "lint": "pnpm -r lint && eslint . --ext .ts",
     "lint:fix": "pnpm -r lint:fix && eslint . --ext .ts"
   },
