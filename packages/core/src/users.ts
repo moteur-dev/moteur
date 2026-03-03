@@ -1,19 +1,21 @@
-import process from 'node:process';
 import fs from 'fs';
-import path from 'path';
-import { User } from '@moteur/types/User';
-import { writeJson } from './utils/fileUtils';
+import { User } from '@moteur/types/User.js';
+import { storageConfig } from './config/storageConfig.js';
+import { writeJson } from './utils/fileUtils.js';
 
-const USERS_FILE = path.resolve(process.env.AUTH_USERS_FILE || 'data/users.json');
+function getUsersFilePath(): string {
+    return storageConfig.usersFile;
+}
 
 let cachedUsers: User[] | null = null;
 
 export function getCachedUsers(): User[] {
     if (!cachedUsers) {
-        if (!fs.existsSync(USERS_FILE)) {
-            throw new Error('Users file not found');
+        const usersFile = getUsersFilePath();
+        if (!fs.existsSync(usersFile)) {
+            return [];
         }
-        const data = fs.readFileSync(USERS_FILE, 'utf-8');
+        const data = fs.readFileSync(usersFile, 'utf-8');
         cachedUsers = JSON.parse(data);
     }
     return cachedUsers ?? [];
@@ -41,7 +43,7 @@ export function createUser(user: User): User {
         throw new Error('User with this email already exists');
     }
     users.push(user);
-    writeJson(USERS_FILE, users);
+    writeJson(getUsersFilePath(), users);
     cachedUsers = null; // Invalidate cache after write
     return user;
 }

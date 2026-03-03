@@ -1,6 +1,6 @@
-import { Block } from '@moteur/types/Block';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta';
+import { Block } from '@moteur/types/Block.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta.js';
 
 export function renderSpacerBlock(block: Block, _opts: RenderOptions): string {
     const data = block.data ?? {};

@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { createEntry } from '@moteur/core/entries';
-import { validateEntry } from '@moteur/core/validators/validateEntry';
+import { createEntry } from '@moteur/core/entries.js';
+import { validateEntry } from '@moteur/core/validators/validateEntry.js';
 import type { OpenAPIV3 } from 'openapi-types';
-import { getModelSchema } from '@moteur/core/models';
-import { requireProjectAccess } from '../middlewares/auth';
+import { getModelSchema } from '@moteur/core/models.js';
+import { requireProjectAccess } from '../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -14,7 +14,7 @@ const handler = async (req: any, res: any) => {
         return res.status(400).json({ error: 'Missing path parameters' });
     }
 
-    const modelSchema = getModelSchema(req.user!, projectId, modelId);
+    const modelSchema = await getModelSchema(req.user!, projectId, modelId);
     if (!modelSchema) {
         return res.status(404).json({ error: 'Model not found' });
     }

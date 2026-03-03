@@ -1,5 +1,5 @@
-import { User } from '@moteur/types/User';
-import { ProjectSchema } from '@moteur/types/Project';
+import { User } from '@moteur/types/User.js';
+import { ProjectSchema } from '@moteur/types/Project.js';
 
 export function assertUserCanAccessProject(user: User, project: ProjectSchema): void {
     if (!project.users || project.users.length === 0) {

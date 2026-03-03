@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireAuth } from '../middlewares/auth';
+import { requireAuth } from '../middlewares/auth.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router();

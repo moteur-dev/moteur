@@ -1,5 +1,5 @@
-import { ValidationIssue } from '@moteur/types/ValidationResult';
-import { Field } from '@moteur/types/Field';
+import { ValidationIssue } from '@moteur/types/ValidationResult.js';
+import { Field } from '@moteur/types/Field.js';
 // @ts-expect-error - Sanitize HTML does not have a default export
 import sanitizeHtml from 'sanitize-html';
 

@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { loginUser } from '@moteur/core/auth';
+import { loginUser } from '@moteur/core/auth.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = express.Router();

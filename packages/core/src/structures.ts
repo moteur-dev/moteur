@@ -1,30 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import { StructureSchema } from '@moteur/types/Structure';
-import { readJson, writeJson } from './utils/fileUtils';
-import { validateStructure } from './validators/validateStructure';
-import { normalizeType } from './utils/normalizeType';
-import { isValidId } from './utils/idUtils';
-import { baseProjectsDir, baseStructuresDir, structureFilePath } from './utils/pathUtils';
+import { StructureSchema } from '@moteur/types/Structure.js';
+import { validateStructure } from './validators/validateStructure.js';
+import { normalizeType } from './utils/normalizeType.js';
+import { isValidId } from './utils/idUtils.js';
+import { baseProjectsDir } from './utils/pathUtils.js';
+import { getProjectStorage } from './utils/getProjectStorage.js';
+import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
+import { structureKey, structureListPrefix } from './utils/storageKeys.js';
 
-/** List all structures for a given project (including global fallbacks) */
-export function listStructures(project?: string): Record<string, StructureSchema> {
-    const registry: Record<string, StructureSchema> = {};
-
-    for (const ns of ['core']) {
-        const nsDir = path.resolve('structures', ns);
-        loadFromDir(nsDir, registry);
-    }
-
-    if (project) {
-        const projectDir = path.resolve(baseProjectsDir(), project, 'structures');
-        loadFromDir(projectDir, registry);
-    }
-
-    return registry;
-}
-
-function loadFromDir(dirPath: string, registry: Record<string, StructureSchema>) {
+function loadFromDir(dirPath: string, registry: Record<string, StructureSchema>): void {
     if (!fs.existsSync(dirPath)) return;
 
     const files = fs.readdirSync(dirPath).filter(f => f.endsWith('on'));
@@ -46,8 +31,44 @@ function loadFromDir(dirPath: string, registry: Record<string, StructureSchema>)
     }
 }
 
+/** List all structures for a given project (including global fallbacks) */
+export async function listStructures(project?: string): Promise<Record<string, StructureSchema>> {
+    const registry: Record<string, StructureSchema> = {};
+
+    for (const ns of ['core']) {
+        const nsDir = path.resolve('structures', ns);
+        loadFromDir(nsDir, registry);
+    }
+
+    if (project) {
+        const storage = getProjectStorage(project);
+        const ids = await storage.list(structureListPrefix());
+        for (const id of ids) {
+            const schema = await getJson<StructureSchema>(storage, structureKey(id));
+            if (schema?.type) {
+                registry[normalizeType(schema.type)] = schema;
+            }
+        }
+    }
+
+    return registry;
+}
+
+/** Sync: get a structure from core namespace only. Used by validators. */
+export function getStructureFromCore(id: string): StructureSchema {
+    const type = id.endsWith('.json') ? id.replace(/\.json$/, '') : id;
+    const normalized = normalizeType(type);
+    const registry: Record<string, StructureSchema> = {};
+    loadFromDir(path.resolve('structures', 'core'), registry);
+    const resolved = registry[normalized];
+    if (!resolved) {
+        throw new Error(`Structure "${id}" not found in core`);
+    }
+    return resolved;
+}
+
 /** Get a specific structure (project takes priority if provided) */
-export function getStructure(id: string, project?: string): StructureSchema {
+export async function getStructure(id: string, project?: string): Promise<StructureSchema> {
     if (!isValidId(id)) {
         throw new Error(`Invalid structureId: "${id}"`);
     }
@@ -55,7 +76,7 @@ export function getStructure(id: string, project?: string): StructureSchema {
         throw new Error(`Invalid projectId: "${project}"`);
     }
     const type = id.endsWith('.json') ? id.replace(/\.json$/, '') : id;
-    const all = listStructures(project);
+    const all = await listStructures(project);
     const resolved = all[type];
     if (!resolved) {
         throw new Error(`Structure "${id}" not found`);
@@ -64,7 +85,10 @@ export function getStructure(id: string, project?: string): StructureSchema {
 }
 
 /** Create a new structure in a given project */
-export function createStructure(project: string, schema: StructureSchema): StructureSchema {
+export async function createStructure(
+    project: string,
+    schema: StructureSchema
+): Promise<StructureSchema> {
     if (!isValidId(project)) {
         throw new Error(`Invalid projectId: "${project}"`);
     }
@@ -77,24 +101,22 @@ export function createStructure(project: string, schema: StructureSchema): Struc
         throw new Error(`Structure validation failed: ${errorMessages}`);
     }
 
-    const base = baseStructuresDir(project);
-    fs.mkdirSync(base, { recursive: true });
-
-    const file = path.join(base, `${schema.type}.json`);
-    if (fs.existsSync(file)) {
+    const storage = getProjectStorage(project);
+    const exists = await hasKey(storage, structureKey(schema.type));
+    if (exists) {
         throw new Error(`Structure "${schema.type}" already exists`);
     }
 
-    writeJson(file, schema);
+    await putJson(storage, structureKey(schema.type), schema);
     return schema;
 }
 
 /** Update a structure in a project (only project scope is writable) */
-export function updateStructure(
+export async function updateStructure(
     project: string,
     id: string,
     patch: Partial<StructureSchema>
-): StructureSchema {
+): Promise<StructureSchema> {
     if (!isValidId(project)) {
         throw new Error(`Invalid projectId: "${project}"`);
     }
@@ -102,12 +124,11 @@ export function updateStructure(
         throw new Error(`Invalid structureId: "${id}"`);
     }
 
-    const file = structureFilePath(project, id);
-    if (!fs.existsSync(file)) {
+    const storage = getProjectStorage(project);
+    const current = await getJson<StructureSchema>(storage, structureKey(id));
+    if (!current) {
         throw new Error(`Structure ${id} not found in project ${project}`);
     }
-
-    const current = readJson(file);
     const updated = { ...current, ...patch };
 
     const validationResult = validateStructure(updated);
@@ -118,12 +139,12 @@ export function updateStructure(
         throw new Error(`Structure validation failed: ${errorMessages}`);
     }
 
-    writeJson(file, updated);
+    await putJson(storage, structureKey(id), updated);
     return updated;
 }
 
 /** Soft-delete (trash) a structure in a project */
-export function deleteStructure(project: string, id: string): void {
+export async function deleteStructure(project: string, id: string): Promise<void> {
     if (!isValidId(project)) {
         throw new Error(`Invalid projectId: "${project}"`);
     }
@@ -131,7 +152,7 @@ export function deleteStructure(project: string, id: string): void {
         throw new Error(`Invalid structureId: "${id}"`);
     }
     const base = baseProjectsDir();
-    const source = path.join(base, project, 'structures', `${id}.json`);
+    const source = path.join(base, project, 'structures', id, 'structure.json');
     const trashDir = path.join(base, project, '.trash', 'structures');
     const dest = path.join(trashDir, `${id}.json`);
 

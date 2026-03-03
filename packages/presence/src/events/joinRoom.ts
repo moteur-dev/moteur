@@ -1,17 +1,25 @@
 import { Socket } from 'socket.io';
-import { presenceStore } from '../PresenceStore';
+import { presenceStore } from '../PresenceStore.js';
 import type { PresenceUpdate } from '@moteur/types/Presence';
-import { formStateStore } from '../FormStateStore';
+import { formStateStore } from '../FormStateStore.js';
+import { validateJoinPayload } from '../validate.js';
 
 export function registerJoinRoom(socket: Socket) {
-    socket.on('join', ({ projectId, screenId }: { projectId: string; screenId?: string }) => {
+    socket.on('join', (payload: unknown) => {
         const user = socket.data.user;
 
-        if (!user?.userId || !user.name || !projectId) {
+        if (!user?.userId || !user.name) {
             console.warn(`[presence] Invalid join attempt from ${socket.id}`);
             return;
         }
 
+        const parsed = validateJoinPayload(payload);
+        if (!parsed) {
+            console.warn(`[presence] Invalid join payload from ${socket.id}`);
+            return;
+        }
+
+        const { projectId, screenId } = parsed;
         socket.join(projectId);
 
         // Initial presence state

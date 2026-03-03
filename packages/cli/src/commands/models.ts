@@ -26,7 +26,7 @@ export async function listModelSchemasCommand(args: {
     if (!args.projectId) {
         args.projectId = await projectSelectPrompt(user);
     }
-    const models = listModelSchemas(user, args.projectId as string);
+    const models = await listModelSchemas(user, args.projectId as string);
     if (models.length === 0) {
         if (!args.quiet) console.log(`📂 No model schemas found in project "${args.projectId}".`);
         return;
@@ -47,7 +47,7 @@ export async function getModelSchemaCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const model = getModelSchema(user, args.projectId as string, args.id as string);
+    const model = await getModelSchema(user, args.projectId as string, args.id as string);
     if (args.json) {
         return console.log(JSON.stringify(model, null, 2));
     }
@@ -91,7 +91,7 @@ export async function createModelSchemaCommand(args: {
     model.fields = {};
     model.optionsSchema = {};
 
-    const created = createModelSchema(user, args.projectId as string, model as ModelSchema);
+    const created = await createModelSchema(user, args.projectId as string, model as ModelSchema);
     if (args.json) {
         return console.log(JSON.stringify(created, null, 2));
     }
@@ -133,7 +133,12 @@ export async function patchModelSchemaCommand(args: {
         interactiveFields: ['label', 'description', 'modelType']
     });
 
-    const updated = updateModelSchema(user, args.projectId as string, args.id as string, patch);
+    const updated = await updateModelSchema(
+        user,
+        args.projectId as string,
+        args.id as string,
+        patch
+    );
     if (!args.quiet) {
         console.log(`🔧 Patched model schema "${args.id}" in project "${args.projectId}".`);
     }
@@ -148,7 +153,7 @@ export async function deleteModelSchemaCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    deleteModelSchema(user, args.projectId as string, args.id as string);
+    await deleteModelSchema(user, args.projectId as string, args.id as string);
     if (!args.quiet) {
         console.log(`🗑️ Moved model schema "${args.id}" to trash in project "${args.projectId}".`);
     }

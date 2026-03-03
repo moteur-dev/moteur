@@ -1,7 +1,7 @@
-import { Field } from '@moteur/types/Field';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { renderField } from '../../htmlFieldRenderer';
-import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta';
+import { Field } from '@moteur/types/Field.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { renderField } from '../../htmlFieldRenderer.js';
+import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta.js';
 
 export function renderObjectField(value: any, options: RenderOptions, field: Field): string {
     if (!value || typeof value !== 'object') return '';

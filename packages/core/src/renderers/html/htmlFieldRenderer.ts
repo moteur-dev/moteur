@@ -1,20 +1,20 @@
-import { Field } from '@moteur/types/Field';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { renderFallbackField } from './rendererFallbackField';
-import { renderBooleanField } from './fields/core/renderBooleanField';
-import { renderColorField } from './fields/core/renderColorField';
-import { renderHtmlField } from './fields/core/renderHtmlField';
-import { renderImageField } from './fields/core/renderImageField';
-import { renderLinkField } from './fields/core/renderLinkField';
-import { renderListField } from './fields/core/renderListField';
-import { renderMarkdownField } from './fields/core/renderMarkdownField';
-import { renderNumberField } from './fields/core/renderNumberField';
-import { renderObjectField } from './fields/core/renderObjectField';
-import { renderRichTextField } from './fields/core/renderRichTextField';
-import { renderSelectField } from './fields/core/renderSelectField';
-//import { renderTextAreaField } from './fields/core/renderTextAreaField';
+import { Field } from '@moteur/types/Field.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { renderFallbackField } from './rendererFallbackField.js';
+import { renderBooleanField } from './fields/core/renderBooleanField.js';
+import { renderColorField } from './fields/core/renderColorField.js';
+import { renderHtmlField } from './fields/core/renderHtmlField.js';
+import { renderImageField } from './fields/core/renderImageField.js';
+import { renderLinkField } from './fields/core/renderLinkField.js';
+import { renderListField } from './fields/core/renderListField.js';
+import { renderMarkdownField } from './fields/core/renderMarkdownField.js';
+import { renderNumberField } from './fields/core/renderNumberField.js';
+import { renderObjectField } from './fields/core/renderObjectField.js';
+import { renderRichTextField } from './fields/core/renderRichTextField.js';
+import { renderSelectField } from './fields/core/renderSelectField.js';
+//import { renderTextAreaField } from './fields/core/renderTextAreaField.js';
 
-import { renderTextField } from './fields/core/renderTextField';
+import { renderTextField } from './fields/core/renderTextField.js';
 
 const fieldRenderers: Record<string, (value: any, options: RenderOptions, field: Field) => string> =
     {

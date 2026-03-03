@@ -17,7 +17,6 @@ import deleteRoute from '../../src/entries/delete';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 import { deleteEntry } from '@moteur/core/entries';
-import { mock } from 'node:test';
 
 vi.mock('@moteur/core/entries', () => ({
     deleteEntry: vi.fn()

@@ -1,7 +1,7 @@
-import { Field } from '@moteur/types/Field';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta';
-import { renderField } from '../../htmlFieldRenderer';
+import { Field } from '@moteur/types/Field.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta.js';
+import { renderField } from '../../htmlFieldRenderer.js';
 
 export function renderListField(value: any, options: RenderOptions, field: Field): string {
     if (!Array.isArray(value) || value.length === 0) {

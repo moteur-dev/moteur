@@ -7,7 +7,7 @@ import { editJsonInEditor } from './editJsonInEditor.js';
 import { User } from '@moteur/types/User.js';
 
 export async function editModelSchemaFields(user: User, projectId: string, modelId: string) {
-    let modelSchema = getModelSchema(user, projectId, modelId);
+    let modelSchema = await getModelSchema(user, projectId, modelId);
 
     // Fetch available field types dynamically
     const availableFields = Object.values(fieldRegistry.all()).map(f => ({
@@ -133,6 +133,6 @@ export async function editModelSchemaFields(user: User, projectId: string, model
     }
 
     // Save updated schema
-    updateModelSchema(user, projectId, modelId, { fields: modelSchema.fields });
+    await updateModelSchema(user, projectId, modelId, { fields: modelSchema.fields });
     console.log('✅ Model schema fields updated!');
 }

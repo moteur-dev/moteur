@@ -1,21 +1,17 @@
 import fs from 'fs/promises';
 import { constants as fsConstants } from 'fs';
 import path from 'path';
-import { StorageAdapter } from '@moteur/types/Storage';
+import { StorageAdapter, LocalStorageOptions } from '@moteur/types/Storage.js';
 import { storageRegistry } from '../registry/StorageRegistry.js';
 
-export interface LocalJsonStorageOptions {
-    baseDir: string;
-    prefix?: string;
-    listMode?: 'directory' | 'file';
-}
+export type { LocalStorageOptions };
 
 export class LocalJsonStorageAdapter implements StorageAdapter {
     private baseDir: string;
     private prefix: string;
     private listMode: 'directory' | 'file';
 
-    constructor(options: LocalJsonStorageOptions) {
+    constructor(options: LocalStorageOptions) {
         this.baseDir = options.baseDir;
         this.prefix = options.prefix ?? '';
         this.listMode = options.listMode ?? 'directory';
@@ -87,10 +83,12 @@ export class LocalJsonStorageAdapter implements StorageAdapter {
             }
         }
 
-        // Directory-based mode
+        // Directory-based mode: return direct children that are either directories or .json files
         try {
-            const files = await fs.readdir(basePath);
-            return files.filter(file => file.endsWith('.json'));
+            const entries = await fs.readdir(basePath, { withFileTypes: true });
+            return entries
+                .filter(e => e.isDirectory() || (e.isFile() && e.name.endsWith('.json')))
+                .map(e => e.name);
         } catch (error: any) {
             if (error.code === 'ENOENT') {
                 return [];

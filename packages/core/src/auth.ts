@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 
-import { getUserByEmail } from './users';
-import { User } from '@moteur/types/User';
+import { getUserByEmail } from './users.js';
+import { User } from '@moteur/types/User.js';
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'super-jwt-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRY ?? '1h';
@@ -57,6 +57,9 @@ export function generateJWT(user: User): string {
 export function verifyJWT(token: string): JwtPayload {
     if (!JWT_SECRET) {
         throw new Error('Missing JWT_SECRET in environment');
+    }
+    if (typeof token !== 'string' || !token.trim()) {
+        throw new Error('Invalid or expired token [ jwt must be a string ]');
     }
 
     try {

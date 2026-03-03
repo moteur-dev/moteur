@@ -5,23 +5,23 @@ import dotenv from 'dotenv';
 // Load env
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-dotenv.config({ path: resolve(__dirname, '../../.env') });
+dotenv.config({ path: resolve(__dirname, '../../../.env') });
 
 import express, { Router } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 
-import openapiRoute, { baseSpec } from './openapi';
-import authRoutes, { authSpecs } from './auth';
-import projectRoutes, { projectsSpecs } from './projects';
-import modelsRoute, { modelsSpecs } from './models';
-import entriesRoute, { entriesSpecs } from './entries';
+import openapiRoute, { baseSpec } from './openapi.js';
+import aiRoutes, { aiSpecs } from './ai/index.js';
+import authRoutes, { authSpecs } from './auth/index.js';
+import projectRoutes, { projectsSpecs } from './projects/index.js';
+import modelsRoute, { modelsSpecs } from './models/index.js';
+import entriesRoute, { entriesSpecs } from './entries/index.js';
 
-import { mergePluginSpecs } from './utils/mergePluginSpecs';
+import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
 import { createPresenceServer } from '@moteur/presence';
-
 // Create Express app
 const app = express();
 app.use(express.json());
@@ -39,6 +39,7 @@ const mergedApiSpecs = await mergePluginSpecs({
     ...baseSpec,
     paths: {
         ...baseSpec.paths,
+        ...aiSpecs.paths,
         ...authSpecs.paths,
         ...projectsSpecs.paths,
         ...modelsSpecs.paths,
@@ -64,6 +65,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(mergedApiSpecs));
 
 app.use(basePath, openapiRoute);
 app.use(basePath + '/auth', authRoutes);
+app.use(basePath + '/ai', aiRoutes);
 app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);

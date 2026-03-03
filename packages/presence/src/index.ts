@@ -10,6 +10,6 @@ console.log('Loading ', resolve(__dirname, '../../.env'));
 dotenv.config({ path: resolve(__dirname, '../../.env') });
 
 // Make sure all fields are registered
-import '@moteur/core/fields';
+import '@moteur/core/fields/index.js';
 
-export { createPresenceServer } from './server';
+export { createPresenceServer } from './server.js';

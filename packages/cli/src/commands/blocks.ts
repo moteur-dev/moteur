@@ -1,4 +1,4 @@
-import { listBlocks } from '@moteur/core/blocks';
+import { listBlocks } from '@moteur/core/blocks.js';
 
 export async function listBlocksCommand(args: {
     project?: string;

@@ -1,8 +1,8 @@
-import { Block } from '@moteur/types/Block';
-import { RenderOptions } from '@moteur/types/Renderer';
-import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta';
-import { resolveLocalizedValue } from '../../../../utils/resolveLocalizedValue';
-import { renderField } from '../../htmlFieldRenderer';
+import { Block } from '@moteur/types/Block.js';
+import { RenderOptions } from '@moteur/types/Renderer.js';
+import { renderAttributesFromMeta } from '../../../../utils/renderAttributesFromMeta.js';
+import { resolveLocalizedValue } from '../../../../utils/resolveLocalizedValue.js';
+import { renderField } from '../../htmlFieldRenderer.js';
 
 export function renderQuoteBlock(block: Block, opts: RenderOptions): string {
     const { locale } = opts;

@@ -3,9 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcrypt';
 import { loginUser } from '@moteur/core/auth.js';
-import { createUser } from '@moteur/core/users.js';
-import { cliRegistry } from '@moteur/core/registry/CommandRegistry';
-import { showAuthMenu } from '../menu/authMenu';
+import { createUser, listUsers, getProjectUsers } from '@moteur/core/users.js';
+import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
+import { showAuthMenu } from '../menu/authMenu.js';
+import { cliRequireRole } from '../utils/auth.js';
+import { User } from '@moteur/types/User.js';
 
 const TOKEN_FILE = path.resolve(
     process.env.HOME || process.env.USERPROFILE || '.',
@@ -20,7 +22,7 @@ export async function loginCommand(): Promise<void> {
     ]);
 
     try {
-        const token = await loginUser(email, password);
+        const { token } = await loginUser(email, password);
         fs.writeFileSync(TOKEN_FILE, JSON.stringify({ token }, null, 2));
         console.log('✅ Login successful! Token saved.');
     } catch (err) {
@@ -67,6 +69,45 @@ export async function createUserCommand(): Promise<void> {
     }
 }
 
+/** Strip sensitive fields for list output (CLI and JSON). */
+function sanitizeUserForList(u: User): Omit<User, 'passwordHash'> & { passwordHash?: never } {
+    const { passwordHash: _, ...rest } = u;
+    return rest;
+}
+
+export async function listUsersCommand(args: {
+    json?: boolean;
+    quiet?: boolean;
+    project?: string;
+}): Promise<void> {
+    cliRequireRole('admin');
+
+    const users = args.project ? getProjectUsers(args.project) : listUsers();
+
+    const safe = users.map(sanitizeUserForList);
+
+    if (args.json) {
+        return console.log(JSON.stringify(safe, null, 2));
+    }
+    if (args.quiet) return;
+
+    if (safe.length === 0) {
+        console.log(
+            args.project ? `👤 No users found for project "${args.project}".` : '👤 No users found.'
+        );
+        return;
+    }
+
+    console.log('👤 Users:');
+    for (const u of safe) {
+        const roles = (u.roles ?? []).join(', ') || '—';
+        const projects = (u.projects ?? []).join(', ') || '—';
+        console.log(
+            `  ${u.id} | ${u.email} | active: ${u.isActive} | roles: ${roles} | projects: ${projects}`
+        );
+    }
+}
+
 cliRegistry.register('auth', {
     name: '',
     description: 'Interactive auth menu',
@@ -92,4 +133,10 @@ cliRegistry.register('auth', {
     name: 'create-user',
     description: 'Create a new user',
     action: createUserCommand
+});
+
+cliRegistry.register('auth', {
+    name: 'list',
+    description: 'List all users and their roles/permissions (admin only)',
+    action: listUsersCommand
 });

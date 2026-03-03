@@ -5,12 +5,12 @@ import {
     createModelSchemaCommand,
     patchModelSchemaCommand,
     deleteModelSchemaCommand
-} from '../commands/models';
-import { showEntriesMenu } from './entriesMenu';
-import { showWelcomeBanner } from '../utils/showWelcomeBanner';
-import { projectSelectPrompt } from '../utils/projectSelectPrompt';
-import { User } from '@moteur/types/User';
-import { cliLoadUser } from '../utils/auth';
+} from '../commands/models.js';
+import { showEntriesMenu } from './entriesMenu.js';
+import { showWelcomeBanner } from '../utils/showWelcomeBanner.js';
+import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
+import { User } from '@moteur/types/User.js';
+import { cliLoadUser } from '../utils/auth.js';
 
 export async function showModelSchemasMenu(project: string) {
     const user: User = cliLoadUser();

@@ -39,7 +39,8 @@ export default [
       }],
       'prettier/prettier': ['error', { 
         semi: true, 
-        singleQuote: true 
+        singleQuote: true,
+        endOfLine: 'lf'
       }],
     },
   },

@@ -1,14 +1,19 @@
 import fs from 'fs';
 import path from 'path';
-import { ProjectSchema } from '@moteur/types/Project';
-import { User } from '@moteur/types/User';
-import { ValidationResult } from '@moteur/types/ValidationResult';
-import { isValidId } from './utils/idUtils';
-import { readJson, writeJson, isExistingProjectId } from './utils/fileUtils';
-import { projectFilePath, projectDir, baseProjectsDir } from './utils/pathUtils';
-import { assertUserCanAccessProject, assertUserCanCreateProject } from './utils/access';
-import { triggerEvent } from './utils/eventBus';
-import { validateProject } from './validators/validateProject';
+import { ProjectSchema } from '@moteur/types/Project.js';
+import { User } from '@moteur/types/User.js';
+import { ValidationResult } from '@moteur/types/ValidationResult.js';
+import { isValidId } from './utils/idUtils.js';
+import { isExistingProjectId } from './utils/fileUtils.js';
+import { projectDir, baseProjectsDir } from './utils/pathUtils.js';
+import { assertUserCanAccessProject, assertUserCanCreateProject } from './utils/access.js';
+import { triggerEvent } from './utils/eventBus.js';
+import { validateProject } from './validators/validateProject.js';
+import { getProjectStorage } from './utils/getProjectStorage.js';
+import { storageRegistry } from './registry/StorageRegistry.js';
+import { getJson, putJson } from './utils/storageAdapterUtils.js';
+import { PROJECT_KEY } from './utils/storageKeys.js';
+import type { LocalStorageOptions } from '@moteur/types/Storage.js';
 
 export function loadProjects(): ProjectSchema[] {
     const root = baseProjectsDir();
@@ -26,7 +31,7 @@ export function loadProjects(): ProjectSchema[] {
             try {
                 const raw = fs.readFileSync(configPath, 'utf-8');
                 const schema = JSON.parse(raw) as ProjectSchema;
-                return { ...schema, id: dir }; // enforce folder name as ID fallback
+                return { ...schema, id: dir };
             } catch (err) {
                 console.error(`[Moteur] Failed to load project config for "${dir}"`, err);
                 return null;
@@ -35,7 +40,7 @@ export function loadProjects(): ProjectSchema[] {
         .filter((p): p is ProjectSchema => p !== null);
 }
 
-export function getProject(user: User, projectId: string): ProjectSchema {
+export async function getProject(user: User, projectId: string): Promise<ProjectSchema> {
     if (!isValidId(projectId)) {
         throw new Error(`Invalid projectId: "${projectId}"`);
     }
@@ -43,10 +48,13 @@ export function getProject(user: User, projectId: string): ProjectSchema {
         throw new Error(`Project "${projectId}" not found`);
     }
 
-    const file = projectFilePath(projectId);
-    const project: ProjectSchema = readJson(file);
-    assertUserCanAccessProject(user, project);
-    return project;
+    const storage = getProjectStorage(projectId);
+    const project = await getJson<ProjectSchema>(storage, PROJECT_KEY);
+    if (!project || !project.id) {
+        throw new Error(`Project "${projectId}" not found`);
+    }
+    assertUserCanAccessProject(user, { ...project, id: projectId });
+    return { ...project, id: projectId };
 }
 
 export function listProjects(user: User): ProjectSchema[] {
@@ -60,10 +68,10 @@ export function listProjects(user: User): ProjectSchema[] {
     });
 }
 
-export function createProject(
+export async function createProject(
     user: User,
     project: ProjectSchema
-): { project?: ProjectSchema; validation?: ValidationResult } {
+): Promise<{ project?: ProjectSchema; validation?: ValidationResult }> {
     assertUserCanCreateProject(user);
     if (!project || !project.id || !isValidId(project.id)) {
         throw new Error(`Invalid project schema: "${JSON.stringify(project)}"`);
@@ -77,36 +85,36 @@ export function createProject(
         return { validation: validationErrors };
     }
 
-    // Core plugins validate the project schema, assigns the user, add audit info, etc.
     triggerEvent('project.beforeCreate', { project, user });
 
-    // @todo Move to a plugin
-    const dir = projectDir(project.id);
-    fs.mkdirSync(path.join(dir, 'layouts'), { recursive: true });
-    fs.mkdirSync(path.join(dir, 'structures'), { recursive: true });
-    fs.mkdirSync(path.join(dir, 'models'), { recursive: true });
+    const options: LocalStorageOptions = {
+        baseDir: projectDir(project.id),
+        listMode: 'directory'
+    };
+    const storage = storageRegistry.create('local', options);
+    await putJson(storage, PROJECT_KEY, project);
 
-    writeJson(projectFilePath(project.id), project);
     triggerEvent('project.afterCreate', { project, user });
     return { project };
 }
 
-export function updateProject(
+export async function updateProject(
     user: User,
     projectId: string,
     patch: Partial<ProjectSchema>
-): ProjectSchema {
-    const current = getProject(user, projectId);
+): Promise<ProjectSchema> {
+    const current = await getProject(user, projectId);
     const updated = { ...current, ...patch };
     triggerEvent('project.beforeUpdate', { project: updated, user });
 
-    writeJson(projectFilePath(projectId), updated);
+    const storage = getProjectStorage(projectId);
+    await putJson(storage, PROJECT_KEY, updated);
     triggerEvent('project.afterUpdate', { project: updated, user });
     return updated;
 }
 
-export function deleteProject(user: User, projectId: string): void {
-    const project = getProject(user, projectId);
+export async function deleteProject(user: User, projectId: string): Promise<void> {
+    const project = await getProject(user, projectId);
 
     triggerEvent('project.beforeDelete', { project, user });
 

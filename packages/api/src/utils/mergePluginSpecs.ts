@@ -1,5 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { loadPluginsForProject } from '@moteur/core/utils/loadPlugins';
+import { loadPluginsForProject } from '@moteur/core/utils/loadPlugins.js';
 
 export async function mergePluginSpecs(
     baseSpec: OpenAPIV3.Document,

@@ -1,28 +1,25 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path'
-import { fileURLToPath } from 'url'
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+/**
+ * Root Vitest config for reference. Actual tests live in packages (api, cli, core, presence).
+ * Run all tests from root: pnpm test
+ * Run tests in a package: pnpm --filter @moteur/core test
+ */
 export default defineConfig({
     test: {
-        setupFiles: ['./src/tests/setup.ts'],
         globals: true,
-        environment: 'node', // change to 'jsdom' if testing DOM
-        include: ['src/**/*.test.ts'], // adjust as needed
-        coverage: {
-            provider: 'v8',
-            reporter: ['text', 'html'],
-            exclude: ['**/*.test.ts'],
-            skipFull: false, // <= keep report even if everything is covered
-            reportsDirectory: './coverage'
-        }
+        environment: 'node',
+        include: [], // tests are in packages/*/tests — use: pnpm test
+        passWithNoTests: true,
     },
     resolve: {
         alias: {
-        '@': path.resolve(__dirname, 'src'),
+            '@': path.resolve(__dirname, 'src'),
         },
     },
-    
 });

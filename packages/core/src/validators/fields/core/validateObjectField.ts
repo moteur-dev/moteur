@@ -1,6 +1,6 @@
-import { Field } from '@moteur/types/Field';
-import { ValidationIssue } from '@moteur/types/ValidationResult';
-import { validateFieldValue } from '../../validateFieldValue';
+import { Field } from '@moteur/types/Field.js';
+import { ValidationIssue } from '@moteur/types/ValidationResult.js';
+import { validateFieldValue } from '../../validateFieldValue.js';
 
 export function validateObjectField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];

@@ -8,13 +8,13 @@ import {
     deleteLayout,
     renderLayout
 } from '@moteur/core/layouts.js';
-import { resolveInputData } from '../utils/resolveInputData';
-import { Layout } from '@moteur/types/Layout';
-import { listBlocks } from '@moteur/core/blocks';
-import { cliLoadUser } from '../utils/auth';
-import { User } from '@moteur/types/User';
-import { cliRegistry } from '@moteur/core/registry/CommandRegistry';
-import { showLayoutMenu } from '../menu/layoutMenu';
+import { resolveInputData } from '../utils/resolveInputData.js';
+import { Layout } from '@moteur/types/Layout.js';
+import { listBlocks } from '@moteur/core/blocks.js';
+import { cliLoadUser } from '../utils/auth.js';
+import { User } from '@moteur/types/User.js';
+import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
+import { showLayoutMenu } from '../menu/layoutMenu.js';
 
 export async function listLayoutsCommand(args: {
     projectId?: string;
@@ -22,7 +22,7 @@ export async function listLayoutsCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const layouts = listLayouts(user, args.projectId as string);
+    const layouts = await listLayouts(user, args.projectId as string);
     if (args.json) return console.log(JSON.stringify(layouts, null, 2));
     if (!args.quiet) {
         console.log(`📄 Layouts in project "${args.projectId}":`);
@@ -37,7 +37,7 @@ export async function getLayoutCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const layout = getLayout(user, args.projectId as string, args.id as string);
+    const layout = await getLayout(user, args.projectId as string, args.id as string);
     if (args.json) return console.log(JSON.stringify(layout, null, 2));
     if (!args.quiet) {
         console.log(`📄 Layout "${args.id}" in project "${args.projectId}":`);
@@ -77,7 +77,7 @@ export async function patchLayoutCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const layout = getLayout(user, args.projectId as string, args.id as string);
+    const layout = await getLayout(user, args.projectId as string, args.id as string);
     if (!layout) throw new Error(`Layout not found: ${args.id}`);
 
     const patch = await resolveInputData({
@@ -169,10 +169,15 @@ async function editLayoutBlocksInteractively(layout?: Layout, projectId?: string
                 console.log('❌ Invalid index');
             }
         } else if (action === 'save') {
-            const isNew = !hasLayout(projectId as string, layout?.id as string);
+            const isNew = !(await hasLayout(projectId as string, layout?.id as string));
             const result = isNew
-                ? createLayout(user, projectId as string, layout as Layout)
-                : updateLayout(user, projectId as string, layout?.id as string, layout as Layout);
+                ? await createLayout(user, projectId as string, layout as Layout)
+                : await updateLayout(
+                      user,
+                      projectId as string,
+                      layout?.id as string,
+                      layout as Layout
+                  );
             if (!quiet) {
                 console.log(`✅ Layout ${isNew ? 'created' : 'updated'}: ${layout?.id}`);
             }
@@ -188,7 +193,7 @@ export async function deleteLayoutCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    deleteLayout(user, args.projectId as string, args.id as string);
+    await deleteLayout(user, args.projectId as string, args.id as string);
     if (!args.quiet) {
         console.log(`🗑️ Moved layout "${args.id}" to trash in project "${args.projectId}"`);
     }
@@ -201,7 +206,7 @@ export async function renderLayoutCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const layout = getLayout(user, args.projectId as string, args.id as string);
+    const layout = await getLayout(user, args.projectId as string, args.id as string);
     if (!layout) {
         throw new Error(`Layout "${args.id}" not found in project "${args.projectId}"`);
     }

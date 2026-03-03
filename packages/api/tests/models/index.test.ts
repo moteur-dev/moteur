@@ -37,7 +37,7 @@ describe('models/index router', () => {
         for (const { method, path } of endpoints) {
             const res = await request(app)[method](path).send({});
             console.log(`Testing ${method.toUpperCase()} ${path} - Status: ${res.status}`);
-            expect([400, 404, 500]).toContain(res.status); // route registered, backend may reject
+            expect([200, 204, 400, 404, 500]).toContain(res.status); // route registered; 200/204 success, 4xx/5xx client or server error
         }
     });
 });

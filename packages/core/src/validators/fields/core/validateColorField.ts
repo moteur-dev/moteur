@@ -1,6 +1,6 @@
-import { ValidationIssue } from '@moteur/types/ValidationResult';
-import fieldRegistry from '../../../registry/FieldRegistry';
-import { Field } from '@moteur/types/Field';
+import { ValidationIssue } from '@moteur/types/ValidationResult.js';
+import fieldRegistry from '../../../registry/FieldRegistry.js';
+import { Field } from '@moteur/types/Field.js';
 
 export function validateColorField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyJWT } from '@moteur/core/auth';
-import { getUserById } from '@moteur/core/users';
-import { getProject } from '@moteur/core/projects';
+import { verifyJWT } from '@moteur/core/auth.js';
+import { getUserById } from '@moteur/core/users.js';
+import { getProject } from '@moteur/core/projects.js';
 
 export function requireAuth(req: any, res: any, next: NextFunction) {
     const token = req.headers.authorization?.replace('Bearer ', '');
@@ -53,15 +53,15 @@ export function requireRole(requiredRole: string) {
 }
 
 export function requireProjectAccess(req: Request, res: Response, next: NextFunction) {
-    requireAuth(req, res, () => {
+    requireAuth(req, res, async () => {
         const user = (req as any).user;
         const projectId = req.params.projectId || req.body.projectId;
-        const project = getProject(user, projectId);
 
         if (!projectId) {
             return res.status(400).json({ error: 'Project ID is required' });
         }
 
+        const project = await getProject(user, projectId);
         if (!project.users?.includes(user.id)) {
             return res.status(403).json({ error: 'Access to this project is forbidden' });
         }
