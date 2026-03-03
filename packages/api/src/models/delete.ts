@@ -5,14 +5,14 @@ import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });
 
-router.delete('/:modelId', requireAdmin, (req: any, res: any) => {
+router.delete('/:modelId', requireAdmin, async (req: any, res: any) => {
     const { projectId, modelId } = req.params;
     if (!projectId || !modelId) {
         return res.status(400).json({ error: 'Missing projectId or modelId in path' });
     }
 
     try {
-        deleteModelSchema(req.user!, projectId, modelId);
+        await deleteModelSchema(req.user!, projectId, modelId);
         return res.status(204).send();
     } catch (err: any) {
         return res.status(404).json({ error: err.message });

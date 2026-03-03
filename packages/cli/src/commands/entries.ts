@@ -50,7 +50,12 @@ export async function getEntryCommand(args: {
     quiet?: boolean;
 }) {
     const user: User = cliLoadUser();
-    const entry = await getEntry(user, args.projectId as string, args.model as string, args.id as string);
+    const entry = await getEntry(
+        user,
+        args.projectId as string,
+        args.model as string,
+        args.id as string
+    );
     if (args.json) return console.log(JSON.stringify(entry, null, 2));
     if (!args.quiet) {
         console.log(`📁 Entry "${args.id}" in model "${args.model}":`);
@@ -277,7 +282,12 @@ async function validateSingleEntry(args: {
     quiet?: boolean;
 }): Promise<ValidationResult> {
     const user: User = cliLoadUser();
-    const entry = await getEntry(user, args.projectId as string, args.model as string, args.id as string);
+    const entry = await getEntry(
+        user,
+        args.projectId as string,
+        args.model as string,
+        args.id as string
+    );
     if (!entry) {
         throw new Error(
             `❌ Entry "${args.id}" not found in model "${args.model}" and project "${args.projectId}".`

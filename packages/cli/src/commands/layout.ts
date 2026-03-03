@@ -172,7 +172,12 @@ async function editLayoutBlocksInteractively(layout?: Layout, projectId?: string
             const isNew = !(await hasLayout(projectId as string, layout?.id as string));
             const result = isNew
                 ? await createLayout(user, projectId as string, layout as Layout)
-                : await updateLayout(user, projectId as string, layout?.id as string, layout as Layout);
+                : await updateLayout(
+                      user,
+                      projectId as string,
+                      layout?.id as string,
+                      layout as Layout
+                  );
             if (!quiet) {
                 console.log(`✅ Layout ${isNew ? 'created' : 'updated'}: ${layout?.id}`);
             }

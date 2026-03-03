@@ -5,11 +5,11 @@ import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router();
 
-router.get('/:projectId', requireProjectAccess, (req: any, res: any) => {
+router.get('/:projectId', requireProjectAccess, async (req: any, res: any) => {
     try {
         const { projectId } = req.params;
         const user = req.user;
-        const project = getProject(user, projectId);
+        const project = await getProject(user, projectId);
 
         if (!project || !project.id) {
             return res.status(404).json({ error: 'Project not found' });

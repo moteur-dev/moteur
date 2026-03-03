@@ -87,11 +87,7 @@ export class LocalJsonStorageAdapter implements StorageAdapter {
         try {
             const entries = await fs.readdir(basePath, { withFileTypes: true });
             return entries
-                .filter(
-                    e =>
-                        e.isDirectory() ||
-                        (e.isFile() && e.name.endsWith('.json'))
-                )
+                .filter(e => e.isDirectory() || (e.isFile() && e.name.endsWith('.json')))
                 .map(e => e.name);
         } catch (error: any) {
             if (error.code === 'ENOENT') {

@@ -7,7 +7,6 @@ import {
     isS3StorageOptions
 } from '@moteur/types/Storage.js';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- adapters take specific option types; we validate before create
 type AdapterFactory = new (options: any) => StorageAdapter;
 
 function validateLocalOptions(options: LocalStorageOptions): void {

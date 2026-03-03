@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "build": "tsc -b",
+    "test": "echo No tests in @moteur/types",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
   },

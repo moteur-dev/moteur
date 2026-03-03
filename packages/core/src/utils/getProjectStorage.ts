@@ -20,7 +20,8 @@ export function getProjectStorage(projectId: string) {
     }
 
     const storageId = projectConfig.storage || 'local';
-    const storageOptions: StorageOptions = projectConfig.storageOptions ?? defaultLocalOptions(projectId);
+    const storageOptions: StorageOptions =
+        projectConfig.storageOptions ?? defaultLocalOptions(projectId);
 
     return storageRegistry.create(storageId, storageOptions);
 }
