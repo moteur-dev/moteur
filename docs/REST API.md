@@ -62,9 +62,23 @@ Restricted endpoints for creating, updating, and managing content and schemas.
 |--------|-------------------------------------|----------------------------------------------|
 | GET    | `./admin/projects`        | List all projects                            |
 | GET    | `./admin/projects/:id`    | Get a single project's metadata              |
-| POST   | `./admin/projects`        | Create a new project                         |
+| POST   | `./admin/projects`        | Create a new project (optional `blueprintId` in body to apply a blueprint template) |
 | PATCH  | `./admin/projects/:id`    | Update a project's metadata                  |
 | DELETE | `./admin/projects/:id`    | Delete a project and all its content         |
+
+---
+
+### 📐 Blueprints (project templates)
+
+Blueprints are stored under **`data/blueprints/`** (override with `BLUEPRINTS_DIR`). Each file is `data/blueprints/<id>.json`. See [Blueprints.md](Blueprints.md) for the JSON shape and how “create from blueprint” works.
+
+| Method | Endpoint                                 | Description                                  |
+|--------|------------------------------------------|----------------------------------------------|
+| GET    | `./projects/blueprints`        | List all blueprints                          |
+| GET    | `./projects/blueprints/:id`     | Get one blueprint by id                      |
+| POST   | `./projects/blueprints`        | Create or replace a blueprint               |
+| PATCH  | `./projects/blueprints/:id`     | Update a blueprint (partial)                 |
+| DELETE | `./projects/blueprints/:id`     | Delete a blueprint                           |
 
 ---
 

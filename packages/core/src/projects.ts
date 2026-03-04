@@ -15,6 +15,10 @@ import { getJson, putJson } from './utils/storageAdapterUtils.js';
 import { PROJECT_KEY } from './utils/storageKeys.js';
 import type { LocalStorageOptions } from '@moteur/types/Storage.js';
 import { removeProjectFromAllUsers, addProjectToUser } from './users.js';
+import { getBlueprint } from './blueprints.js';
+import { createModelSchema } from './models.js';
+import { createLayout } from './layouts.js';
+import { createStructure } from './structures.js';
 
 export function loadProjects(): ProjectSchema[] {
     const root = baseProjectsDir();
@@ -107,6 +111,52 @@ export async function createProject(
 
     triggerEvent('project.afterCreate', { project: projectWithUsers, user });
     return { project: projectWithUsers };
+}
+
+/**
+ * Create a new project and apply a blueprint's template (models, layouts, structures).
+ * If blueprintId is missing or blueprint has no template, behaves like createProject.
+ */
+export async function createProjectFromBlueprint(
+    user: User,
+    project: ProjectSchema,
+    blueprintId: string | undefined
+): Promise<{ project?: ProjectSchema; validation?: ValidationResult }> {
+    const result = await createProject(user, project);
+    if (result.validation || !result.project) return result;
+
+    const projectId = result.project.id;
+    if (!blueprintId || !isValidId(blueprintId)) return result;
+
+    let blueprint;
+    try {
+        blueprint = getBlueprint(blueprintId);
+    } catch {
+        return result;
+    }
+    const template = blueprint.template;
+    if (!template) return result;
+
+    try {
+        if (template.models?.length) {
+            for (const model of template.models) {
+                await createModelSchema(user, projectId, model);
+            }
+        }
+        if (template.layouts?.length) {
+            for (const layout of template.layouts) {
+                await createLayout(user, projectId, layout);
+            }
+        }
+        if (template.structures?.length) {
+            for (const structure of template.structures) {
+                await createStructure(projectId, structure);
+            }
+        }
+    } catch (err) {
+        console.error('[Moteur] Failed to apply blueprint template to project', projectId, err);
+    }
+    return result;
 }
 
 export async function updateProject(

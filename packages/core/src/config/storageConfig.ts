@@ -48,6 +48,15 @@ export const storageConfig = {
     },
 
     /**
+     * Directory containing blueprint JSON files (one file per blueprint).
+     * Env: BLUEPRINTS_DIR. Default: data/blueprints (relative to data root).
+     */
+    get blueprintsDir(): string {
+        const raw = process.env.BLUEPRINTS_DIR || 'data/blueprints';
+        return resolveFromRoot(raw);
+    },
+
+    /**
      * Path to the users JSON file (auth).
      * Env: AUTH_USERS_FILE. Default: data/users.json (relative to data root).
      */
@@ -81,6 +90,14 @@ export function validateStorageConfig(): void {
             fs.mkdirSync(projectsDir, { recursive: true });
         } catch (_e) {
             throw new Error(`[Moteur] PROJECTS_DIR cannot be created: ${projectsDir}`);
+        }
+    }
+    const blueprintsDir = storageConfig.blueprintsDir;
+    if (!fs.existsSync(blueprintsDir)) {
+        try {
+            fs.mkdirSync(blueprintsDir, { recursive: true });
+        } catch (_e) {
+            throw new Error(`[Moteur] BLUEPRINTS_DIR cannot be created: ${blueprintsDir}`);
         }
     }
     if (!fs.existsSync(usersDir)) {
