@@ -20,6 +20,16 @@ export function registerJoinRoom(socket: Socket) {
         }
 
         const { projectId, screenId } = parsed;
+
+        const allowedProjects: string[] = user.projects ?? [];
+        if (!allowedProjects.includes(projectId)) {
+            console.warn(`[presence] User ${user.userId} denied join to project ${projectId}`);
+            socket.emit('error', {
+                message: 'Access denied: you do not have access to this project'
+            });
+            return;
+        }
+
         socket.join(projectId);
 
         // Initial presence state

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import { randomUUID } from 'crypto';
+import { generateJWT } from '@moteur/core/auth.js';
 import type { OpenAPIV3 } from 'openapi-types';
 import { getUserByEmail, createUser } from '@moteur/core/users.js';
 import { User } from '@moteur/types/User.js';
@@ -67,13 +67,7 @@ googleAuthRoute.get('/google/callback', async (req: any, res: any) => {
             await createUser(user as User);
         }
 
-        const token = jwt.sign(
-            { sub: user.id, email: user.email },
-            process.env.JWT_SECRET || 'jwt-secret',
-            {
-                expiresIn: '1d'
-            }
-        );
+        const token = generateJWT(user as User);
 
         const redirectUrl = process.env.AUTH_REDIRECT_AFTER_LOGIN || '/auth/callback';
         res.redirect(`${redirectUrl}?token=${token}`);

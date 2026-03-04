@@ -2,10 +2,11 @@ import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
 import { formStateStore } from '@moteur/presence/FormStateStore.js';
 import { presenceStore } from '@moteur/presence/PresenceStore.js';
+import { requireProjectAccess } from '../../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
 
-router.get('/:projectId/presence/debug', (req: any, res: any) => {
+router.get('/:projectId/presence/debug', requireProjectAccess, (req: any, res: any) => {
     const { projectId } = req.params;
     if (!projectId) return res.status(400).json({ error: 'Missing projectId' });
 

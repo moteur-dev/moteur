@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mocks
 vi.mock('../../src/middlewares/auth', () => ({
     requireAdmin: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' };
+        req.user = { id: 'admin1', roles: ['admin'] };
         next();
     }
 }));
@@ -29,7 +29,7 @@ describe('DELETE /projects/:projectId', () => {
     it('should return 204 on successful deletion', async () => {
         const res = await request(app).delete('/projects/demo');
         expect(res.status).toBe(204);
-        expect(deleteProject).toHaveBeenCalledWith({ id: 'admin1', role: 'admin' }, 'demo');
+        expect(deleteProject).toHaveBeenCalledWith({ id: 'admin1', roles: ['admin'] }, 'demo');
     });
 
     it('should return 400 if projectId is missing in path', async () => {

@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
 import { formStateStore } from '@moteur/presence/FormStateStore.js';
+import { requireAuth } from '../../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
 
-router.delete('/presence/form-state/:screenId', (req: any, res: any) => {
+router.delete('/presence/form-state/:screenId', requireAuth, (req: any, res: any) => {
     const { screenId } = req.params;
 
     if (!screenId) {

@@ -8,7 +8,6 @@ import type { MoteurAPI } from './MoteurAPI.js';
 // Ensure core plugins are loaded
 import './plugins/core/autoAssignUser.js';
 import './plugins/core/auditLogger.js';
-import './plugins/core/autoAssignUser.js';
 import './plugins/core/validation.js';
 
 // Storage adapters (self-register on import)

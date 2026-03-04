@@ -5,8 +5,17 @@ import { getUserByEmail, getDisplayProjectIds } from './users.js';
 import { loadProjects } from './projects.js';
 import { User } from '@moteur/types/User.js';
 
-const JWT_SECRET = process.env.JWT_SECRET ?? 'super-jwt-secret-key';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRY ?? '1h';
+
+function getJwtSecret(): string {
+    const secret = process.env.JWT_SECRET?.trim();
+    if (!secret) {
+        throw new Error(
+            'JWT_SECRET must be set in environment. Do not use a default in production.'
+        );
+    }
+    return secret;
+}
 
 export async function loginUser(
     email: string,
@@ -41,9 +50,7 @@ export async function loginUser(
 }
 
 export function generateJWT(user: User): string {
-    if (!JWT_SECRET) {
-        throw new Error('Missing JWT_SECRET in environment');
-    }
+    const secret = getJwtSecret();
     const existingProjectIds = loadProjects().map(p => p.id);
     const projects = getDisplayProjectIds(user, existingProjectIds);
     const payload: JwtPayload = {
@@ -56,22 +63,20 @@ export function generateJWT(user: User): string {
     };
     const token: string = jwt.sign(
         payload,
-        JWT_SECRET as Secret,
+        secret as Secret,
         { expiresIn: JWT_EXPIRES_IN } as SignOptions
     );
     return token;
 }
 
 export function verifyJWT(token: string): JwtPayload {
-    if (!JWT_SECRET) {
-        throw new Error('Missing JWT_SECRET in environment');
-    }
+    const secret = getJwtSecret();
     if (typeof token !== 'string' || !token.trim()) {
         throw new Error('Invalid or expired token [ jwt must be a string ]');
     }
 
     try {
-        const decoded: JwtPayload = jwt.verify(token, JWT_SECRET as Secret) as JwtPayload;
+        const decoded: JwtPayload = jwt.verify(token, secret as Secret) as JwtPayload;
         return decoded;
     } catch (err) {
         throw new Error(

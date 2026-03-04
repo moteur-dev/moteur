@@ -1,12 +1,18 @@
 import fs from 'fs';
 import { User } from '@moteur/types/User.js';
 import { storageConfig } from './config/storageConfig.js';
-import { writeJson } from './utils/fileUtils.js';
+import { writeJsonAtomic } from './utils/fileUtils.js';
 
 function getUsersFilePath(): string {
     return storageConfig.usersFile;
 }
 
+/**
+ * In-memory cache of users. Invalidated on write in this process.
+ * Concurrency: users.json is written atomically (temp file + rename).
+ * Multiple processes (e.g. API + CLI) should not write concurrently to the same file;
+ * prefer a single writer or move to a proper database for multi-instance deployments.
+ */
 let cachedUsers: User[] | null = null;
 
 export function getCachedUsers(): User[] {
@@ -52,7 +58,7 @@ export function createUser(user: User): User {
         throw new Error('User with this email already exists');
     }
     users.push(user);
-    writeJson(getUsersFilePath(), users);
+    writeJsonAtomic(getUsersFilePath(), users);
     cachedUsers = null; // Invalidate cache after write
     return user;
 }
@@ -89,7 +95,7 @@ export function addProjectToUser(userId: string, projectId: string): void {
     users = users.slice();
     users[index] = { ...u, projects: [...projects, projectId] };
     try {
-        writeJson(filePath, users);
+        writeJsonAtomic(filePath, users);
     } catch (err) {
         throw new Error(
             `addProjectToUser: failed to write users file (${filePath}): ${err instanceof Error ? err.message : String(err)}`
@@ -115,7 +121,7 @@ export function removeProjectFromAllUsers(projectId: string): void {
         return u;
     });
     if (changed) {
-        writeJson(getUsersFilePath(), updated);
+        writeJsonAtomic(getUsersFilePath(), updated);
         cachedUsers = null;
     }
 }
