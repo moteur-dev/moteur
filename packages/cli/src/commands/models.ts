@@ -133,7 +133,12 @@ export async function patchModelSchemaCommand(args: {
         interactiveFields: ['label', 'description', 'modelType']
     });
 
-    const updated = await updateModelSchema(user, args.projectId as string, args.id as string, patch);
+    const updated = await updateModelSchema(
+        user,
+        args.projectId as string,
+        args.id as string,
+        patch
+    );
     if (!args.quiet) {
         console.log(`🔧 Patched model schema "${args.id}" in project "${args.projectId}".`);
     }

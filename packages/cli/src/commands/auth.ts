@@ -3,7 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcrypt';
 import { loginUser } from '@moteur/core/auth.js';
-import { createUser, listUsers, getProjectUsers, getDisplayProjectIds } from '@moteur/core/users.js';
+import {
+    createUser,
+    listUsers,
+    getProjectUsers,
+    getDisplayProjectIds
+} from '@moteur/core/users.js';
 import { loadProjects } from '@moteur/core/projects.js';
 import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
 import { showAuthMenu } from '../menu/authMenu.js';
@@ -83,9 +88,7 @@ export async function listUsersCommand(args: {
 }): Promise<void> {
     cliRequireRole('admin');
 
-    const users = args.project
-        ? getProjectUsers(args.project)
-        : listUsers();
+    const users = args.project ? getProjectUsers(args.project) : listUsers();
 
     const safe = users.map(sanitizeUserForList);
 
@@ -95,9 +98,9 @@ export async function listUsersCommand(args: {
     if (args.quiet) return;
 
     if (safe.length === 0) {
-        console.log(args.project
-            ? `👤 No users found for project "${args.project}".`
-            : '👤 No users found.');
+        console.log(
+            args.project ? `👤 No users found for project "${args.project}".` : '👤 No users found.'
+        );
         return;
     }
 
@@ -106,7 +109,9 @@ export async function listUsersCommand(args: {
     for (const u of safe) {
         const roles = (u.roles ?? []).join(', ') || '—';
         const projects = getDisplayProjectIds(u, existingProjectIds).join(', ') || '—';
-        console.log(`  ${u.id} | ${u.email} | active: ${u.isActive} | roles: ${roles} | projects: ${projects}`);
+        console.log(
+            `  ${u.id} | ${u.email} | active: ${u.isActive} | roles: ${roles} | projects: ${projects}`
+        );
     }
 }
 

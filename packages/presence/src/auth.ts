@@ -1,4 +1,3 @@
-import type { Socket } from 'socket.io';
 import { verifyJWT } from '@moteur/core/auth.js';
 
 export function registerAuthMiddleware(io: import('socket.io').Server) {

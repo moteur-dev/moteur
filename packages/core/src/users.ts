@@ -41,10 +41,7 @@ export function getProjectUsers(projectId: string): User[] {
  * Return user.projects filtered to only IDs that exist (e.g. for display or JWT).
  * Pass existingProjectIds from loadProjects().map(p => p.id) to avoid orphan refs.
  */
-export function getDisplayProjectIds(
-    user: User,
-    existingProjectIds: string[]
-): string[] {
+export function getDisplayProjectIds(user: User, existingProjectIds: string[]): string[] {
     const set = new Set(existingProjectIds);
     return (user.projects ?? []).filter(id => set.has(id));
 }

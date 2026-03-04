@@ -19,7 +19,7 @@ const schema = z.object({
     quality: z.string().default('hd')
 });
 
-type PromptOptions = {
+type _PromptOptions = {
     scene: string; // e.g. "A robot arm assembling gears"
     style?: string; // e.g. "Retro-futuristic 1970s poster"
     medium?: string; // e.g. "Screenprint with halftone"

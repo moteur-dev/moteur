@@ -29,7 +29,7 @@ function formatFieldListForPrompt(fields: Record<string, any>): string {
 }
 
 router.post('/generate-entry', requireProjectAccess, async (req: any, res: any) => {
-    const { prompt, projectId, modelId, locale = 'en' } = req.body;
+    const { prompt, projectId, modelId, locale: _locale = 'en' } = req.body;
 
     if (!prompt || !projectId || !modelId) {
         return res
@@ -47,7 +47,7 @@ router.post('/generate-entry', requireProjectAccess, async (req: any, res: any) 
     }
 
     try {
-        const project = getProject(req.user, projectId);
+        const _project = getProject(req.user, projectId);
         const model = getModelSchema(req.user, projectId, modelId);
 
         const fieldList = formatFieldListForPrompt(model.fields);
