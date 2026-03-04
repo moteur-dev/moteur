@@ -14,6 +14,7 @@ import { storageRegistry } from './registry/StorageRegistry.js';
 import { getJson, putJson } from './utils/storageAdapterUtils.js';
 import { PROJECT_KEY } from './utils/storageKeys.js';
 import type { LocalStorageOptions } from '@moteur/types/Storage.js';
+import { removeProjectFromAllUsers, addProjectToUser } from './users.js';
 
 export function loadProjects(): ProjectSchema[] {
     const root = baseProjectsDir();
@@ -85,17 +86,27 @@ export async function createProject(
         return { validation: validationErrors };
     }
 
-    triggerEvent('project.beforeCreate', { project, user });
+    // Assign the creating user to the project if not already
+    const projectWithUsers = { ...project };
+    if (!projectWithUsers.users?.length) {
+        projectWithUsers.users = [user.id];
+    } else if (!projectWithUsers.users.includes(user.id)) {
+        projectWithUsers.users = [...projectWithUsers.users, user.id];
+    }
+
+    triggerEvent('project.beforeCreate', { project: projectWithUsers, user });
 
     const options: LocalStorageOptions = {
-        baseDir: projectDir(project.id),
+        baseDir: projectDir(projectWithUsers.id),
         listMode: 'directory'
     };
     const storage = storageRegistry.create('local', options);
-    await putJson(storage, PROJECT_KEY, project);
+    await putJson(storage, PROJECT_KEY, projectWithUsers);
 
-    triggerEvent('project.afterCreate', { project, user });
-    return { project };
+    addProjectToUser(user.id, projectWithUsers.id);
+
+    triggerEvent('project.afterCreate', { project: projectWithUsers, user });
+    return { project: projectWithUsers };
 }
 
 export async function updateProject(
@@ -125,6 +136,8 @@ export async function deleteProject(user: User, projectId: string): Promise<void
 
     fs.mkdirSync(destDir, { recursive: true });
     fs.renameSync(source, dest);
+
+    removeProjectFromAllUsers(projectId);
 
     triggerEvent('project.afterDelete', { project, user });
 }

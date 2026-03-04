@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 
-import { getUserByEmail } from './users.js';
+import { getUserByEmail, getDisplayProjectIds } from './users.js';
+import { loadProjects } from './projects.js';
 import { User } from '@moteur/types/User.js';
 
 const JWT_SECRET = process.env.JWT_SECRET ?? 'super-jwt-secret-key';
@@ -28,9 +29,14 @@ export async function loginUser(
         throw new Error('User is not active');
     }
 
+    const existingProjectIds = loadProjects().map(p => p.id);
+    const displayUser: User = {
+        ...user,
+        projects: getDisplayProjectIds(user, existingProjectIds)
+    };
     return {
-        token: generateJWT(user),
-        user
+        token: generateJWT(displayUser),
+        user: displayUser
     };
 }
 
@@ -38,12 +44,14 @@ export function generateJWT(user: User): string {
     if (!JWT_SECRET) {
         throw new Error('Missing JWT_SECRET in environment');
     }
+    const existingProjectIds = loadProjects().map(p => p.id);
+    const projects = getDisplayProjectIds(user, existingProjectIds);
     const payload: JwtPayload = {
         sub: user.id,
         id: user.id,
         email: user.email,
         roles: user.roles,
-        projects: user.projects,
+        projects,
         isActive: user.isActive
     };
     const token: string = jwt.sign(

@@ -5,9 +5,18 @@ import fs from 'fs';
 /**
  * Root for resolving relative storage paths.
  * Default: process.cwd(). Override with DATA_ROOT for explicit root.
+ * If DATA_ROOT is not set and data/users.json does not exist in cwd,
+ * tries cwd/moteur (so running from workspace root still finds moteur/data).
  */
 function getDataRoot(): string {
-    return path.resolve(process.env.DATA_ROOT || process.cwd());
+    const explicit = process.env.DATA_ROOT;
+    if (explicit) return path.resolve(explicit);
+    const cwd = process.cwd();
+    const dataUsersInCwd = path.join(cwd, 'data', 'users.json');
+    if (fs.existsSync(dataUsersInCwd)) return cwd;
+    const moteurData = path.join(cwd, 'moteur', 'data', 'users.json');
+    if (fs.existsSync(moteurData)) return path.join(cwd, 'moteur');
+    return cwd;
 }
 
 /** Resolve a path relative to the data root. */
