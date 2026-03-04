@@ -7,11 +7,11 @@ import modelsRouter, { modelsSpecs } from '../../src/models';
 // Mocks
 vi.mock('../../src/middlewares/auth', () => ({
     requireAdmin: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' };
+        req.user = { id: 'admin1', roles: ['admin'] };
         next();
     },
     requireProjectAccess: (req: any, _res: any, next: any) => {
-        req.user = { id: 'editor1', role: 'editor' };
+        req.user = { id: 'editor1', roles: ['editor'] };
         next();
     }
 }));

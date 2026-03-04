@@ -1,6 +1,7 @@
 // src/routes/ai/generate-image.ts
 import express, { Router } from 'express';
 import { z } from 'zod';
+import { requireAuth } from '../middlewares/auth.js';
 
 const router: Router = express.Router();
 
@@ -29,7 +30,7 @@ type _PromptOptions = {
     extras?: string[]; // e.g. ["No text", "Background-friendly"]
 };
 
-router.post('/generate-image', async (req: any, res: any) => {
+router.post('/generate-image', requireAuth, async (req: any, res: any) => {
     const parseResult = schema.safeParse(req.body ?? {});
     if (!parseResult.success) {
         return res.status(400).json({ error: 'Invalid or missing prompt/params' });

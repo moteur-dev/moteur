@@ -7,14 +7,9 @@ vi.mock('@moteur/core/users', () => ({
     createUser: vi.fn()
 }));
 
-vi.mock('jsonwebtoken', () => {
-    return {
-        sign: vi.fn().mockReturnValue('mock-jwt-token'),
-        default: {
-            sign: vi.fn().mockReturnValue('mock-jwt-token')
-        }
-    };
-});
+vi.mock('@moteur/core/auth', () => ({
+    generateJWT: vi.fn().mockReturnValue('mock-jwt-token')
+}));
 
 vi.mock('axios', async () => {
     const actual = await vi.importActual<typeof import('axios')>('axios');
@@ -32,7 +27,7 @@ vi.mock('axios', async () => {
 });
 
 import { getUserByEmail, createUser } from '@moteur/core/users';
-import jwt from 'jsonwebtoken';
+import { generateJWT } from '@moteur/core/auth';
 import axios from 'axios';
 import googleRoute from '../../src/auth/google';
 
@@ -90,13 +85,11 @@ describe('GET /auth/google/callback', () => {
         expect(res.headers.location).toBe('/redirect-success?token=mock-jwt-token');
 
         expect(createUser).toHaveBeenCalled();
-        expect(jwt.sign).toHaveBeenCalledWith(
+        expect(generateJWT).toHaveBeenCalledWith(
             expect.objectContaining({
-                sub: expect.stringMatching(/^user:/),
+                id: expect.stringMatching(/^user:/),
                 email: 'newuser@example.com'
-            }),
-            'super-secret',
-            expect.objectContaining({ expiresIn: '1d' })
+            })
         );
     });
 

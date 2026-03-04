@@ -7,15 +7,15 @@ import projectsRouter, { projectsSpecs } from '../../src/projects';
 // fake middleware override to inject user
 vi.mock('../../src/middlewares/auth', () => ({
     requireAdmin: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' };
+        req.user = { id: 'admin1', roles: ['admin'] };
         next();
     },
     requireAuth: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' };
+        req.user = { id: 'admin1', roles: ['admin'] };
         next();
     },
     requireProjectAccess: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' };
+        req.user = { id: 'admin1', roles: ['admin'] };
         next();
     }
 }));

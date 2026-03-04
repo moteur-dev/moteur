@@ -32,6 +32,10 @@ function resolveFromRoot(relativePath: string): string {
  * Centralized storage-related configuration.
  * Single source of truth for PROJECTS_DIR and AUTH_USERS_FILE.
  * All paths are resolved and validated at read time.
+ *
+ * Concurrency: file-based storage has no cross-process locking. For multi-instance
+ * deployments (e.g. several API workers), avoid concurrent writes to the same file
+ * or consider a database backend. users.json uses atomic writes (temp + rename).
  */
 export const storageConfig = {
     /**

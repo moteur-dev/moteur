@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mocks
 vi.mock('../../src/middlewares/auth', () => ({
     requireAuth: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' };
+        req.user = { id: 'admin1', roles: ['admin'] };
         next();
     }
 }));
@@ -50,7 +50,7 @@ describe('POST /projects', () => {
         expect(res.status).toBe(201);
         expect(res.body).toMatchObject(validBody);
         expect(validateProject).toHaveBeenCalledWith(validBody);
-        expect(createProject).toHaveBeenCalledWith({ id: 'admin1', role: 'admin' }, validBody);
+        expect(createProject).toHaveBeenCalledWith({ id: 'admin1', roles: ['admin'] }, validBody);
     });
 
     it('should return 400 on validation failure', async () => {

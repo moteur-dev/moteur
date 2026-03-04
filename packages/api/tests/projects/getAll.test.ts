@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mock middlewares and dependencies
 vi.mock('../../src/middlewares/auth', () => ({
     requireAdmin: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' }; // minimal fake admin
+        req.user = { id: 'admin1', roles: ['admin'] }; // minimal fake admin
         next();
     }
 }));
@@ -37,6 +37,6 @@ describe('GET /projects', () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ projects: mockProjects });
-        expect(listProjects).toHaveBeenCalledWith({ id: 'admin1', role: 'admin' });
+        expect(listProjects).toHaveBeenCalledWith({ id: 'admin1', roles: ['admin'] });
     });
 });

@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mocks
 vi.mock('../../src/middlewares/auth', () => ({
     requireAdmin: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' };
+        req.user = { id: 'admin1', roles: ['admin'] };
         next();
     }
 }));
@@ -52,7 +52,7 @@ describe('PATCH /projects/:projectId/models/:modelId', () => {
         expect(res.body).toMatchObject(updatePayload);
         expect(validateModel).toHaveBeenCalledWith(updatePayload);
         expect(updateModelSchema).toHaveBeenCalledWith(
-            { id: 'admin1', role: 'admin' },
+            { id: 'admin1', roles: ['admin'] },
             'demo',
             'article',
             updatePayload

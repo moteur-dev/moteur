@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mocks
 vi.mock('../../src/middlewares/auth', () => ({
     requireProjectAccess: (req: any, _res: any, next: any) => {
-        req.user = { id: 'admin1', role: 'admin' };
+        req.user = { id: 'admin1', roles: ['admin'] };
         next();
     }
 }));
@@ -38,7 +38,7 @@ describe('GET /projects/:projectId', () => {
         const res = await request(app).get('/projects/site1');
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ project: mockProject });
-        expect(getProject).toHaveBeenCalledWith({ id: 'admin1', role: 'admin' }, 'site1');
+        expect(getProject).toHaveBeenCalledWith({ id: 'admin1', roles: ['admin'] }, 'site1');
     });
 
     it('should return 404 if project is not found', async () => {

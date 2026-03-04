@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import {
     projectDir,
     //trashProjectDir,
@@ -24,6 +25,20 @@ export function readJson(file: string): any {
 
 export function writeJson(file: string, data: any): void {
     fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+/**
+ * Atomic write for JSON: write to a temp file then rename.
+ * Reduces risk of corruption if the process crashes during write.
+ * Use for critical single-file data (e.g. users.json).
+ * Note: No cross-process locking; avoid concurrent writes to the same file from multiple processes.
+ */
+export function writeJsonAtomic(file: string, data: any): void {
+    const dir = path.dirname(file);
+    const name = path.basename(file);
+    const tmp = path.join(dir, `.${name}.tmp`);
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf-8');
+    fs.renameSync(tmp, file);
 }
 
 /** Check if a project exists (directory) */

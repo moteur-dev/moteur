@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mocks
 vi.mock('../../src/middlewares/auth', () => ({
     requireProjectAccess: (req: any, _res: any, next: any) => {
-        req.user = { id: 'editor1', role: 'editor' };
+        req.user = { id: 'editor1', roles: ['editor'] };
         next();
     }
 }));
@@ -38,7 +38,7 @@ describe('GET /projects/:projectId/models', () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ models: mockModels });
-        expect(listModelSchemas).toHaveBeenCalledWith({ id: 'editor1', role: 'editor' }, 'demo');
+        expect(listModelSchemas).toHaveBeenCalledWith({ id: 'editor1', roles: ['editor'] }, 'demo');
     });
 
     it('should return 400 if projectId is missing (should be unreachable)', async () => {

@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mocks
 vi.mock('../../src/middlewares/auth', () => ({
     requireProjectAccess: (req: any, _res: any, next: any) => {
-        req.user = { id: 'user1', role: 'editor' };
+        req.user = { id: 'user1', roles: ['editor'] };
         next();
     }
 }));
@@ -42,7 +42,7 @@ describe('GET /projects/:projectId/models/:modelId', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ model: mockModel });
         expect(getModelSchema).toHaveBeenCalledWith(
-            { id: 'user1', role: 'editor' },
+            { id: 'user1', roles: ['editor'] },
             'demo',
             'article'
         );
