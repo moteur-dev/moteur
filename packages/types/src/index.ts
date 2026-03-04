@@ -1,5 +1,6 @@
 export * from './Audit';
 export * from './Block';
+export * from './Blueprint';
 export * from './Field';
 export * from './FieldValidator';
 export * from './Layout';

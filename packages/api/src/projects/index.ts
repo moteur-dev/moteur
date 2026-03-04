@@ -8,6 +8,10 @@ import create, { openapi as createSpec, schemas as createSchemas } from './creat
 import update, { openapi as updateSpec } from './update.js';
 import remove, { openapi as deleteSpec } from './delete.js';
 import users, { openapi as usersSpec } from './users.js';
+import blueprintsRouter, {
+    openapi as blueprintsSpec,
+    schemas as blueprintsSchemas
+} from './blueprints/index.js';
 
 import presenceFormState, { openapi as presenceFormStateSpec } from './presence/formState.js';
 import debug, { openapi as debugSpec } from './presence/debug.js';
@@ -15,6 +19,7 @@ import debug, { openapi as debugSpec } from './presence/debug.js';
 const router: Router = Router();
 
 router.use(getAll);
+router.use('/blueprints', blueprintsRouter);
 router.use(getOne);
 router.use(create);
 router.use(update);
@@ -31,11 +36,13 @@ export const projectsSpecs = {
         updateSpec,
         deleteSpec,
         usersSpec,
+        blueprintsSpec,
         presenceFormStateSpec,
         debugSpec
     ),
     schemas: {
-        ...createSchemas
+        ...createSchemas,
+        ...blueprintsSchemas
     }
 };
 

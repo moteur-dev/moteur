@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middlewares/auth.js';
-import { createProject } from '@moteur/core/projects.js';
+import { createProjectFromBlueprint } from '@moteur/core/projects.js';
 import { validateProject } from '@moteur/core/validators/validateProject.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
@@ -8,13 +8,14 @@ const router: Router = Router();
 
 router.post('/', requireAuth, async (req: any, res: any) => {
     try {
-        const validation = validateProject(req.body);
+        const { blueprintId, ...body } = req.body || {};
+        const validation = validateProject(body);
         if (!validation.valid) {
             return res
                 .status(400)
                 .json({ validation: validation.issues, error: 'Validation failed' });
         }
-        const result = await createProject(req.user!, req.body);
+        const result = await createProjectFromBlueprint(req.user!, body, blueprintId);
         if (result.validation) {
             return res
                 .status(400)
@@ -35,7 +36,21 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 required: true,
                 content: {
                     'application/json': {
-                        schema: { $ref: '#/components/schemas/Project' }
+                        schema: {
+                            allOf: [
+                                { $ref: '#/components/schemas/Project' },
+                                {
+                                    type: 'object',
+                                    properties: {
+                                        blueprintId: {
+                                            type: 'string',
+                                            description:
+                                                'Optional blueprint id to apply template (models, layouts, structures) to the new project.'
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     }
                 }
             },
@@ -84,7 +99,12 @@ export const schemas: OpenAPIV3.ComponentsObject['schemas'] = {
             id: { type: 'string' },
             label: { type: 'string' },
             description: { type: 'string' },
+            defaultLocale: { type: 'string' },
             locale: { type: 'string' },
+            blueprintId: {
+                type: 'string',
+                description: 'Optional blueprint id to apply template to the new project.'
+            },
             modules: {
                 type: 'array',
                 items: { type: 'string' }

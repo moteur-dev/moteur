@@ -11,7 +11,7 @@ vi.mock('../../src/middlewares/auth', () => ({
 }));
 
 vi.mock('@moteur/core/projects', () => ({
-    createProject: vi.fn()
+    createProjectFromBlueprint: vi.fn()
 }));
 
 vi.mock('@moteur/core/validators/validateProject', () => ({
@@ -19,7 +19,7 @@ vi.mock('@moteur/core/validators/validateProject', () => ({
 }));
 
 import createRoute from '../../src/projects/create';
-import { createProject } from '@moteur/core/projects';
+import { createProjectFromBlueprint } from '@moteur/core/projects';
 import { validateProject } from '@moteur/core/validators/validateProject';
 
 const app = express();
@@ -35,6 +35,7 @@ describe('POST /projects', () => {
         id: 'demo',
         label: 'Demo Project',
         description: 'A test project',
+        defaultLocale: 'en',
         locale: 'en',
         modules: ['core'],
         plugins: []
@@ -42,7 +43,7 @@ describe('POST /projects', () => {
 
     it('should create a project and return 201', async () => {
         (validateProject as any).mockReturnValue({ valid: true });
-        (createProject as any).mockResolvedValue({
+        (createProjectFromBlueprint as any).mockResolvedValue({
             project: { ...validBody, createdAt: Date.now() }
         });
 
@@ -50,7 +51,30 @@ describe('POST /projects', () => {
         expect(res.status).toBe(201);
         expect(res.body).toMatchObject(validBody);
         expect(validateProject).toHaveBeenCalledWith(validBody);
-        expect(createProject).toHaveBeenCalledWith({ id: 'admin1', roles: ['admin'] }, validBody);
+        expect(createProjectFromBlueprint).toHaveBeenCalledWith(
+            { id: 'admin1', roles: ['admin'] },
+            validBody,
+            undefined
+        );
+    });
+
+    it('should pass blueprintId to createProjectFromBlueprint when provided', async () => {
+        (validateProject as any).mockReturnValue({ valid: true });
+        (createProjectFromBlueprint as any).mockResolvedValue({
+            project: { ...validBody, id: 'demo', label: 'Demo Project' }
+        });
+
+        const res = await request(app)
+            .post('/projects')
+            .send({ ...validBody, blueprintId: 'blog' });
+
+        expect(res.status).toBe(201);
+        expect(validateProject).toHaveBeenCalledWith(validBody);
+        expect(createProjectFromBlueprint).toHaveBeenCalledWith(
+            { id: 'admin1', roles: ['admin'] },
+            validBody,
+            'blog'
+        );
     });
 
     it('should return 400 on validation failure', async () => {
@@ -78,7 +102,7 @@ describe('POST /projects', () => {
 
     it('should return 400 on unexpected error', async () => {
         (validateProject as any).mockReturnValue({ valid: true });
-        (createProject as any).mockImplementation(() => {
+        (createProjectFromBlueprint as any).mockImplementation(() => {
             throw new Error('Something went wrong');
         });
 
