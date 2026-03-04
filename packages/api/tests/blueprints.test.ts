@@ -2,7 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../../src/middlewares/auth', () => ({
+vi.mock('../src/middlewares/auth', () => ({
     requireAdmin: (_req: any, _res: any, next: any) => {
         next();
     }
@@ -22,13 +22,13 @@ vi.mock('@moteur/core/blueprints.js', () => ({
     deleteBlueprint: (...args: unknown[]) => mockDeleteBlueprint(...args)
 }));
 
-import blueprintsRouter from '../../src/projects/blueprints/index.js';
+import blueprintsRouter from '../src/blueprints/index.js';
 
 const app = express();
 app.use(express.json());
-app.use('/projects/blueprints', blueprintsRouter);
+app.use('/blueprints', blueprintsRouter);
 
-describe('GET /projects/blueprints', () => {
+describe('GET /blueprints', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -40,7 +40,7 @@ describe('GET /projects/blueprints', () => {
         ];
         mockListBlueprints.mockReturnValue(blueprints);
 
-        const res = await request(app).get('/projects/blueprints');
+        const res = await request(app).get('/blueprints');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ blueprints });
@@ -52,14 +52,14 @@ describe('GET /projects/blueprints', () => {
             throw new Error('FS error');
         });
 
-        const res = await request(app).get('/projects/blueprints');
+        const res = await request(app).get('/blueprints');
 
         expect(res.status).toBe(500);
         expect(res.body).toMatchObject({ error: 'FS error' });
     });
 });
 
-describe('GET /projects/blueprints/:blueprintId', () => {
+describe('GET /blueprints/:blueprintId', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -68,7 +68,7 @@ describe('GET /projects/blueprints/:blueprintId', () => {
         const bp = { id: 'blog', name: 'Blog Site', description: 'Template' };
         mockGetBlueprint.mockReturnValue(bp);
 
-        const res = await request(app).get('/projects/blueprints/blog');
+        const res = await request(app).get('/blueprints/blog');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual(bp);
@@ -80,7 +80,7 @@ describe('GET /projects/blueprints/:blueprintId', () => {
             throw new Error('Blueprint "missing" not found');
         });
 
-        const res = await request(app).get('/projects/blueprints/missing');
+        const res = await request(app).get('/blueprints/missing');
 
         expect(res.status).toBe(404);
         expect(res.body).toMatchObject({ error: expect.stringContaining('not found') });
@@ -91,13 +91,13 @@ describe('GET /projects/blueprints/:blueprintId', () => {
             throw new Error('Invalid blueprint id: "bad id"');
         });
 
-        const res = await request(app).get('/projects/blueprints/bad%20id');
+        const res = await request(app).get('/blueprints/bad%20id');
 
         expect(res.status).toBe(400);
     });
 });
 
-describe('POST /projects/blueprints', () => {
+describe('POST /blueprints', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -106,7 +106,7 @@ describe('POST /projects/blueprints', () => {
         const body = { id: 'new-bp', name: 'New Blueprint', description: 'Desc' };
         mockCreateBlueprint.mockReturnValue(body);
 
-        const res = await request(app).post('/projects/blueprints').send(body);
+        const res = await request(app).post('/blueprints').send(body);
 
         expect(res.status).toBe(201);
         expect(res.body).toEqual(body);
@@ -115,7 +115,7 @@ describe('POST /projects/blueprints', () => {
 
     it('returns 400 when id is missing', async () => {
         const res = await request(app)
-            .post('/projects/blueprints')
+            .post('/blueprints')
             .send({ name: 'No Id', description: 'Missing id' });
 
         expect(res.status).toBe(400);
@@ -128,13 +128,13 @@ describe('POST /projects/blueprints', () => {
             throw new Error('Invalid blueprint id: "x"');
         });
 
-        const res = await request(app).post('/projects/blueprints').send({ id: 'x', name: 'X' });
+        const res = await request(app).post('/blueprints').send({ id: 'x', name: 'X' });
 
         expect(res.status).toBe(400);
     });
 });
 
-describe('PATCH /projects/blueprints/:blueprintId', () => {
+describe('PATCH /blueprints/:blueprintId', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -144,7 +144,7 @@ describe('PATCH /projects/blueprints/:blueprintId', () => {
         mockUpdateBlueprint.mockReturnValue(updated);
 
         const res = await request(app)
-            .patch('/projects/blueprints/blog')
+            .patch('/blueprints/blog')
             .send({ name: 'Blog (updated)', description: 'New desc' });
 
         expect(res.status).toBe(200);
@@ -160,13 +160,13 @@ describe('PATCH /projects/blueprints/:blueprintId', () => {
             throw new Error('Blueprint "x" not found');
         });
 
-        const res = await request(app).patch('/projects/blueprints/x').send({ name: 'Y' });
+        const res = await request(app).patch('/blueprints/x').send({ name: 'Y' });
 
         expect(res.status).toBe(404);
     });
 });
 
-describe('DELETE /projects/blueprints/:blueprintId', () => {
+describe('DELETE /blueprints/:blueprintId', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -174,7 +174,7 @@ describe('DELETE /projects/blueprints/:blueprintId', () => {
     it('deletes blueprint and returns 204', async () => {
         mockDeleteBlueprint.mockReturnValue(undefined);
 
-        const res = await request(app).delete('/projects/blueprints/blog');
+        const res = await request(app).delete('/blueprints/blog');
 
         expect(res.status).toBe(204);
         expect(res.body).toEqual({});
@@ -186,7 +186,7 @@ describe('DELETE /projects/blueprints/:blueprintId', () => {
             throw new Error('Invalid blueprint id: "bad!"');
         });
 
-        const res = await request(app).delete('/projects/blueprints/bad!');
+        const res = await request(app).delete('/blueprints/bad!');
 
         expect(res.status).toBe(400);
     });

@@ -68,17 +68,17 @@ Restricted endpoints for creating, updating, and managing content and schemas.
 
 ---
 
-### 📐 Blueprints (project templates)
+### 📐 Blueprints (global project templates)
 
-Blueprints are stored under **`data/blueprints/`** (override with `BLUEPRINTS_DIR`). Each file is `data/blueprints/<id>.json`. See [Blueprints.md](Blueprints.md) for the JSON shape and how “create from blueprint” works.
+Blueprints are **global** (not per-project). Stored under **`data/blueprints/`** (override with `BLUEPRINTS_DIR`). Each file is `data/blueprints/<id>.json`. See [Blueprints.md](Blueprints.md) for the JSON shape and how “create from blueprint” works.
 
 | Method | Endpoint                                 | Description                                  |
 |--------|------------------------------------------|----------------------------------------------|
-| GET    | `./projects/blueprints`        | List all blueprints                          |
-| GET    | `./projects/blueprints/:id`     | Get one blueprint by id                      |
-| POST   | `./projects/blueprints`        | Create or replace a blueprint               |
-| PATCH  | `./projects/blueprints/:id`     | Update a blueprint (partial)                 |
-| DELETE | `./projects/blueprints/:id`     | Delete a blueprint                           |
+| GET    | `./blueprints`        | List all blueprints                          |
+| GET    | `./blueprints/:id`     | Get one blueprint by id                      |
+| POST   | `./blueprints`        | Create or replace a blueprint               |
+| PATCH  | `./blueprints/:id`     | Update a blueprint (partial)                 |
+| DELETE | `./blueprints/:id`     | Delete a blueprint                           |
 
 ---
 
