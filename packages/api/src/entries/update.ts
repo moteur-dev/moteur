@@ -14,7 +14,7 @@ router.patch('/:entryId', requireProjectAccess, async (req: any, res: any) => {
         return res.status(400).json({ error: 'Missing path parameters' });
     }
 
-    const modelSchema = getModelSchema(req.user!, projectId, modelId);
+    const modelSchema = await getModelSchema(req.user!, projectId, modelId);
     if (!modelSchema) {
         return res.status(404).json({ error: 'Model not found' });
     }
