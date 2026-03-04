@@ -3,7 +3,7 @@ import { validateStructureField } from '../../../../src/validators/fields/core/v
 import { Field } from '@moteur/types/Field.js';
 import { getStructureFromCore } from '../../../../src/structures.js';
 
-// --- Mock getStructureFromCore (used by validator for shared structure lookup) ---
+// --- Mock getStructureFromCore (used by validateStructureField for shared schema) ---
 vi.mock('../../../../src/structures.js', () => ({
     getStructureFromCore: vi.fn()
 }));

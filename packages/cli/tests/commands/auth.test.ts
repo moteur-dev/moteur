@@ -3,7 +3,10 @@ import '../helpers/mockCliUser';
 vi.mock('@moteur/core/users.js', () => ({
     listUsers: vi.fn(),
     getProjectUsers: vi.fn(),
-    createUser: vi.fn()
+    createUser: vi.fn(),
+    getDisplayProjectIds: vi.fn(
+        (user: { projects?: string[] }, _existingIds: string[]) => user?.projects ?? []
+    )
 }));
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

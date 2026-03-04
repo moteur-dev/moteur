@@ -61,11 +61,14 @@ export function requireProjectAccess(req: Request, res: Response, next: NextFunc
             return res.status(400).json({ error: 'Project ID is required' });
         }
 
-        const project = await getProject(user, projectId);
-        if (!project.users?.includes(user.id)) {
+        try {
+            const project = await getProject(user, projectId);
+            if (!project.users?.includes(user.id)) {
+                return res.status(403).json({ error: 'Access to this project is forbidden' });
+            }
+            next();
+        } catch {
             return res.status(403).json({ error: 'Access to this project is forbidden' });
         }
-
-        next();
     });
 }

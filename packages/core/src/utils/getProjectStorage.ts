@@ -3,6 +3,9 @@ import { storageRegistry } from '../registry/StorageRegistry.js';
 import { readFileSync } from 'fs';
 import { projectFilePath, projectDir } from './pathUtils.js';
 
+// Ensure local storage adapter is registered (API and CLI use core subpaths and may never load core index)
+import '../plugins/LocalJsonStorageAdapter.js';
+
 const defaultLocalOptions = (projectId: string): LocalStorageOptions => ({
     baseDir: projectDir(projectId),
     listMode: 'directory'

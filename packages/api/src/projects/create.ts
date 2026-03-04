@@ -6,7 +6,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router();
 
-router.post('/', requireAuth, (req: any, res: any) => {
+router.post('/', requireAuth, async (req: any, res: any) => {
     try {
         const validation = validateProject(req.body);
         if (!validation.valid) {
@@ -14,8 +14,13 @@ router.post('/', requireAuth, (req: any, res: any) => {
                 .status(400)
                 .json({ validation: validation.issues, error: 'Validation failed' });
         }
-        const project = createProject(req.user!, req.body);
-        return res.status(201).json(project);
+        const result = await createProject(req.user!, req.body);
+        if (result.validation) {
+            return res
+                .status(400)
+                .json({ validation: result.validation.issues, error: 'Validation failed' });
+        }
+        return res.status(201).json(result.project);
     } catch (err: any) {
         return res.status(400).json({ error: err.message });
     }

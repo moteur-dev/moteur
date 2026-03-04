@@ -20,15 +20,16 @@ export interface S3StorageOptions {
     bucket: string;
     region: string;
     prefix?: string;
-    credentials?: { accessKeyId: string; secretAccessKey: string };
+    credentials?: Record<string, unknown>;
 }
 
 export type StorageOptions = LocalStorageOptions | S3StorageOptions;
 
 export function isLocalStorageOptions(options: StorageOptions): options is LocalStorageOptions {
-    return 'baseDir' in options && typeof (options as LocalStorageOptions).baseDir === 'string';
+    return typeof (options as LocalStorageOptions).baseDir === 'string';
 }
 
 export function isS3StorageOptions(options: StorageOptions): options is S3StorageOptions {
-    return 'bucket' in options && typeof (options as S3StorageOptions).bucket === 'string';
+    const o = options as S3StorageOptions;
+    return typeof o.bucket === 'string' && typeof o.region === 'string';
 }
