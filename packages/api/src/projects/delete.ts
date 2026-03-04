@@ -5,11 +5,11 @@ import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router();
 
-router.delete('/:projectId', requireAdmin, (req: any, res: any) => {
+router.delete('/:projectId', requireAdmin, async (req: any, res: any) => {
     const { projectId } = req.params;
 
     try {
-        deleteProject(req.user!, projectId);
+        await deleteProject(req.user!, projectId);
         return res.status(204).send();
     } catch (err: any) {
         return res.status(404).json({ error: err.message });

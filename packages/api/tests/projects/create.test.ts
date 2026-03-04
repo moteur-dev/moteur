@@ -42,7 +42,9 @@ describe('POST /projects', () => {
 
     it('should create a project and return 201', async () => {
         (validateProject as any).mockReturnValue({ valid: true });
-        (createProject as any).mockReturnValue({ ...validBody, createdAt: Date.now() });
+        (createProject as any).mockResolvedValue({
+            project: { ...validBody, createdAt: Date.now() }
+        });
 
         const res = await request(app).post('/projects').send(validBody);
         expect(res.status).toBe(201);

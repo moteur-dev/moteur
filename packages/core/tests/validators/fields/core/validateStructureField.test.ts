@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { validateStructureField } from '../../../../src/validators/fields/core/validateStructureField.js';
 import { Field } from '@moteur/types/Field.js';
-import { getStructure } from '../../../../src/structures.js';
+import { getStructureFromCore } from '../../../../src/structures.js';
 
-// --- Mock getStructure ---
+// --- Mock getStructureFromCore (used by validateStructureField for shared schema) ---
 vi.mock('../../../../src/structures.js', () => ({
-    getStructure: vi.fn()
+    getStructureFromCore: vi.fn()
 }));
 
 describe('validateStructureField', () => {
@@ -19,7 +19,7 @@ describe('validateStructureField', () => {
     });
 
     it('validates structure using shared schema', () => {
-        (getStructure as vi.Mock).mockReturnValue({ fields: sharedSchemaFields });
+        (getStructureFromCore as vi.Mock).mockReturnValue({ fields: sharedSchemaFields });
 
         const field: Field = {
             type: 'core/structure',
@@ -107,7 +107,7 @@ describe('validateStructureField', () => {
     });
 
     it('errors when shared schema is not found', () => {
-        (getStructure as vi.Mock).mockImplementation(() => {
+        (getStructureFromCore as vi.Mock).mockImplementation(() => {
             throw new Error('Schema not found');
         });
 
