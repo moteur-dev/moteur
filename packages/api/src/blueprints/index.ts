@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireAdmin } from '../../middlewares/auth.js';
+import { requireAdmin } from '../middlewares/auth.js';
 import {
     listBlueprints,
     getBlueprint,
@@ -74,7 +74,7 @@ router.delete('/:blueprintId', requireAdmin, (req: any, res: any) => {
 });
 
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
-    '/projects/blueprints': {
+    '/blueprints': {
         get: {
             summary: 'List all blueprints',
             tags: ['Blueprints'],
@@ -121,7 +121,7 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             }
         }
     },
-    '/projects/blueprints/{blueprintId}': {
+    '/blueprints/{blueprintId}': {
         get: {
             summary: 'Get a blueprint by id',
             tags: ['Blueprints'],

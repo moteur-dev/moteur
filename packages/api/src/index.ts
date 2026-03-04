@@ -16,6 +16,10 @@ import openapiRoute, { baseSpec } from './openapi.js';
 import aiRoutes, { aiSpecs } from './ai/index.js';
 import authRoutes, { authSpecs } from './auth/index.js';
 import projectRoutes, { projectsSpecs } from './projects/index.js';
+import blueprintsRoutes, {
+    openapi as blueprintsSpec,
+    schemas as blueprintsSchemas
+} from './blueprints/index.js';
 import modelsRoute, { modelsSpecs } from './models/index.js';
 import entriesRoute, { entriesSpecs } from './entries/index.js';
 
@@ -56,6 +60,7 @@ const mergedApiSpecs = await mergePluginSpecs({
         ...aiSpecs.paths,
         ...authSpecs.paths,
         ...projectsSpecs.paths,
+        ...blueprintsSpec,
         ...modelsSpecs.paths,
         ...entriesSpecs.paths
     },
@@ -64,7 +69,8 @@ const mergedApiSpecs = await mergePluginSpecs({
         schemas: {
             ...baseSpec.components?.schemas,
             ...authSpecs.schemas,
-            ...projectsSpecs.schemas
+            ...projectsSpecs.schemas,
+            ...blueprintsSchemas
         }
     }
 });
@@ -80,6 +86,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(mergedApiSpecs));
 app.use(basePath, openapiRoute);
 app.use(basePath + '/auth', authRoutes);
 app.use(basePath + '/ai', aiRoutes);
+app.use(basePath + '/blueprints', blueprintsRoutes);
 app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
