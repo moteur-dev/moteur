@@ -42,7 +42,7 @@ router.post('/', requireAdmin, (req: any, res: any) => {
         if (!body?.id) {
             return res.status(400).json({ error: 'Blueprint "id" is required' });
         }
-        const blueprint = createBlueprint(body);
+        const blueprint = createBlueprint(body, req.user);
         return res.status(201).json(blueprint);
     } catch (err: any) {
         return res.status(400).json({ error: err.message });
@@ -53,7 +53,7 @@ router.post('/', requireAdmin, (req: any, res: any) => {
 router.patch('/:blueprintId', requireAdmin, (req: any, res: any) => {
     try {
         const { blueprintId } = req.params;
-        const blueprint = updateBlueprint(blueprintId, req.body);
+        const blueprint = updateBlueprint(blueprintId, req.body, req.user);
         return res.json(blueprint);
     } catch (err: any) {
         if (err.message?.includes('not found')) {
@@ -66,7 +66,7 @@ router.patch('/:blueprintId', requireAdmin, (req: any, res: any) => {
 /** Delete a blueprint */
 router.delete('/:blueprintId', requireAdmin, (req: any, res: any) => {
     try {
-        deleteBlueprint(req.params.blueprintId);
+        deleteBlueprint(req.params.blueprintId, req.user);
         return res.status(204).send();
     } catch (err: any) {
         return res.status(400).json({ error: err.message });

@@ -24,7 +24,8 @@ export const Moteur: MoteurAPI = {
     structures: Structures,
     activity: {
         getLog: ActivityLogger.getLog,
-        getProjectLog: ActivityLogger.getProjectLog
+        getProjectLog: ActivityLogger.getProjectLog,
+        getGlobalLog: ActivityLogger.getGlobalLog
     },
     blocks: Blocks
 };

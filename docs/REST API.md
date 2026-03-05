@@ -70,15 +70,23 @@ Restricted endpoints for creating, updating, and managing content and schemas.
 
 ### 📋 Activity Log (read-only)
 
-Activity events are recorded automatically when entries, layouts, structures, or models are created, updated, or deleted. Requires JWT and project access.
+Activity events are recorded automatically when entries, layouts, structures, models, users, or blueprints are created, updated, or deleted.
+
+**Project-scoped activity** (requires JWT + project access):
 
 | Method | Endpoint                                                       | Description                                                                 |
 |--------|----------------------------------------------------------------|-----------------------------------------------------------------------------|
 | GET    | `./admin/projects/:project/activity`                           | Recent activity for the whole project. Query: `limit` (default 50, max 200).|
 | GET    | `./admin/projects/:project/activity/:resourceType/:resourceId`  | Activity for a specific resource (newest first).                            |
 
-**`resourceType`** must be one of: `entry`, `layout`, `page`, `structure`, `model`, `project`.  
-For entries, use **`resourceId`** in the form `modelId__entryId` (double underscore).
+**Global (system) activity** (admin only): user and blueprint changes.
+
+| Method | Endpoint            | Description                                          |
+|--------|---------------------|------------------------------------------------------|
+| GET    | `./activity`        | Recent global activity. Query: `limit` (default 50, max 200). |
+
+**`resourceType`** (project or global): `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
+For entries, use **`resourceId`** in the form `modelId__entryId` (double underscore). Global events have `projectId: "_system"`.
 
 Response shape: `{ events: ActivityEvent[] }`. Each event includes `id`, `projectId`, `resourceType`, `resourceId`, `action` (`created` \| `updated` \| `deleted` \| `published` \| `unpublished`), `userId`, `userName`, optional `fieldPath` / `before` / `after`, and `timestamp` (ISO).
 

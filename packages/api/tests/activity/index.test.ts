@@ -1,0 +1,66 @@
+import request from 'supertest';
+import express from 'express';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+vi.mock('../../src/middlewares/auth', () => ({
+    requireAdmin: (req: any, _res: any, next: any) => {
+        req.user = { id: 'admin1', roles: ['admin'] };
+        next();
+    }
+}));
+
+vi.mock('@moteur/core/activityLogger', () => ({
+    getGlobalLog: vi.fn()
+}));
+
+import activityGlobalRouter from '../../src/activity/index.js';
+import { getGlobalLog } from '@moteur/core/activityLogger.js';
+
+const app = express();
+app.use(express.json());
+app.use('/activity', activityGlobalRouter);
+
+describe('GET /activity (global)', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('returns global activity with default limit', async () => {
+        const mockEvents = [
+            {
+                id: 'ev-1',
+                projectId: '_system',
+                resourceType: 'blueprint',
+                resourceId: 'blog',
+                action: 'created',
+                userId: 'admin1',
+                userName: 'Admin',
+                timestamp: '2025-01-01T12:00:00.000Z'
+            }
+        ];
+        (getGlobalLog as any).mockResolvedValue(mockEvents);
+
+        const res = await request(app).get('/activity');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ events: mockEvents });
+        expect(getGlobalLog).toHaveBeenCalledWith(50);
+    });
+
+    it('accepts limit query and caps at 200', async () => {
+        (getGlobalLog as any).mockResolvedValue([]);
+
+        await request(app).get('/activity?limit=300');
+
+        expect(getGlobalLog).toHaveBeenCalledWith(200);
+    });
+
+    it('returns 500 on getGlobalLog failure', async () => {
+        (getGlobalLog as any).mockRejectedValue(new Error('read error'));
+
+        const res = await request(app).get('/activity');
+
+        expect(res.status).toBe(500);
+        expect(res.body.error).toBeDefined();
+    });
+});

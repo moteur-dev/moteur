@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
 import { triggerEvent } from '../../../src/utils/eventBus.js';
-import { getLog } from '../../../src/activityLogger.js';
+import { getLog, getGlobalLog, GLOBAL_PROJECT_ID } from '../../../src/activityLogger.js';
 import { onEvent } from '../../../src/utils/eventBus.js';
 import type { ActivityEvent } from '@moteur/types/Activity.js';
 import type { User } from '@moteur/types/User.js';
@@ -171,6 +171,70 @@ describe('activityLogPlugin', () => {
             resourceType: 'structure',
             resourceId: 'core/card',
             action: 'created'
+        });
+    });
+
+    it('logs user.afterCreate to global activity', async () => {
+        const createdUser: User = {
+            id: 'new-user-1',
+            name: 'New User',
+            email: 'new@test.com',
+            isActive: true,
+            roles: [],
+            projects: []
+        };
+
+        const loggedPromise = waitForActivityLogged();
+        await triggerEvent('user.afterCreate', { user: createdUser, performedBy: user });
+        await loggedPromise;
+
+        const events = await getGlobalLog(10);
+        expect(
+            events.some(
+                e =>
+                    e.resourceType === 'user' &&
+                    e.resourceId === 'new-user-1' &&
+                    e.action === 'created'
+            )
+        ).toBe(true);
+        const ev = events.find(e => e.resourceId === 'new-user-1');
+        expect(ev).toMatchObject({
+            projectId: GLOBAL_PROJECT_ID,
+            resourceType: 'user',
+            resourceId: 'new-user-1',
+            action: 'created',
+            userId: user.id,
+            userName: user.name
+        });
+    });
+
+    it('logs blueprint.afterCreate to global activity', async () => {
+        const blueprint = {
+            id: 'test-bp',
+            name: 'Test Blueprint',
+            description: 'For tests'
+        };
+
+        const loggedPromise = waitForActivityLogged();
+        await triggerEvent('blueprint.afterCreate', { blueprint: blueprint as any, user });
+        await loggedPromise;
+
+        const events = await getGlobalLog(10);
+        expect(
+            events.some(
+                e =>
+                    e.resourceType === 'blueprint' &&
+                    e.resourceId === 'test-bp' &&
+                    e.action === 'created'
+            )
+        ).toBe(true);
+        const ev = events.find(e => e.resourceId === 'test-bp');
+        expect(ev).toMatchObject({
+            projectId: GLOBAL_PROJECT_ID,
+            resourceType: 'blueprint',
+            resourceId: 'test-bp',
+            action: 'created',
+            userId: user.id
         });
     });
 });

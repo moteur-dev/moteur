@@ -22,6 +22,7 @@ import blueprintsRoutes, {
 } from './blueprints/index.js';
 import modelsRoute, { modelsSpecs } from './models/index.js';
 import entriesRoute, { entriesSpecs } from './entries/index.js';
+import activityGlobalRoute, { openapi as activityGlobalSpec } from './activity/index.js';
 
 import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
@@ -65,6 +66,7 @@ const mergedApiSpecs = await mergePluginSpecs({
         ...authSpecs.paths,
         ...projectsSpecs.paths,
         ...blueprintsSpec,
+        ...activityGlobalSpec,
         ...modelsSpecs.paths,
         ...entriesSpecs.paths
     },
@@ -91,6 +93,7 @@ app.use(basePath, openapiRoute);
 app.use(basePath + '/auth', authRoutes);
 app.use(basePath + '/ai', aiRoutes);
 app.use(basePath + '/blueprints', blueprintsRoutes);
+app.use(basePath + '/activity', activityGlobalRoute);
 app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);

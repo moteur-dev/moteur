@@ -1,5 +1,11 @@
 import { onEvent } from '../../utils/eventBus.js';
-import { log, toActivityEvent } from '../../activityLogger.js';
+import {
+    log,
+    logGlobal,
+    toActivityEvent,
+    GLOBAL_PROJECT_ID,
+    systemUser
+} from '../../activityLogger.js';
 
 function registerActivityListeners() {
     const created = 'created' as const;
@@ -54,6 +60,21 @@ function registerActivityListeners() {
     });
     onEvent('structure.afterDelete', async ({ structure, user, projectId }) => {
         log(toActivityEvent(projectId, 'structure', structure.type, deleted, user));
+    });
+
+    onEvent('user.afterCreate', async ({ user, performedBy }) => {
+        const actor = performedBy ?? systemUser();
+        logGlobal(toActivityEvent(GLOBAL_PROJECT_ID, 'user', user.id, created, actor));
+    });
+
+    onEvent('blueprint.afterCreate', async ({ blueprint, user }) => {
+        logGlobal(toActivityEvent(GLOBAL_PROJECT_ID, 'blueprint', blueprint.id, created, user));
+    });
+    onEvent('blueprint.afterUpdate', async ({ blueprint, user }) => {
+        logGlobal(toActivityEvent(GLOBAL_PROJECT_ID, 'blueprint', blueprint.id, updated, user));
+    });
+    onEvent('blueprint.afterDelete', async ({ blueprint, user }) => {
+        logGlobal(toActivityEvent(GLOBAL_PROJECT_ID, 'blueprint', blueprint.id, deleted, user));
     });
 }
 

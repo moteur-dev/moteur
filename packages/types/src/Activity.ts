@@ -1,4 +1,12 @@
-export type ActivityResourceType = 'entry' | 'layout' | 'page' | 'structure' | 'model' | 'project';
+export type ActivityResourceType =
+    | 'entry'
+    | 'layout'
+    | 'page'
+    | 'structure'
+    | 'model'
+    | 'project'
+    | 'user'
+    | 'blueprint';
 
 export type ActivityAction = 'created' | 'updated' | 'deleted' | 'published' | 'unpublished';
 

@@ -9,6 +9,6 @@ export interface MoteurAPI {
     projects: typeof Projects;
     layouts: typeof Layouts;
     structures: typeof Structures;
-    activity: Pick<typeof Activity, 'getLog' | 'getProjectLog'>;
+    activity: Pick<typeof Activity, 'getLog' | 'getProjectLog' | 'getGlobalLog'>;
     blocks: typeof Blocks;
 }

@@ -10,7 +10,9 @@ const RESOURCE_TYPES: ActivityResourceType[] = [
     'page',
     'structure',
     'model',
-    'project'
+    'project',
+    'user',
+    'blueprint'
 ];
 
 const router: Router = Router({ mergeParams: true });

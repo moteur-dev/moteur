@@ -2,6 +2,7 @@ import fs from 'fs';
 import { User } from '@moteur/types/User.js';
 import { storageConfig } from './config/storageConfig.js';
 import { writeJsonAtomic } from './utils/fileUtils.js';
+import { triggerEvent } from './utils/eventBus.js';
 
 function getUsersFilePath(): string {
     return storageConfig.usersFile;
@@ -52,14 +53,16 @@ export function getDisplayProjectIds(user: User, existingProjectIds: string[]): 
     return (user.projects ?? []).filter(id => set.has(id));
 }
 
-export function createUser(user: User): User {
+export function createUser(user: User, performedBy?: User): User {
     const users = getCachedUsers();
     if (users.some(u => u.email === user.email)) {
         throw new Error('User with this email already exists');
     }
+    triggerEvent('user.beforeCreate', { user, performedBy });
     users.push(user);
     writeJsonAtomic(getUsersFilePath(), users);
     cachedUsers = null; // Invalidate cache after write
+    triggerEvent('user.afterCreate', { user, performedBy });
     return user;
 }
 

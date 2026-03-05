@@ -1,5 +1,6 @@
 // utils/eventBus.ts
 import type { ActivityEvent } from '@moteur/types/Activity.js';
+import type { BlueprintSchema } from '@moteur/types/Blueprint.js';
 import { ProjectSchema } from '@moteur/types/Project.js';
 import { ModelSchema, Entry } from '@moteur/types/Model.js';
 import { Layout } from '@moteur/types/Layout.js';
@@ -52,13 +53,18 @@ export interface EventMap {
     'structure.beforeDelete': { structure: StructureSchema; user: User; projectId: string };
     'structure.afterDelete': { structure: StructureSchema; user: User; projectId: string };
 
-    // Users
-    'user.beforeCreate': { user: User };
-    'user.afterCreate': { user: User };
-    'user.beforeUpdate': { user: User };
-    'user.afterUpdate': { user: User };
-    'user.beforeDelete': { user: User };
-    'user.afterDelete': { user: User };
+    // Users (performedBy = actor who created/updated/deleted the user)
+    'user.beforeCreate': { user: User; performedBy?: User };
+    'user.afterCreate': { user: User; performedBy?: User };
+    'user.beforeUpdate': { user: User; performedBy?: User };
+    'user.afterUpdate': { user: User; performedBy?: User };
+    'user.beforeDelete': { user: User; performedBy?: User };
+    'user.afterDelete': { user: User; performedBy?: User };
+
+    // Blueprints (user = actor)
+    'blueprint.afterCreate': { blueprint: BlueprintSchema; user: User };
+    'blueprint.afterUpdate': { blueprint: BlueprintSchema; user: User };
+    'blueprint.afterDelete': { blueprint: BlueprintSchema; user: User };
 
     // Activity (emitted after an event is persisted to the activity log)
     'activity.logged': { event: ActivityEvent };
