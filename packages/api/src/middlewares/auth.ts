@@ -52,6 +52,20 @@ export function requireRole(requiredRole: string) {
     };
 }
 
+/** Sets req.user if valid JWT present; does not fail if no token or invalid. */
+export function optionalAuth(req: Request, res: Response, next: NextFunction) {
+    const token = (req as any).headers?.authorization?.replace('Bearer ', '');
+    if (!token) return next();
+    try {
+        const payload = verifyJWT(token);
+        const user = getUserById(payload.sub as string);
+        if (user?.id && user.isActive) (req as any).user = user;
+    } catch {
+        // ignore invalid token for optional auth
+    }
+    next();
+}
+
 export function requireProjectAccess(req: Request, res: Response, next: NextFunction) {
     requireAuth(req, res, async () => {
         const user = (req as any).user;

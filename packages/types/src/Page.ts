@@ -1,34 +1,14 @@
-import { Field } from './Field';
+import type { EntryStatus } from './Model.js';
 
-export interface TemplateSchema {
-    id: string;
-    label: string;
-    description?: string;
-    fields: Record<string, Field>;
-    options?: Record<string, any>;
-}
-
-// types/Page.ts
 export interface Page {
     id: string;
-    type: string; // references TemplateSchema.id
-    routePattern?: string;
-    data: Record<string, any>;
+    projectId: string;
+    templateId: string;
+    label: string;
+    slug?: string;
+    parentId?: string;
+    status: EntryStatus;
+    fields: Record<string, any>;
+    createdAt: string;
+    updatedAt: string;
 }
-export const templateSchemaFields: Record<string, Field> = {
-    id: {
-        type: 'core/text',
-        label: 'ID',
-        options: { multilingual: false, required: true }
-    },
-    label: {
-        type: 'core/text',
-        label: 'Label',
-        options: { multilingual: true, required: true }
-    },
-    description: {
-        type: 'core/text',
-        label: 'Description',
-        options: { multilingual: true, required: false }
-    }
-};

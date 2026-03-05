@@ -1,4 +1,6 @@
 import * as Projects from './projects.js';
+import * as Templates from './templates.js';
+import * as Pages from './pages.js';
 import * as Layouts from './layouts.js';
 import * as Structures from './structures.js';
 import * as ActivityLogger from './activityLogger.js';
@@ -23,6 +25,8 @@ import './fields/index.js';
 
 export const Moteur: MoteurAPI = {
     projects: Projects,
+    templates: Templates,
+    pages: Pages,
     layouts: Layouts,
     structures: Structures,
     activity: {
@@ -40,6 +44,7 @@ export const Moteur: MoteurAPI = {
     },
     reviews: {
         submit: Reviews.submitForReview,
+        submitPage: Reviews.submitForPageReview,
         approve: Reviews.approveReview,
         reject: Reviews.rejectReview,
         get: Reviews.getReviews,

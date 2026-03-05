@@ -10,8 +10,10 @@ export async function createNotification(
     data: {
         type: NotificationType;
         reviewId: string;
-        entryId: string;
-        modelId: string;
+        entryId?: string;
+        modelId?: string;
+        pageId?: string;
+        templateId?: string;
     }
 ): Promise<Notification> {
     try {
@@ -26,6 +28,8 @@ export async function createNotification(
             reviewId: data.reviewId,
             entryId: data.entryId,
             modelId: data.modelId,
+            pageId: data.pageId,
+            templateId: data.templateId,
             read: false,
             createdAt: now
         };

@@ -23,6 +23,7 @@ import blueprintsRoutes, {
 import modelsRoute, { modelsSpecs } from './models/index.js';
 import entriesRoute, { entriesSpecs } from './entries/index.js';
 import activityGlobalRoute, { openapi as activityGlobalSpec } from './activity/index.js';
+import adminRoutes, { adminSpecs } from './admin/index.js';
 
 import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
@@ -68,7 +69,8 @@ const mergedApiSpecs = await mergePluginSpecs({
         ...blueprintsSpec,
         ...activityGlobalSpec,
         ...modelsSpecs.paths,
-        ...entriesSpecs.paths
+        ...entriesSpecs.paths,
+        ...adminSpecs.paths
     },
     components: {
         ...baseSpec.components,
@@ -97,6 +99,7 @@ app.use(basePath + '/activity', activityGlobalRoute);
 app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
+app.use(basePath + '/admin/projects', adminRoutes);
 
 // Global error handler: centralizes errors and avoids leaking stack traces
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -181,6 +184,17 @@ onEvent('review.entryStatusChanged', async ctx => {
         io.to(ctx.projectId).emit('review:status_changed', {
             entryId: ctx.entryId,
             modelId: ctx.modelId,
+            status: ctx.status
+        });
+    } catch {
+        // never break on emit failure
+    }
+});
+onEvent('review.pageStatusChanged', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('review:status_changed', {
+            pageId: ctx.pageId,
+            templateId: ctx.templateId,
             status: ctx.status
         });
     } catch {

@@ -15,5 +15,6 @@ export * from './Project';
 export * from './Renderer';
 export * from './Storage';
 export * from './Structure';
+export * from './Template';
 export * from './User';
 export * from './ValidationResult';
