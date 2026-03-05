@@ -19,7 +19,7 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
                     status: status as 'pending' | 'approved' | 'rejected'
                 })
         });
-        return res.json(reviews);
+        return res.json({ reviews });
     } catch {
         return res.status(500).json({ error: 'Failed to list reviews' });
     }
@@ -30,7 +30,7 @@ router.get('/:reviewId', requireProjectAccess, async (req: any, res: any) => {
     try {
         const review = await getReview(projectId, reviewId);
         if (!review) return res.status(404).json({ error: 'Review not found' });
-        return res.json(review);
+        return res.json({ review });
     } catch {
         return res.status(500).json({ error: 'Failed to get review' });
     }
@@ -40,7 +40,7 @@ router.post('/:reviewId/approve', requireProjectAccess, async (req: any, res: an
     const { projectId, reviewId } = req.params;
     try {
         const review = await approveReview(projectId, req.user!, reviewId);
-        return res.json(review);
+        return res.json({ review });
     } catch (err: any) {
         const status =
             err.message?.includes('reviewer') || err.message?.includes('admin')
@@ -62,7 +62,7 @@ router.post('/:reviewId/reject', requireProjectAccess, async (req: any, res: any
             reviewId,
             typeof reason === 'string' ? reason : 'Rejected without comment.'
         );
-        return res.json(review);
+        return res.json({ review });
     } catch (err: any) {
         const status =
             err.message?.includes('reviewer') || err.message?.includes('admin')
@@ -93,7 +93,14 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 '200': {
                     description: 'List of reviews',
                     content: {
-                        'application/json': { schema: { type: 'array', items: { type: 'object' } } }
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    reviews: { type: 'array', items: { type: 'object' } }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -110,7 +117,14 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             responses: {
                 '200': {
                     description: 'Review',
-                    content: { 'application/json': { schema: { type: 'object' } } }
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: { review: { type: 'object' } }
+                            }
+                        }
+                    }
                 },
                 '404': { description: 'Review not found' }
             }
@@ -127,7 +141,14 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             responses: {
                 '200': {
                     description: 'Approved review',
-                    content: { 'application/json': { schema: { type: 'object' } } }
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: { review: { type: 'object' } }
+                            }
+                        }
+                    }
                 },
                 '403': { description: 'Reviewer or admin role required' },
                 '400': { description: 'Review not found or not pending' }
@@ -155,7 +176,14 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             responses: {
                 '200': {
                     description: 'Rejected review',
-                    content: { 'application/json': { schema: { type: 'object' } } }
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: { review: { type: 'object' } }
+                            }
+                        }
+                    }
                 },
                 '403': { description: 'Reviewer or admin role required' },
                 '400': { description: 'Review not found or not pending' }

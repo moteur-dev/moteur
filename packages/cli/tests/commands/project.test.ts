@@ -15,7 +15,7 @@ import {
     createProjectCommand,
     patchProjectCommand,
     deleteProjectCommand
-} from '../../src/commands/project';
+} from '../../src/commands/projects';
 
 import { getProject, listProjects, createProject, updateProject } from '@moteur/core/projects.js';
 

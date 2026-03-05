@@ -43,7 +43,7 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
             ...(parentId != null && { parentId: String(parentId) }),
             body: String(commentBody).trim()
         });
-        return res.status(201).json(comment);
+        return res.status(201).json({ comment });
     } catch (err: any) {
         const status = err.message?.includes('not found') ? 404 : 400;
         return res.status(status).json({ error: err?.message ?? 'Failed to add comment' });
@@ -77,7 +77,7 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
                 ...(fieldPath !== undefined && { fieldPath })
             }
         );
-        return res.json(comments);
+        return res.json({ comments });
     } catch (err: any) {
         return res.status(500).json({ error: err?.message ?? 'Failed to get comments' });
     }
@@ -92,7 +92,7 @@ router.patch('/:id', requireProjectAccess, async (req: any, res: any) => {
             return res.status(400).json({ error: 'body is required' });
         }
         const comment = await editComment(projectId, user, id, String(body).trim());
-        return res.json(comment);
+        return res.json({ comment });
     } catch (err: any) {
         const status = err.message?.includes('not found')
             ? 404
@@ -108,7 +108,7 @@ router.post('/:id/resolve', requireProjectAccess, async (req: any, res: any) => 
         const { projectId, id } = req.params;
         const user = req.user;
         const comment = await resolveComment(projectId, user, id);
-        return res.json(comment);
+        return res.json({ comment });
     } catch (err: any) {
         const status = err.message?.includes('not found') ? 404 : 400;
         return res.status(status).json({ error: err?.message ?? 'Failed to resolve comment' });
@@ -185,7 +185,12 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 '201': {
                     description: 'Created comment',
                     content: {
-                        'application/json': { schema: { $ref: '#/components/schemas/Comment' } }
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: { comment: { $ref: '#/components/schemas/Comment' } }
+                            }
+                        }
                     }
                 },
                 '400': { description: 'Bad request' },
@@ -217,8 +222,13 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                     content: {
                         'application/json': {
                             schema: {
-                                type: 'array',
-                                items: { $ref: '#/components/schemas/Comment' }
+                                type: 'object',
+                                properties: {
+                                    comments: {
+                                        type: 'array',
+                                        items: { $ref: '#/components/schemas/Comment' }
+                                    }
+                                }
                             }
                         }
                     }
@@ -251,7 +261,12 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 '200': {
                     description: 'Updated comment',
                     content: {
-                        'application/json': { schema: { $ref: '#/components/schemas/Comment' } }
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: { comment: { $ref: '#/components/schemas/Comment' } }
+                            }
+                        }
                     }
                 },
                 '400': { description: 'Bad request' },
@@ -285,7 +300,12 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 '200': {
                     description: 'Resolved comment',
                     content: {
-                        'application/json': { schema: { $ref: '#/components/schemas/Comment' } }
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: { comment: { $ref: '#/components/schemas/Comment' } }
+                            }
+                        }
                     }
                 },
                 '404': { description: 'Not found' }

@@ -58,7 +58,7 @@ describe('POST /projects/:projectId/comments', () => {
         });
 
         expect(res.status).toBe(201);
-        expect(res.body).toEqual(mockComment);
+        expect(res.body).toEqual({ comment: mockComment });
         expect(addComment).toHaveBeenCalledWith(
             'proj1',
             expect.any(Object),
@@ -116,7 +116,7 @@ describe('GET /projects/:projectId/comments', () => {
         );
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual([mockComment]);
+        expect(res.body).toEqual({ comments: [mockComment] });
         expect(getComments).toHaveBeenCalledWith(
             'proj1',
             'entry',
@@ -160,7 +160,7 @@ describe('PATCH /projects/:projectId/comments/:id', () => {
             .send({ body: 'Updated' });
 
         expect(res.status).toBe(200);
-        expect(res.body.body).toBe('Updated');
+        expect(res.body.comment.body).toBe('Updated');
         expect(editComment).toHaveBeenCalledWith(
             'proj1',
             expect.any(Object),
@@ -204,7 +204,7 @@ describe('POST /projects/:projectId/comments/:id/resolve', () => {
         const res = await request(app).post('/projects/proj1/comments/comment-1/resolve');
 
         expect(res.status).toBe(200);
-        expect(res.body.resolved).toBe(true);
+        expect(res.body.comment.resolved).toBe(true);
         expect(resolveComment).toHaveBeenCalledWith('proj1', expect.any(Object), 'comment-1');
     });
 
