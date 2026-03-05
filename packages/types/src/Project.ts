@@ -8,6 +8,9 @@ export interface ProjectSchema {
     defaultLocale: string; // Default language for fallbacks
     supportedLocales?: string[]; // Other supported locales
 
+    /** When true, the project is active and available for use. New projects are created with isActive: true. */
+    isActive?: boolean;
+
     users?: string[]; // Optional list of authorized users
 
     storage?: string; // Storage adapter ID (e.g., 'core/local', 'core/s3')
