@@ -88,7 +88,7 @@ Activity events are recorded automatically when entries, layouts, structures, mo
 **`resourceType`** (project or global): `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
 For entries, use **`resourceId`** in the form `modelId__entryId` (double underscore). Global events have `projectId: "_system"`.
 
-Response shape: `{ events: ActivityEvent[] }`. Each event includes `id`, `projectId`, `resourceType`, `resourceId`, `action` (`created` \| `updated` \| `deleted` \| `published` \| `unpublished` \| `commented` \| `resolved`), `userId`, `userName`, optional `fieldPath` / `before` / `after`, and `timestamp` (ISO).
+Response shape: `{ events: ActivityEvent[] }`. Each event includes `id`, `projectId`, `resourceType`, `resourceId`, `action` (`created` \| `updated` \| `deleted` \| `published` \| `unpublished` \| `commented` \| `resolved` \| `submitted_for_review` \| `approved` \| `rejected`), `userId`, `userName`, optional `fieldPath` / `before` / `after`, and `timestamp` (ISO).
 
 ---
 
@@ -107,6 +107,33 @@ Comments are stored per project in `comments.json`. All endpoints require JWT + 
 `resourceType` is `entry` or `layout`. For entries, `resourceId` is `modelId__entryId`; for layouts, `resourceId` is the layout ID. Comments are threaded (one level of replies via `parentId`) and broadcast in real time via WebSocket (see Presence API).
 
 Comment body length is limited; set `COMMENTS_MAX_BODY_LENGTH` (default 10000) to override. Requests with a body over the limit return 400 with a clear error message.
+
+---
+
+### 📋 Review & Approval Workflow
+
+Requires `project.workflow.enabled`. All endpoints require JWT + project access. Approve/reject require `reviewer` or `admin` role.  
+**Full guide:** [Workflows.md](Workflows.md) — modes, roles, publish guard, notifications.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST   | `./admin/projects/:project/models/:model/entries/:id/submit-review` | Submit an entry for review. Body: `{ assignedTo?: string }`. Returns created `Review`. |
+| GET    | `./admin/projects/:project/reviews` | List reviews. Query: `modelId?`, `entryId?`, `status?` (pending \| approved \| rejected). Returns `Review[]`. |
+| GET    | `./admin/projects/:project/reviews/:reviewId` | Get a single review. Returns `Review`. |
+| POST   | `./admin/projects/:project/reviews/:reviewId/approve` | Approve a review (reviewer/admin only). Entry is auto-published. Returns updated `Review`. 403 if user lacks role. |
+| POST   | `./admin/projects/:project/reviews/:reviewId/reject` | Reject a review (reviewer/admin only). Body: `{ reason: string }` (becomes a Comment). Entry returns to draft. Returns updated `Review`. 403 if user lacks role. |
+
+---
+
+### 🔔 Notifications
+
+In-studio notifications for review events. Stored per project in `notifications.json`. All endpoints require JWT + project access.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | `./admin/projects/:project/notifications` | List notifications for current user. Query: `unreadOnly?` (default true). Returns `Notification[]`. |
+| POST   | `./admin/projects/:project/notifications/:id/read` | Mark a notification as read. Returns updated `Notification`. |
+| POST   | `./admin/projects/:project/notifications/read-all` | Mark all notifications as read for current user. Returns 204. |
 
 ---
 
@@ -172,6 +199,7 @@ Blueprints are **global** (not per-project). Stored under **`data/blueprints/`**
 | POST   | `./admin/projects/:project/models/:model/entries`            | Create a new entry for a model.              |
 | PUT    | `./admin/projects/:project/models/:model/entries/:id`        | Replace an entry entirely.                   |
 | PATCH  | `./admin/projects/:project/models/:model/entries/:id`        | Update part of an entry.                     |
+| PATCH  | `./admin/projects/:project/models/:model/entries/:id/status` | Set entry status. Body: `{ status: 'draft' \| 'in_review' \| 'published' \| 'unpublished' }`. Admin can bypass review; others need an approved review to set `published` when `workflow.requireReview` is enabled. |
 | DELETE | `./admin/projects/:project/models/:model/entries/:id`        | Delete an entry.                             |
 
 

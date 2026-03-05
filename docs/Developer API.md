@@ -105,6 +105,43 @@ Edits the comment body. Only the author can edit. Updates `updatedAt`.
 
 ---
 
+## 📋 Reviews API
+
+Review & approval workflow: submit entries for review, approve (auto-publish), or reject (entry returns to draft with a Comment as the rejection reason). Requires `project.workflow.enabled`. Reviewer or admin role is required for approve/reject.  
+**Full guide:** [Workflows.md](Workflows.md) — how it works, modes, roles, publish guard.
+
+### `Moteur.reviews.submit(projectId: string, user: User, modelId: string, entryId: string, assignedTo?: string): Promise<Review>`
+Submits an entry for review. Sets entry status to `in_review` and creates a Review. Optionally assign to a specific reviewer (`assignedTo` = userId). Notifies reviewers (or `assignedTo`) and logs activity.
+
+### `Moteur.reviews.approve(projectId: string, user: User, reviewId: string): Promise<Review>`
+Approves a review. Only users with `reviewer` or `admin` role. In `auto_publish` mode, sets entry status to `published`. Resolves the Review and notifies the requester.
+
+### `Moteur.reviews.reject(projectId: string, user: User, reviewId: string, reason: string): Promise<Review>`
+Rejects a review. Only users with `reviewer` or `admin` role. Creates a Comment on the entry with `reason` as the body, sets entry status back to `draft`, and stores the comment ID in `Review.rejectionCommentId`. Notifies the requester.
+
+### `Moteur.reviews.get(projectId: string, options?: { modelId?: string; entryId?: string; status?: 'pending' | 'approved' | 'rejected' }): Promise<Review[]>`
+Returns reviews for the project, optionally filtered by `modelId`, `entryId`, or `status`.
+
+### `Moteur.reviews.getOne(projectId: string, reviewId: string): Promise<Review | null>`
+Returns a single review by ID, or `null` if not found.
+
+---
+
+## 🔔 Notifications API
+
+In-studio notifications for review events (e.g. “review requested”, “approved”, “rejected”). Stored per project in `notifications.json`.
+
+### `Moteur.notifications.get(projectId: string, userId: string, unreadOnly?: boolean): Promise<Notification[]>`
+Returns notifications for the user in the project. Default `unreadOnly` is `true`.
+
+### `Moteur.notifications.markRead(projectId: string, userId: string, notificationId: string): Promise<Notification>`
+Marks a notification as read. Returns the updated notification.
+
+### `Moteur.notifications.markAllRead(projectId: string, userId: string): Promise<void>`
+Marks all notifications for the user in the project as read.
+
+---
+
 ## 🧩 Fields API
 
 ### `Moteur.fields.loadFields(): Record<string, Field>`

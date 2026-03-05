@@ -154,6 +154,40 @@ onEvent('comment.edited', async ctx => {
     }
 });
 
+// Broadcast review events to project room
+onEvent('review.submitted', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('review:submitted', ctx.review);
+    } catch {
+        // never break on emit failure
+    }
+});
+onEvent('review.approved', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('review:approved', ctx.review);
+    } catch {
+        // never break on emit failure
+    }
+});
+onEvent('review.rejected', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('review:rejected', ctx.review);
+    } catch {
+        // never break on emit failure
+    }
+});
+onEvent('review.entryStatusChanged', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('review:status_changed', {
+            entryId: ctx.entryId,
+            modelId: ctx.modelId,
+            status: ctx.status
+        });
+    } catch {
+        // never break on emit failure
+    }
+});
+
 // Validate storage paths before accepting connections
 validateStorageConfig();
 

@@ -19,6 +19,8 @@ import commentsRouter, {
     openapi as commentsSpec,
     schemas as commentsSchemas
 } from './comments/index.js';
+import reviewsRouter, { openapi as reviewsSpec } from './reviews/index.js';
+import notificationsRouter, { openapi as notificationsSpec } from './notifications/index.js';
 
 const router: Router = Router();
 
@@ -32,6 +34,8 @@ router.use(presenceFormState);
 router.use(debug);
 router.use('/:projectId/activity', activityRouter);
 router.use('/:projectId/comments', commentsRouter);
+router.use('/:projectId/reviews', reviewsRouter);
+router.use('/:projectId/notifications', notificationsRouter);
 
 export const projectsSpecs = {
     paths: mergePathSpecs(
@@ -44,7 +48,9 @@ export const projectsSpecs = {
         presenceFormStateSpec,
         debugSpec,
         activitySpec,
-        commentsSpec
+        commentsSpec,
+        reviewsSpec,
+        notificationsSpec
     ),
     schemas: {
         ...createSchemas,

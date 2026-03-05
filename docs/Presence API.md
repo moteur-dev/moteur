@@ -175,6 +175,36 @@ Payload: `{ id: string }` (comment ID that was deleted).
 
 ---
 
+## 📋 Review workflow events
+
+Emitted to the project room when entries are submitted for review, approved, or rejected. Clients can use these for real-time review dashboards and entry status updates.
+
+### `review:submitted`
+
+**Server → All in project room**
+
+Payload: full `Review` object (new review request).
+
+### `review:approved`
+
+**Server → All in project room**
+
+Payload: full `Review` object (with `status: 'approved'`, `resolvedAt`, `reviewedBy`, `reviewedByName`).
+
+### `review:rejected`
+
+**Server → All in project room**
+
+Payload: full `Review` object (with `status: 'rejected'`, `rejectionCommentId`, `resolvedAt`, etc.).
+
+### `review:status_changed`
+
+**Server → All in project room**
+
+Payload: `{ entryId: string; modelId: string; status: EntryStatus }` — indicates an entry’s status was updated (e.g. to `in_review`, `published`, or `draft`). `EntryStatus` is one of: `draft`, `in_review`, `published`, `unpublished`.
+
+---
+
 ## 🧠 Data Structures
 
 ### `Presence`

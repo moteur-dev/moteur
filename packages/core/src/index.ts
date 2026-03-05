@@ -4,6 +4,8 @@ import * as Structures from './structures.js';
 import * as ActivityLogger from './activityLogger.js';
 import * as Blocks from './blocks.js';
 import * as Comments from './comments.js';
+import * as Reviews from './reviews.js';
+import * as Notifications from './notifications.js';
 
 import type { MoteurAPI } from './MoteurAPI.js';
 
@@ -35,6 +37,18 @@ export const Moteur: MoteurAPI = {
         resolve: Comments.resolveComment,
         delete: Comments.deleteComment,
         edit: Comments.editComment
+    },
+    reviews: {
+        submit: Reviews.submitForReview,
+        approve: Reviews.approveReview,
+        reject: Reviews.rejectReview,
+        get: Reviews.getReviews,
+        getOne: Reviews.getReview
+    },
+    notifications: {
+        get: Notifications.getNotifications,
+        markRead: Notifications.markRead,
+        markAllRead: Notifications.markAllRead
     }
 };
 

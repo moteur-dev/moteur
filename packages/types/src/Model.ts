@@ -1,10 +1,13 @@
 import { Audit } from './Audit';
 import { Field } from './Field';
 
+export type EntryStatus = 'draft' | 'in_review' | 'published' | 'unpublished';
+
 export interface Entry {
     id: string;
     type: string; // The ModelSchema this instance belongs to
     data: Record<string, any>;
+    status?: EntryStatus; // default: 'draft'
     meta?: {
         audit?: Audit;
     };
