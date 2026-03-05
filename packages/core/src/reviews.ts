@@ -45,7 +45,9 @@ export async function submitForReview(
     const storage = getProjectStorage(projectId);
     const entry = await getJson<Entry>(storage, entryKey(modelId, entryId));
     if (!entry) {
-        throw new Error(`Entry "${entryId}" not found in model "${modelId}" of project "${projectId}".`);
+        throw new Error(
+            `Entry "${entryId}" not found in model "${modelId}" of project "${projectId}".`
+        );
     }
     const now = new Date().toISOString();
 
@@ -53,10 +55,7 @@ export async function submitForReview(
         const list = (await getJson<Review[]>(storage, REVIEWS_KEY)) ?? [];
 
         const pendingForEntry = list.some(
-            r =>
-                r.modelId === modelId &&
-                r.entryId === entryId &&
-                r.status === 'pending'
+            r => r.modelId === modelId && r.entryId === entryId && r.status === 'pending'
         );
         if (pendingForEntry) {
             throw new Error('This entry already has a pending review');
@@ -292,15 +291,7 @@ export async function rejectReview(
             });
         }
 
-        log(
-            toActivityEvent(
-                projectId,
-                'entry',
-                resourceId,
-                'rejected',
-                user
-            )
-        );
+        log(toActivityEvent(projectId, 'entry', resourceId, 'rejected', user));
 
         try {
             await triggerEvent('review.rejected', { projectId, review: updated });

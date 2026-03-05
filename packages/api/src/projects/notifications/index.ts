@@ -1,10 +1,6 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
-import {
-    getNotifications,
-    markRead,
-    markAllRead
-} from '@moteur/core/notifications.js';
+import { getNotifications, markRead, markAllRead } from '@moteur/core/notifications.js';
 import { requireProjectAccess } from '../../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
@@ -57,7 +53,9 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             responses: {
                 '200': {
                     description: 'List of notifications',
-                    content: { 'application/json': { schema: { type: 'array', items: { type: 'object' } } } }
+                    content: {
+                        'application/json': { schema: { type: 'array', items: { type: 'object' } } }
+                    }
                 }
             }
         }
@@ -71,7 +69,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
             ],
             responses: {
-                '200': { description: 'Notification', content: { 'application/json': { schema: { type: 'object' } } } },
+                '200': {
+                    description: 'Notification',
+                    content: { 'application/json': { schema: { type: 'object' } } }
+                },
                 '404': { description: 'Notification not found' }
             }
         }

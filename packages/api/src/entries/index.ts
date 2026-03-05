@@ -21,7 +21,15 @@ router.use(submitReview);
 router.use(status);
 
 export const entriesSpecs = {
-    paths: mergePathSpecs(getAllSpec, getOneSpec, createSpec, updateSpec, deleteSpec, submitReviewSpec, statusSpec),
+    paths: mergePathSpecs(
+        getAllSpec,
+        getOneSpec,
+        createSpec,
+        updateSpec,
+        deleteSpec,
+        submitReviewSpec,
+        statusSpec
+    ),
     schemas: {}
 };
 

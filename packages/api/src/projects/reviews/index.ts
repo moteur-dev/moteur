@@ -1,11 +1,6 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
-import {
-    getReviews,
-    getReview,
-    approveReview,
-    rejectReview
-} from '@moteur/core/reviews.js';
+import { getReviews, getReview, approveReview, rejectReview } from '@moteur/core/reviews.js';
 import { requireProjectAccess } from '../../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
@@ -19,7 +14,10 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
         const reviews = await getReviews(projectId, {
             ...(modelId && { modelId }),
             ...(entryId && { entryId }),
-            ...(status && (status === 'pending' || status === 'approved' || status === 'rejected') && { status: status as 'pending' | 'approved' | 'rejected' })
+            ...(status &&
+                (status === 'pending' || status === 'approved' || status === 'rejected') && {
+                    status: status as 'pending' | 'approved' | 'rejected'
+                })
         });
         return res.json(reviews);
     } catch {
@@ -45,9 +43,11 @@ router.post('/:reviewId/approve', requireProjectAccess, async (req: any, res: an
         return res.json(review);
     } catch (err: any) {
         const status =
-            err.message?.includes('reviewer') || err.message?.includes('admin') ? 403
-                : err.message?.includes('not found') || err.message?.includes('not pending') ? 400
-                : 500;
+            err.message?.includes('reviewer') || err.message?.includes('admin')
+                ? 403
+                : err.message?.includes('not found') || err.message?.includes('not pending')
+                  ? 400
+                  : 500;
         return res.status(status).json({ error: err?.message ?? 'Failed to approve review' });
     }
 });
@@ -65,9 +65,11 @@ router.post('/:reviewId/reject', requireProjectAccess, async (req: any, res: any
         return res.json(review);
     } catch (err: any) {
         const status =
-            err.message?.includes('reviewer') || err.message?.includes('admin') ? 403
-                : err.message?.includes('not found') || err.message?.includes('not pending') ? 400
-                : 500;
+            err.message?.includes('reviewer') || err.message?.includes('admin')
+                ? 403
+                : err.message?.includes('not found') || err.message?.includes('not pending')
+                  ? 400
+                  : 500;
         return res.status(status).json({ error: err?.message ?? 'Failed to reject review' });
     }
 });
@@ -81,12 +83,18 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
                 { name: 'modelId', in: 'query', schema: { type: 'string' } },
                 { name: 'entryId', in: 'query', schema: { type: 'string' } },
-                { name: 'status', in: 'query', schema: { type: 'string', enum: ['pending', 'approved', 'rejected'] } }
+                {
+                    name: 'status',
+                    in: 'query',
+                    schema: { type: 'string', enum: ['pending', 'approved', 'rejected'] }
+                }
             ],
             responses: {
                 '200': {
                     description: 'List of reviews',
-                    content: { 'application/json': { schema: { type: 'array', items: { type: 'object' } } } }
+                    content: {
+                        'application/json': { schema: { type: 'array', items: { type: 'object' } } }
+                    }
                 }
             }
         }
@@ -100,7 +108,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'reviewId', in: 'path', required: true, schema: { type: 'string' } }
             ],
             responses: {
-                '200': { description: 'Review', content: { 'application/json': { schema: { type: 'object' } } } },
+                '200': {
+                    description: 'Review',
+                    content: { 'application/json': { schema: { type: 'object' } } }
+                },
                 '404': { description: 'Review not found' }
             }
         }
@@ -114,7 +125,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'reviewId', in: 'path', required: true, schema: { type: 'string' } }
             ],
             responses: {
-                '200': { description: 'Approved review', content: { 'application/json': { schema: { type: 'object' } } } },
+                '200': {
+                    description: 'Approved review',
+                    content: { 'application/json': { schema: { type: 'object' } } }
+                },
                 '403': { description: 'Reviewer or admin role required' },
                 '400': { description: 'Review not found or not pending' }
             }
@@ -139,7 +153,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 }
             },
             responses: {
-                '200': { description: 'Rejected review', content: { 'application/json': { schema: { type: 'object' } } } },
+                '200': {
+                    description: 'Rejected review',
+                    content: { 'application/json': { schema: { type: 'object' } } }
+                },
                 '403': { description: 'Reviewer or admin role required' },
                 '400': { description: 'Review not found or not pending' }
             }

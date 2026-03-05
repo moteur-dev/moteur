@@ -10,7 +10,12 @@ declare module 'nodemailer' {
         auth?: { user: string; pass: string };
     }
     interface Transporter {
-        sendMail(options: { from: string; to: string; subject: string; text: string }): Promise<unknown>;
+        sendMail(options: {
+            from: string;
+            to: string;
+            subject: string;
+            text: string;
+        }): Promise<unknown>;
     }
     function createTransport(options: TransportOptions): Transporter;
 }

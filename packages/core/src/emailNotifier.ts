@@ -5,10 +5,7 @@ import type { User } from '@moteur/types/User.js';
 export type ReviewEmailType = 'review_requested' | 'approved' | 'rejected';
 
 function isEmailConfigured(): boolean {
-    return !!(
-        process.env.SMTP_HOST &&
-        process.env.SMTP_FROM
-    );
+    return !!(process.env.SMTP_HOST && process.env.SMTP_FROM);
 }
 
 function getSubject(type: ReviewEmailType, projectLabel: string): string {

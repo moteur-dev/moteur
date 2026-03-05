@@ -40,13 +40,21 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                     'application/json': {
                         schema: {
                             type: 'object',
-                            properties: { assignedTo: { type: 'string', description: 'User ID of assigned reviewer' } }
+                            properties: {
+                                assignedTo: {
+                                    type: 'string',
+                                    description: 'User ID of assigned reviewer'
+                                }
+                            }
                         }
                     }
                 }
             },
             responses: {
-                '201': { description: 'Review created', content: { 'application/json': { schema: { type: 'object' } } } },
+                '201': {
+                    description: 'Review created',
+                    content: { 'application/json': { schema: { type: 'object' } } }
+                },
                 '400': { description: 'Workflow not enabled or already pending' },
                 '404': { description: 'Entry not found' }
             }

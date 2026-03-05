@@ -25,10 +25,11 @@ router.patch('/:entryId/status', requireProjectAccess, async (req: any, res: any
         });
         return res.json(entry);
     } catch (err: any) {
-        const statusCode =
-            err.message?.includes('requires an approved review') ? 403
-                : err.message?.includes('not found') ? 404
-                : 400;
+        const statusCode = err.message?.includes('requires an approved review')
+            ? 403
+            : err.message?.includes('not found')
+              ? 404
+              : 400;
         return res.status(statusCode).json({
             error: err?.message ?? 'Failed to update entry status'
         });
@@ -38,7 +39,8 @@ router.patch('/:entryId/status', requireProjectAccess, async (req: any, res: any
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
     '/projects/{projectId}/models/{modelId}/entries/{entryId}/status': {
         patch: {
-            summary: 'Update entry status (admin can bypass review; others require approval for published)',
+            summary:
+                'Update entry status (admin can bypass review; others require approval for published)',
             tags: ['Entries'],
             parameters: [
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
@@ -60,8 +62,14 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 }
             },
             responses: {
-                '200': { description: 'Entry updated', content: { 'application/json': { schema: { type: 'object' } } } },
-                '403': { description: 'Publishing requires approved review when workflow.requireReview is enabled' },
+                '200': {
+                    description: 'Entry updated',
+                    content: { 'application/json': { schema: { type: 'object' } } }
+                },
+                '403': {
+                    description:
+                        'Publishing requires approved review when workflow.requireReview is enabled'
+                },
                 '404': { description: 'Entry not found' }
             }
         }
