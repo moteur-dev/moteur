@@ -69,9 +69,9 @@ export async function createEntry(
         throw new Error(`Entry "${entry.id}" already exists in model "${modelId}".`);
     }
 
-    triggerEvent('entry.beforeCreate', { entry, user });
+    triggerEvent('entry.beforeCreate', { entry, user, modelId, projectId });
     await putJson(storage, entryKey(modelId, entry.id), entry);
-    triggerEvent('entry.afterCreate', { entry, user });
+    triggerEvent('entry.afterCreate', { entry, user, modelId, projectId });
 
     return entry;
 }
@@ -90,10 +90,10 @@ export async function updateEntry(
     const current = await getEntry(user, projectId, modelId, entryId);
     const updated = { ...current, ...patch };
 
-    triggerEvent('entry.beforeUpdate', { entry: updated, user });
+    triggerEvent('entry.beforeUpdate', { entry: updated, user, modelId, projectId });
     const storage = getProjectStorage(projectId);
     await putJson(storage, entryKey(modelId, entryId), updated);
-    triggerEvent('entry.afterUpdate', { entry: updated, user });
+    triggerEvent('entry.afterUpdate', { entry: updated, user, modelId, projectId });
     return updated;
 }
 
@@ -105,7 +105,7 @@ export async function deleteEntry(
 ): Promise<void> {
     const entry = await getEntry(user, projectId, modelId, entryId);
 
-    triggerEvent('entry.beforeDelete', { entry, user });
+    triggerEvent('entry.beforeDelete', { entry, user, modelId, projectId });
 
     const trashDir = trashEntryDir(projectId, modelId, entryId);
     fs.mkdirSync(trashDir, { recursive: true });
@@ -113,5 +113,5 @@ export async function deleteEntry(
     const dest = path.join(trashDir, `${entryId}-${Date.now()}.json`);
     fs.renameSync(entryFilePath(projectId, modelId, entryId), dest);
 
-    triggerEvent('entry.afterDelete', { entry, user });
+    triggerEvent('entry.afterDelete', { entry, user, modelId, projectId });
 }

@@ -4,6 +4,8 @@
  */
 export const PROJECT_KEY = 'project.json';
 
+export const ACTIVITY_KEY = 'activity.json';
+
 export function modelKey(modelId: string): string {
     return `models/${modelId}/model.json`;
 }

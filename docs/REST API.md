@@ -68,6 +68,22 @@ Restricted endpoints for creating, updating, and managing content and schemas.
 
 ---
 
+### 📋 Activity Log (read-only)
+
+Activity events are recorded automatically when entries, layouts, structures, or models are created, updated, or deleted. Requires JWT and project access.
+
+| Method | Endpoint                                                       | Description                                                                 |
+|--------|----------------------------------------------------------------|-----------------------------------------------------------------------------|
+| GET    | `./admin/projects/:project/activity`                           | Recent activity for the whole project. Query: `limit` (default 50, max 200).|
+| GET    | `./admin/projects/:project/activity/:resourceType/:resourceId`  | Activity for a specific resource (newest first).                            |
+
+**`resourceType`** must be one of: `entry`, `layout`, `page`, `structure`, `model`, `project`.  
+For entries, use **`resourceId`** in the form `modelId__entryId` (double underscore).
+
+Response shape: `{ events: ActivityEvent[] }`. Each event includes `id`, `projectId`, `resourceType`, `resourceId`, `action` (`created` \| `updated` \| `deleted` \| `published` \| `unpublished`), `userId`, `userName`, optional `fieldPath` / `before` / `after`, and `timestamp` (ISO).
+
+---
+
 ### 📐 Blueprints (global project templates)
 
 Blueprints are **global** (not per-project). Stored under **`data/blueprints/`** (override with `BLUEPRINTS_DIR`). Each file is `data/blueprints/<id>.json`. See [Blueprints.md](Blueprints.md) for the JSON shape and how “create from blueprint” works.

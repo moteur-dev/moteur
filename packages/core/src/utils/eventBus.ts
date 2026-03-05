@@ -1,4 +1,5 @@
 // utils/eventBus.ts
+import type { ActivityEvent } from '@moteur/types/Activity.js';
 import { ProjectSchema } from '@moteur/types/Project.js';
 import { ModelSchema, Entry } from '@moteur/types/Model.js';
 import { Layout } from '@moteur/types/Layout.js';
@@ -16,40 +17,40 @@ export interface EventMap {
     'project.beforeDelete': { project: ProjectSchema; user: User };
     'project.afterDelete': { project: ProjectSchema; user: User };
 
-    // Models
-    'model.beforeCreate': { model: ModelSchema; user: User };
-    'model.afterCreate': { model: ModelSchema; user: User };
-    'model.beforeUpdate': { model: ModelSchema; user: User };
-    'model.afterUpdate': { model: ModelSchema; user: User };
-    'model.beforeDelete': { model: ModelSchema; user: User };
-    'model.afterDelete': { model: ModelSchema; user: User };
+    // Models (projectId for activity log)
+    'model.beforeCreate': { model: ModelSchema; user: User; projectId: string };
+    'model.afterCreate': { model: ModelSchema; user: User; projectId: string };
+    'model.beforeUpdate': { model: ModelSchema; user: User; projectId: string };
+    'model.afterUpdate': { model: ModelSchema; user: User; projectId: string };
+    'model.beforeDelete': { model: ModelSchema; user: User; projectId: string };
+    'model.afterDelete': { model: ModelSchema; user: User; projectId: string };
 
-    // Entries
-    'entry.beforeCreate': { entry: Entry; user: User };
-    'entry.afterCreate': { entry: Entry; user: User };
-    'entry.beforeUpdate': { entry: Entry; user: User };
-    'entry.afterUpdate': { entry: Entry; user: User };
-    'entry.beforeDelete': { entry: Entry; user: User };
-    'entry.afterDelete': { entry: Entry; user: User };
+    // Entries (projectId and modelId for activity log)
+    'entry.beforeCreate': { entry: Entry; user: User; modelId: string; projectId: string };
+    'entry.afterCreate': { entry: Entry; user: User; modelId: string; projectId: string };
+    'entry.beforeUpdate': { entry: Entry; user: User; modelId: string; projectId: string };
+    'entry.afterUpdate': { entry: Entry; user: User; modelId: string; projectId: string };
+    'entry.beforeDelete': { entry: Entry; user: User; modelId: string; projectId: string };
+    'entry.afterDelete': { entry: Entry; user: User; modelId: string; projectId: string };
 
-    // Layouts
-    'layout.beforeCreate': { layout: Layout; user: User };
-    'layout.afterCreate': { layout: Layout; user: User };
-    'layout.beforeUpdate': { layout: Layout; user: User };
-    'layout.afterUpdate': { layout: Layout; user: User };
-    'layout.beforeDelete': { layout: Layout; user: User };
-    'layout.afterDelete': { layout: Layout; user: User };
+    // Layouts (projectId for activity log)
+    'layout.beforeCreate': { layout: Layout; user: User; projectId: string };
+    'layout.afterCreate': { layout: Layout; user: User; projectId: string };
+    'layout.beforeUpdate': { layout: Layout; user: User; projectId: string };
+    'layout.afterUpdate': { layout: Layout; user: User; projectId: string };
+    'layout.beforeDelete': { layout: Layout; user: User; projectId: string };
+    'layout.afterDelete': { layout: Layout; user: User; projectId: string };
 
     // Blocks
     'block.created': { block: Block; user: User };
 
-    // Structures
-    'structure.beforeCreate': { structure: StructureSchema; user: User };
-    'structure.afterCreate': { structure: StructureSchema; user: User };
-    'structure.beforeUpdate': { structure: StructureSchema; user: User };
-    'structure.afterUpdate': { structure: StructureSchema; user: User };
-    'structure.beforeDelete': { structure: StructureSchema; user: User };
-    'structure.afterDelete': { structure: StructureSchema; user: User };
+    // Structures (projectId for activity log)
+    'structure.beforeCreate': { structure: StructureSchema; user: User; projectId: string };
+    'structure.afterCreate': { structure: StructureSchema; user: User; projectId: string };
+    'structure.beforeUpdate': { structure: StructureSchema; user: User; projectId: string };
+    'structure.afterUpdate': { structure: StructureSchema; user: User; projectId: string };
+    'structure.beforeDelete': { structure: StructureSchema; user: User; projectId: string };
+    'structure.afterDelete': { structure: StructureSchema; user: User; projectId: string };
 
     // Users
     'user.beforeCreate': { user: User };
@@ -58,6 +59,9 @@ export interface EventMap {
     'user.afterUpdate': { user: User };
     'user.beforeDelete': { user: User };
     'user.afterDelete': { user: User };
+
+    // Activity (emitted after an event is persisted to the activity log)
+    'activity.logged': { event: ActivityEvent };
 }
 
 // Listener type

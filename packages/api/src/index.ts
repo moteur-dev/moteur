@@ -27,6 +27,10 @@ import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
 import { createPresenceServer } from '@moteur/presence';
 import { validateStorageConfig } from '@moteur/core/config/storageConfig.js';
+import { onEvent } from '@moteur/core/utils/eventBus.js';
+
+// Load core so activity log plugin registers and writes activity on resource changes
+import '@moteur/core';
 
 // CORS: restrict to explicit origins. Set CORS_ORIGINS (comma-separated) in production.
 function getCorsOrigin(): string | string[] {
@@ -107,8 +111,15 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 // 🔧 Create HTTP server wrapper
 const httpServer = createServer(app);
 
-// ✅ Plug in presence socket engine
-createPresenceServer(httpServer);
+// ✅ Plug in presence socket engine and broadcast activity events to project room
+const io = createPresenceServer(httpServer);
+onEvent('activity.logged', async ctx => {
+    try {
+        io.to(ctx.event.projectId).emit('activity:event', ctx.event);
+    } catch {
+        // never break on emit failure
+    }
+});
 
 // Validate storage paths before accepting connections
 validateStorageConfig();

@@ -1,3 +1,4 @@
+export * from './Activity';
 export * from './Audit';
 export * from './Block';
 export * from './Blueprint';
