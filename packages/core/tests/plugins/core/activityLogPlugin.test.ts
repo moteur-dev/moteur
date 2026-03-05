@@ -188,16 +188,16 @@ describe('activityLogPlugin', () => {
         await triggerEvent('user.afterCreate', { user: createdUser, performedBy: user });
         await loggedPromise;
 
-        const events = await getGlobalLog(10);
+        const page = await getGlobalLog(10);
         expect(
-            events.some(
+            page.events.some(
                 e =>
                     e.resourceType === 'user' &&
                     e.resourceId === 'new-user-1' &&
                     e.action === 'created'
             )
         ).toBe(true);
-        const ev = events.find(e => e.resourceId === 'new-user-1');
+        const ev = page.events.find(e => e.resourceId === 'new-user-1');
         expect(ev).toMatchObject({
             projectId: GLOBAL_PROJECT_ID,
             resourceType: 'user',
@@ -219,16 +219,16 @@ describe('activityLogPlugin', () => {
         await triggerEvent('blueprint.afterCreate', { blueprint: blueprint as any, user });
         await loggedPromise;
 
-        const events = await getGlobalLog(10);
+        const page = await getGlobalLog(10);
         expect(
-            events.some(
+            page.events.some(
                 e =>
                     e.resourceType === 'blueprint' &&
                     e.resourceId === 'test-bp' &&
                     e.action === 'created'
             )
         ).toBe(true);
-        const ev = events.find(e => e.resourceId === 'test-bp');
+        const ev = page.events.find(e => e.resourceId === 'test-bp');
         expect(ev).toMatchObject({
             projectId: GLOBAL_PROJECT_ID,
             resourceType: 'blueprint',

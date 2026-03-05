@@ -38,21 +38,29 @@ describe('GET /activity (global)', () => {
                 timestamp: '2025-01-01T12:00:00.000Z'
             }
         ];
-        (getGlobalLog as any).mockResolvedValue(mockEvents);
+        (getGlobalLog as any).mockResolvedValue({ events: mockEvents });
 
         const res = await request(app).get('/activity');
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ events: mockEvents });
-        expect(getGlobalLog).toHaveBeenCalledWith(50);
+        expect(res.body.events).toEqual(mockEvents);
+        expect(getGlobalLog).toHaveBeenCalledWith(50, undefined);
     });
 
     it('accepts limit query and caps at 200', async () => {
-        (getGlobalLog as any).mockResolvedValue([]);
+        (getGlobalLog as any).mockResolvedValue({ events: [] });
 
         await request(app).get('/activity?limit=300');
 
-        expect(getGlobalLog).toHaveBeenCalledWith(200);
+        expect(getGlobalLog).toHaveBeenCalledWith(200, undefined);
+    });
+
+    it('passes before query for pagination', async () => {
+        (getGlobalLog as any).mockResolvedValue({ events: [], nextBefore: undefined });
+
+        await request(app).get('/activity?before=2025-01-01T10:00:00.000Z');
+
+        expect(getGlobalLog).toHaveBeenCalledWith(50, '2025-01-01T10:00:00.000Z');
     });
 
     it('returns 500 on getGlobalLog failure', async () => {

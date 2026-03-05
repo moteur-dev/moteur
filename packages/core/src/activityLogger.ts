@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import type {
     ActivityEvent,
+    ActivityLogPage,
     ActivityResourceType,
     ActivityAction
 } from '@moteur/types/Activity.js';
@@ -98,10 +99,11 @@ export async function getLog(
 ): Promise<ActivityEvent[]> {
     try {
         if (projectId === GLOBAL_PROJECT_ID) {
-            const events = await getGlobalLog(MAX_EVENTS_IN_FILE);
-            return events.filter(
+            const page = await getGlobalLog(MAX_EVENTS_IN_FILE);
+            const filtered = page.events.filter(
                 e => e.resourceType === resourceType && e.resourceId === resourceId
             );
+            return filtered;
         }
         const storage = getProjectStorage(projectId);
         const events = (await getJson<ActivityEvent[]>(storage, ACTIVITY_KEY)) ?? [];
@@ -115,21 +117,37 @@ export async function getLog(
 }
 
 /**
- * Returns recent activity for the whole project, newest first.
+ * Returns a page of activity for the project, newest first.
+ * Use `before` (ISO timestamp) to fetch older events. Response includes `nextBefore` when more pages exist.
  * When projectId is GLOBAL_PROJECT_ID, returns global (system) activity.
  */
 export async function getProjectLog(
     projectId: string,
-    limit: number = DEFAULT_PROJECT_LOG_LIMIT
-): Promise<ActivityEvent[]> {
+    limit: number = DEFAULT_PROJECT_LOG_LIMIT,
+    before?: string
+): Promise<ActivityLogPage> {
     try {
-        if (projectId === GLOBAL_PROJECT_ID) return getGlobalLog(limit);
+        if (projectId === GLOBAL_PROJECT_ID) return getGlobalLog(limit, before);
         const storage = getProjectStorage(projectId);
         const events = (await getJson<ActivityEvent[]>(storage, ACTIVITY_KEY)) ?? [];
-        return events.slice(-limit).reverse();
+        return slicePage(events, limit, before);
     } catch {
-        return [];
+        return { events: [] };
     }
+}
+
+/** Events are stored chronological (oldest first). Return newest-first page and optional nextBefore. */
+function slicePage(events: ActivityEvent[], limit: number, before?: string): ActivityLogPage {
+    let list = events;
+    if (before) {
+        list = events.filter(e => e.timestamp < before);
+    }
+    const page = list.slice(-limit).reverse();
+    const hasMore = list.length > limit;
+    return {
+        events: page,
+        ...(hasMore && page.length > 0 && { nextBefore: page[page.length - 1]!.timestamp })
+    };
 }
 
 /**
@@ -161,19 +179,21 @@ export function logGlobal(event: ActivityEvent): void {
 }
 
 /**
- * Returns recent global (system) activity, newest first.
+ * Returns a page of global (system) activity, newest first.
+ * Use `before` (ISO timestamp) to fetch older events. Response includes `nextBefore` when more pages exist.
  */
 export async function getGlobalLog(
-    limit: number = DEFAULT_PROJECT_LOG_LIMIT
-): Promise<ActivityEvent[]> {
+    limit: number = DEFAULT_PROJECT_LOG_LIMIT,
+    before?: string
+): Promise<ActivityLogPage> {
     try {
         const filePath = getGlobalActivityPath();
-        if (!fs.existsSync(filePath)) return [];
+        if (!fs.existsSync(filePath)) return { events: [] };
         const raw = fs.readFileSync(filePath, 'utf-8');
         const events = (JSON.parse(raw) as ActivityEvent[]) ?? [];
-        return events.slice(-limit).reverse();
+        return slicePage(events, limit, before);
     } catch {
-        return [];
+        return { events: [] };
     }
 }
 

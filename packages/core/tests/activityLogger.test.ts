@@ -107,8 +107,8 @@ describe('activityLogger', () => {
 
     describe('getProjectLog', () => {
         it('returns empty array when no activity file exists', async () => {
-            const events = await getProjectLog(projectId);
-            expect(events).toEqual([]);
+            const page = await getProjectLog(projectId);
+            expect(page.events).toEqual([]);
         });
 
         it('returns recent events newest first with default limit', async () => {
@@ -127,10 +127,10 @@ describe('activityLogger', () => {
                 await new Promise(r => globalThis.setTimeout(r, 20));
             }
 
-            const events = await getProjectLog(projectId);
-            expect(events).toHaveLength(3);
-            expect(events[0].id).toBe('id-2');
-            expect(events[2].id).toBe('id-0');
+            const page = await getProjectLog(projectId);
+            expect(page.events).toHaveLength(3);
+            expect(page.events[0].id).toBe('id-2');
+            expect(page.events[2].id).toBe('id-0');
         });
 
         it('respects limit parameter', async () => {
@@ -149,10 +149,38 @@ describe('activityLogger', () => {
                 await new Promise(r => globalThis.setTimeout(r, 20));
             }
 
-            const events = await getProjectLog(projectId, 2);
-            expect(events).toHaveLength(2);
-            expect(events[0].id).toBe('id-4');
-            expect(events[1].id).toBe('id-3');
+            const page = await getProjectLog(projectId, 2);
+            expect(page.events).toHaveLength(2);
+            expect(page.events[0].id).toBe('id-4');
+            expect(page.events[1].id).toBe('id-3');
+        });
+
+        it('returns nextBefore when more events exist and supports before cursor', async () => {
+            for (let i = 0; i < 5; i++) {
+                log({
+                    id: `id-${i}`,
+                    projectId,
+                    resourceType: 'model',
+                    resourceId: `m${i}`,
+                    action: 'created',
+                    userId: 'u1',
+                    userName: 'User',
+                    timestamp: new Date().toISOString()
+                });
+                await waitForActivityLogged();
+                await new Promise(r => globalThis.setTimeout(r, 20));
+            }
+
+            const first = await getProjectLog(projectId, 2);
+            expect(first.events).toHaveLength(2);
+            expect(first.nextBefore).toBeDefined();
+            expect(first.events[0].id).toBe('id-4');
+            expect(first.events[1].id).toBe('id-3');
+
+            const second = await getProjectLog(projectId, 2, first.nextBefore);
+            expect(second.events).toHaveLength(2);
+            expect(second.events[0].id).toBe('id-2');
+            expect(second.events[1].id).toBe('id-1');
         });
     });
 
@@ -183,9 +211,9 @@ describe('activityLogger', () => {
                 userName: 'Alice'
             });
 
-            const events = await getProjectLog(projectId, 10);
-            expect(events).toHaveLength(1);
-            expect(events[0].id).toBe('ev-1');
+            const page = await getProjectLog(projectId, 10);
+            expect(page.events).toHaveLength(1);
+            expect(page.events[0].id).toBe('ev-1');
         });
 
         it('does not throw when called with invalid projectId', () => {

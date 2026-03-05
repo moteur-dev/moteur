@@ -76,14 +76,14 @@ Activity events are recorded automatically when entries, layouts, structures, mo
 
 | Method | Endpoint                                                       | Description                                                                 |
 |--------|----------------------------------------------------------------|-----------------------------------------------------------------------------|
-| GET    | `./admin/projects/:project/activity`                           | Recent activity for the whole project. Query: `limit` (default 50, max 200).|
+| GET    | `./admin/projects/:project/activity`                           | Page of activity. Query: `limit` (default 50, max 200), `before` (ISO timestamp for next page). Response: `{ events, nextBefore? }`. |
 | GET    | `./admin/projects/:project/activity/:resourceType/:resourceId`  | Activity for a specific resource (newest first).                            |
 
 **Global (system) activity** (admin only): user and blueprint changes.
 
 | Method | Endpoint            | Description                                          |
 |--------|---------------------|------------------------------------------------------|
-| GET    | `./activity`        | Recent global activity. Query: `limit` (default 50, max 200). |
+| GET    | `./activity`        | Page of global activity. Query: `limit` (default 50, max 200), `before` (pagination). Response: `{ events, nextBefore? }`. |
 
 **`resourceType`** (project or global): `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
 For entries, use **`resourceId`** in the form `modelId__entryId` (double underscore). Global events have `projectId: "_system"`.

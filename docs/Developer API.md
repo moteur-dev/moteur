@@ -75,11 +75,12 @@ Returns activity events for a specific resource (newest first).
 For entries, use `resourceId` in the form `modelId__entryId` (double underscore).  
 For global (user/blueprint) activity, use `projectId: "_system"`.
 
-### `Moteur.activity.getProjectLog(projectId: string, limit?: number): Promise<ActivityEvent[]>`
-Returns recent activity for the whole project (newest first). Default `limit` is 50. Use `projectId: "_system"` for global activity.
+### `Moteur.activity.getProjectLog(projectId: string, limit?: number, before?: string): Promise<ActivityLogPage>`
+Returns a page of activity for the project (newest first). Default `limit` is 50. Use `projectId: "_system"` for global activity.  
+**Pagination:** pass `before` (ISO timestamp of the oldest event from the previous page) to load older events. The result includes `events` and optionally `nextBefore` (use as `before` for the next page).
 
-### `Moteur.activity.getGlobalLog(limit?: number): Promise<ActivityEvent[]>`
-Returns recent global (system) activity: user and blueprint changes. Default `limit` is 50.
+### `Moteur.activity.getGlobalLog(limit?: number, before?: string): Promise<ActivityLogPage>`
+Returns a page of global (system) activity: user and blueprint changes. Default `limit` is 50. Supports `before` for pagination (same as `getProjectLog`).
 
 ---
 

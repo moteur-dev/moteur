@@ -23,3 +23,10 @@ export interface ActivityEvent {
     after?: unknown;
     timestamp: string; // ISO
 }
+
+/** Paginated activity log: events newest first, plus optional cursor for next page. */
+export interface ActivityLogPage {
+    events: ActivityEvent[];
+    /** ISO timestamp of the oldest event in this page; use as `before` query param for the next page. */
+    nextBefore?: string;
+}

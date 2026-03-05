@@ -39,21 +39,29 @@ describe('GET /projects/:projectId/activity', () => {
                 timestamp: '2025-01-01T12:00:00.000Z'
             }
         ];
-        (getProjectLog as any).mockResolvedValue(mockEvents);
+        (getProjectLog as any).mockResolvedValue({ events: mockEvents });
 
         const res = await request(app).get('/projects/proj1/activity');
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ events: mockEvents });
-        expect(getProjectLog).toHaveBeenCalledWith('proj1', 50);
+        expect(res.body.events).toEqual(mockEvents);
+        expect(getProjectLog).toHaveBeenCalledWith('proj1', 50, undefined);
     });
 
     it('accepts limit query and caps at 200', async () => {
-        (getProjectLog as any).mockResolvedValue([]);
+        (getProjectLog as any).mockResolvedValue({ events: [] });
 
         await request(app).get('/projects/proj1/activity?limit=300');
 
-        expect(getProjectLog).toHaveBeenCalledWith('proj1', 200);
+        expect(getProjectLog).toHaveBeenCalledWith('proj1', 200, undefined);
+    });
+
+    it('passes before query for pagination', async () => {
+        (getProjectLog as any).mockResolvedValue({ events: [], nextBefore: undefined });
+
+        await request(app).get('/projects/proj1/activity?before=2025-01-01T10:00:00.000Z');
+
+        expect(getProjectLog).toHaveBeenCalledWith('proj1', 50, '2025-01-01T10:00:00.000Z');
     });
 
     it('returns 500 on getProjectLog failure', async () => {
@@ -89,7 +97,7 @@ describe('GET /projects/:projectId/activity/:resourceType/:resourceId', () => {
         const res = await request(app).get('/projects/proj1/activity/entry/article__post-1');
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ events: mockEvents });
+        expect(res.body.events).toEqual(mockEvents);
         expect(getLog).toHaveBeenCalledWith('proj1', 'entry', 'article__post-1');
     });
 

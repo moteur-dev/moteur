@@ -20,9 +20,10 @@ const router: Router = Router({ mergeParams: true });
 router.get('/', requireProjectAccess, async (req: any, res: any) => {
     const { projectId } = req.params;
     const limit = req.query.limit != null ? Math.min(Number(req.query.limit), 200) : 50;
+    const before = typeof req.query.before === 'string' ? req.query.before : undefined;
     try {
-        const events = await getProjectLog(projectId, limit);
-        return res.json({ events });
+        const page = await getProjectLog(projectId, limit, before);
+        return res.json(page);
     } catch (err: any) {
         return res.status(500).json({ error: err?.message ?? 'Failed to load activity' });
     }
@@ -72,11 +73,18 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             tags: ['Activity'],
             parameters: [
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
-                { name: 'limit', in: 'query', schema: { type: 'integer', default: 50 } }
+                { name: 'limit', in: 'query', schema: { type: 'integer', default: 50 } },
+                {
+                    name: 'before',
+                    in: 'query',
+                    description: 'ISO timestamp; return events older than this (for pagination)',
+                    schema: { type: 'string', format: 'date-time' }
+                }
             ],
             responses: {
                 '200': {
-                    description: 'List of activity events (newest first)',
+                    description:
+                        'List of activity events (newest first). Use nextBefore for pagination.',
                     content: {
                         'application/json': {
                             schema: {
@@ -85,6 +93,11 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                                     events: {
                                         type: 'array',
                                         items: { $ref: '#/components/schemas/ActivityEvent' }
+                                    },
+                                    nextBefore: {
+                                        type: 'string',
+                                        format: 'date-time',
+                                        description: 'Use as `before` for the next page'
                                     }
                                 }
                             }
