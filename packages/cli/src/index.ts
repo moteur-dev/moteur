@@ -26,6 +26,7 @@ import './commands/structures.js';
 import './commands/fields.js';
 import './commands/blocks.js';
 import './commands/entries.js';
+import './commands/comments.js';
 import { showHelp, showCommandHelp } from './commands/help.js';
 
 const [command, subcommand, ...rest] = process.argv.slice(2);

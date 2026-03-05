@@ -1,5 +1,6 @@
 export * from './Activity';
 export * from './Audit';
+export * from './Comment';
 export * from './Block';
 export * from './Blueprint';
 export * from './Field';

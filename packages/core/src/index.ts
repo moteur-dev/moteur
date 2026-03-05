@@ -3,6 +3,7 @@ import * as Layouts from './layouts.js';
 import * as Structures from './structures.js';
 import * as ActivityLogger from './activityLogger.js';
 import * as Blocks from './blocks.js';
+import * as Comments from './comments.js';
 
 import type { MoteurAPI } from './MoteurAPI.js';
 
@@ -27,7 +28,14 @@ export const Moteur: MoteurAPI = {
         getProjectLog: ActivityLogger.getProjectLog,
         getGlobalLog: ActivityLogger.getGlobalLog
     },
-    blocks: Blocks
+    blocks: Blocks,
+    comments: {
+        add: Comments.addComment,
+        get: Comments.getComments,
+        resolve: Comments.resolveComment,
+        delete: Comments.deleteComment,
+        edit: Comments.editComment
+    }
 };
 
 export default Moteur;

@@ -124,6 +124,36 @@ onEvent('activity.logged', async ctx => {
     }
 });
 
+// Broadcast comment events to project room for real-time studio updates
+onEvent('comment.added', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('comment:added', ctx.comment);
+    } catch {
+        // never break on emit failure
+    }
+});
+onEvent('comment.resolved', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('comment:resolved', ctx.comment);
+    } catch {
+        // never break on emit failure
+    }
+});
+onEvent('comment.deleted', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('comment:deleted', { id: ctx.id });
+    } catch {
+        // never break on emit failure
+    }
+});
+onEvent('comment.edited', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('comment:edited', ctx.comment);
+    } catch {
+        // never break on emit failure
+    }
+});
+
 // Validate storage paths before accepting connections
 validateStorageConfig();
 

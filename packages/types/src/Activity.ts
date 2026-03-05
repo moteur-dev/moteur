@@ -8,7 +8,14 @@ export type ActivityResourceType =
     | 'user'
     | 'blueprint';
 
-export type ActivityAction = 'created' | 'updated' | 'deleted' | 'published' | 'unpublished';
+export type ActivityAction =
+    | 'created'
+    | 'updated'
+    | 'deleted'
+    | 'published'
+    | 'unpublished'
+    | 'commented'
+    | 'resolved';
 
 export interface ActivityEvent {
     id: string;

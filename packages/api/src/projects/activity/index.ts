@@ -54,7 +54,15 @@ export const schemas: OpenAPIV3.ComponentsObject['schemas'] = {
             resourceId: { type: 'string' },
             action: {
                 type: 'string',
-                enum: ['created', 'updated', 'deleted', 'published', 'unpublished']
+                enum: [
+                    'created',
+                    'updated',
+                    'deleted',
+                    'published',
+                    'unpublished',
+                    'commented',
+                    'resolved'
+                ]
             },
             userId: { type: 'string' },
             userName: { type: 'string' },

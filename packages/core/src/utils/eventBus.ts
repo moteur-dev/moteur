@@ -1,6 +1,7 @@
 // utils/eventBus.ts
 import type { ActivityEvent } from '@moteur/types/Activity.js';
 import type { BlueprintSchema } from '@moteur/types/Blueprint.js';
+import type { Comment } from '@moteur/types/Comment.js';
 import { ProjectSchema } from '@moteur/types/Project.js';
 import { ModelSchema, Entry } from '@moteur/types/Model.js';
 import { Layout } from '@moteur/types/Layout.js';
@@ -68,6 +69,12 @@ export interface EventMap {
 
     // Activity (emitted after an event is persisted to the activity log)
     'activity.logged': { event: ActivityEvent };
+
+    // Comments (emitted after comment mutations for real-time broadcast)
+    'comment.added': { projectId: string; comment: Comment };
+    'comment.resolved': { projectId: string; comment: Comment };
+    'comment.deleted': { projectId: string; id: string };
+    'comment.edited': { projectId: string; comment: Comment };
 }
 
 // Listener type

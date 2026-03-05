@@ -112,6 +112,27 @@ The Moteur CLI allows you to manage projects, layouts, structures, blocks, and f
 
 ---
 
+## 💬 Comments
+
+| Command                                                                 | Description                                              |
+|-------------------------------------------------------------------------|----------------------------------------------------------|
+| `comments list --project=site1 --resource-type=entry --resource-id=article__e1` | List comments for a resource (entry or layout)          |
+| `comments list ... --field-path=hero.title`                             | Filter by field path (optional)                          |
+| `comments list ... --include-resolved=true`                             | Include resolved comments (default: unresolved only)    |
+| `comments add --project=site1 --resource-type=entry --resource-id=article__e1 --body="Your text"` | Add a comment                            |
+| `comments add ... --field-path=hero.title`                              | Attach comment to a specific field (optional)            |
+| `comments add ... --block-id=block-1`                                  | Attach to a layout block (optional)                       |
+| `comments add ... --parent-id=<comment-id>`                             | Add a reply (one level only; optional)                   |
+| `comments add ... [--file \| --data]`                                   | Provide body via JSON file or inline JSON with `body`     |
+| `comments resolve --project=site1 --id=<comment-id>`                    | Mark a comment as resolved                               |
+| `comments delete --project=site1 --id=<comment-id>`                     | Delete a comment (author or admin only)                   |
+| `comments edit --project=site1 --id=<comment-id> --body="New text"`    | Edit comment body (author only)                           |
+| `comments edit ... [--file \| --data]`                                  | Provide new body via JSON with `body`                     |
+
+Use `--json` on list/add/resolve/edit for raw JSON output. `--project` can be omitted to pick from an interactive project list.
+
+---
+
 ## 🧩 Fields
 
 | Command         | Description                        |

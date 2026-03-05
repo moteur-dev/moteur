@@ -15,6 +15,10 @@ import activityRouter, {
     openapi as activitySpec,
     schemas as activitySchemas
 } from './activity/index.js';
+import commentsRouter, {
+    openapi as commentsSpec,
+    schemas as commentsSchemas
+} from './comments/index.js';
 
 const router: Router = Router();
 
@@ -27,6 +31,7 @@ router.use(users);
 router.use(presenceFormState);
 router.use(debug);
 router.use('/:projectId/activity', activityRouter);
+router.use('/:projectId/comments', commentsRouter);
 
 export const projectsSpecs = {
     paths: mergePathSpecs(
@@ -38,11 +43,13 @@ export const projectsSpecs = {
         usersSpec,
         presenceFormStateSpec,
         debugSpec,
-        activitySpec
+        activitySpec,
+        commentsSpec
     ),
     schemas: {
         ...createSchemas,
-        ...activitySchemas
+        ...activitySchemas,
+        ...commentsSchemas
     }
 };
 
