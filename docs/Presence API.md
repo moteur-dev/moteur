@@ -133,7 +133,7 @@ Emitted when an activity event is logged (entry, layout, structure, model, or pr
   projectId: string;
   resourceType: 'entry' | 'layout' | 'page' | 'structure' | 'model' | 'project';
   resourceId: string;
-  action: 'created' | 'updated' | 'deleted' | 'published' | 'unpublished';
+  action: 'created' | 'updated' | 'deleted' | 'published' | 'unpublished' | 'commented' | 'resolved';
   userId: string;
   userName: string;
   fieldPath?: string;
@@ -142,6 +142,36 @@ Emitted when an activity event is logged (entry, layout, structure, model, or pr
   timestamp: string; // ISO
 }
 ```
+
+---
+
+## 💬 Comment events
+
+Emitted to the project room when comments are added, resolved, edited, or deleted. Clients can use these for real-time comment threads in the studio.
+
+### `comment:added`
+
+**Server → All in project room**
+
+Payload: full `Comment` object (new comment).
+
+### `comment:resolved`
+
+**Server → All in project room**
+
+Payload: full `Comment` object (with `resolved: true`, `resolvedBy`, `resolvedAt`).
+
+### `comment:edited`
+
+**Server → All in project room**
+
+Payload: full `Comment` object (updated `body`, `updatedAt`).
+
+### `comment:deleted`
+
+**Server → All in project room**
+
+Payload: `{ id: string }` (comment ID that was deleted).
 
 ---
 

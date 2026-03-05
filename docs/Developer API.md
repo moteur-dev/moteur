@@ -84,6 +84,27 @@ Returns a page of global (system) activity: user and blueprint changes. Default 
 
 ---
 
+## 💬 Comments API
+
+Comments can be attached to entries (top-level or specific fields) and layouts (including specific blocks). They are threaded (one level of replies), resolvable, and broadcast in real time via the presence WebSocket.
+
+### `Moteur.comments.add(projectId: string, user: User, input: CommentInput): Promise<Comment>`
+Creates a new comment. `input` must include `resourceType` (`'entry'` \| `'layout'`), `resourceId` (e.g. `modelId__entryId` for entries, `layoutId` for layouts), and `body` (plain text). Optional: `fieldPath`, `blockId`, `parentId` (for replies; one level deep only).
+
+### `Moteur.comments.get(projectId: string, resourceType: string, resourceId: string, options?: GetCommentsOptions): Promise<Comment[]>`
+Returns comments for a resource. `options.includeResolved` (default `false`) includes resolved comments; `options.fieldPath` filters by field path.
+
+### `Moteur.comments.resolve(projectId: string, user: User, commentId: string): Promise<Comment>`
+Marks a comment as resolved. Any project member can resolve. Sets `resolvedBy` and `resolvedAt`.
+
+### `Moteur.comments.delete(projectId: string, user: User, commentId: string): Promise<void>`
+Hard-deletes a comment. Only the author or an admin can delete.
+
+### `Moteur.comments.edit(projectId: string, user: User, commentId: string, body: string): Promise<Comment>`
+Edits the comment body. Only the author can edit. Updates `updatedAt`.
+
+---
+
 ## 🧩 Fields API
 
 ### `Moteur.fields.loadFields(): Record<string, Field>`

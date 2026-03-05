@@ -88,7 +88,25 @@ Activity events are recorded automatically when entries, layouts, structures, mo
 **`resourceType`** (project or global): `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
 For entries, use **`resourceId`** in the form `modelId__entryId` (double underscore). Global events have `projectId: "_system"`.
 
-Response shape: `{ events: ActivityEvent[] }`. Each event includes `id`, `projectId`, `resourceType`, `resourceId`, `action` (`created` \| `updated` \| `deleted` \| `published` \| `unpublished`), `userId`, `userName`, optional `fieldPath` / `before` / `after`, and `timestamp` (ISO).
+Response shape: `{ events: ActivityEvent[] }`. Each event includes `id`, `projectId`, `resourceType`, `resourceId`, `action` (`created` \| `updated` \| `deleted` \| `published` \| `unpublished` \| `commented` \| `resolved`), `userId`, `userName`, optional `fieldPath` / `before` / `after`, and `timestamp` (ISO).
+
+---
+
+### 💬 Comments
+
+Comments are stored per project in `comments.json`. All endpoints require JWT + project access.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST   | `./admin/projects/:project/comments` | Create a comment. Body: `{ resourceType, resourceId, fieldPath?, blockId?, parentId?, body }`. Returns created `Comment`. |
+| GET    | `./admin/projects/:project/comments` | List comments. Query: `resourceType`, `resourceId` (required), `fieldPath?`, `includeResolved?` (default false). Returns `Comment[]`. |
+| PATCH  | `./admin/projects/:project/comments/:id` | Edit comment text. Body: `{ body }`. Only the author can edit. Returns updated `Comment`. |
+| POST   | `./admin/projects/:project/comments/:id/resolve` | Mark comment resolved. Any project member can resolve. Returns updated `Comment`. |
+| DELETE | `./admin/projects/:project/comments/:id` | Delete a comment. Only the author or an admin can delete. Returns 204 No Content. |
+
+`resourceType` is `entry` or `layout`. For entries, `resourceId` is `modelId__entryId`; for layouts, `resourceId` is the layout ID. Comments are threaded (one level of replies via `parentId`) and broadcast in real time via WebSocket (see Presence API).
+
+Comment body length is limited; set `COMMENTS_MAX_BODY_LENGTH` (default 10000) to override. Requests with a body over the limit return 400 with a clear error message.
 
 ---
 
