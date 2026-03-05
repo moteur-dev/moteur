@@ -23,6 +23,12 @@ export interface ProjectSchema {
 
     namespaces?: string[]; // List of namespaces for this project
 
+    workflow?: {
+        enabled: boolean; // default false
+        mode: 'auto_publish'; // reviewer approves → auto-publishes
+        requireReview: boolean; // if true, authors cannot publish without approval; admins can always bypass
+    };
+
     meta?: {
         audit?: Audit;
     };

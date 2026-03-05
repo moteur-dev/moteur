@@ -5,6 +5,8 @@ import type * as Activity from './activityLogger';
 //import type * as Fields from '../api/fields';
 import type * as Blocks from './blocks';
 import type * as Comments from './comments';
+import type * as Reviews from './reviews';
+import type * as Notifications from './notifications';
 
 export interface MoteurAPI {
     projects: typeof Projects;
@@ -18,5 +20,17 @@ export interface MoteurAPI {
         resolve: typeof Comments.resolveComment;
         delete: typeof Comments.deleteComment;
         edit: typeof Comments.editComment;
+    };
+    reviews: {
+        submit: typeof Reviews.submitForReview;
+        approve: typeof Reviews.approveReview;
+        reject: typeof Reviews.rejectReview;
+        get: typeof Reviews.getReviews;
+        getOne: typeof Reviews.getReview;
+    };
+    notifications: {
+        get: typeof Notifications.getNotifications;
+        markRead: typeof Notifications.markRead;
+        markAllRead: typeof Notifications.markAllRead;
     };
 }

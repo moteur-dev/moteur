@@ -2,6 +2,8 @@
 import type { ActivityEvent } from '@moteur/types/Activity.js';
 import type { BlueprintSchema } from '@moteur/types/Blueprint.js';
 import type { Comment } from '@moteur/types/Comment.js';
+import type { Review } from '@moteur/types/Review.js';
+import type { EntryStatus } from '@moteur/types/Model.js';
 import { ProjectSchema } from '@moteur/types/Project.js';
 import { ModelSchema, Entry } from '@moteur/types/Model.js';
 import { Layout } from '@moteur/types/Layout.js';
@@ -75,6 +77,17 @@ export interface EventMap {
     'comment.resolved': { projectId: string; comment: Comment };
     'comment.deleted': { projectId: string; id: string };
     'comment.edited': { projectId: string; comment: Comment };
+
+    // Reviews (for WebSocket broadcast and notifications)
+    'review.submitted': { projectId: string; review: Review };
+    'review.approved': { projectId: string; review: Review };
+    'review.rejected': { projectId: string; review: Review };
+    'review.entryStatusChanged': {
+        projectId: string;
+        entryId: string;
+        modelId: string;
+        status: EntryStatus;
+    };
 }
 
 // Listener type

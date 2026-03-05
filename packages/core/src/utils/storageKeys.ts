@@ -8,6 +8,10 @@ export const ACTIVITY_KEY = 'activity.json';
 
 export const COMMENTS_KEY = 'comments.json';
 
+export const REVIEWS_KEY = 'reviews.json';
+
+export const NOTIFICATIONS_KEY = 'notifications.json';
+
 export function modelKey(modelId: string): string {
     return `models/${modelId}/model.json`;
 }

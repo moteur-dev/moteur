@@ -15,7 +15,10 @@ export type ActivityAction =
     | 'published'
     | 'unpublished'
     | 'commented'
-    | 'resolved';
+    | 'resolved'
+    | 'submitted_for_review'
+    | 'approved'
+    | 'rejected';
 
 export interface ActivityEvent {
     id: string;

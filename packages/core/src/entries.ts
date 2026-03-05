@@ -5,6 +5,8 @@ import { isValidId } from './utils/idUtils.js';
 import { entryFilePath, trashEntryDir } from './utils/pathUtils.js';
 import { User } from '@moteur/types/User.js';
 import { getModelSchema } from './models.js';
+import { getProject } from './projects.js';
+import { hasApprovedReview } from './reviews.js';
 import { triggerEvent } from './utils/eventBus.js';
 import { getProjectStorage } from './utils/getProjectStorage.js';
 import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
@@ -85,6 +87,21 @@ export async function updateEntry(
 ): Promise<Entry> {
     if (!entryId || !isValidId(entryId)) {
         throw new Error(`Invalid entry ID: ${entryId}`);
+    }
+
+    if (patch.status === 'published') {
+        const project = await getProject(user, projectId);
+        if (project.workflow?.enabled && project.workflow?.requireReview) {
+            const isAdmin = Array.isArray(user.roles) && user.roles.includes('admin');
+            if (!isAdmin) {
+                const approved = await hasApprovedReview(projectId, modelId, entryId);
+                if (!approved) {
+                    throw new Error(
+                        'Publishing requires an approved review when the project has review workflow enabled.'
+                    );
+                }
+            }
+        }
     }
 
     const current = await getEntry(user, projectId, modelId, entryId);
