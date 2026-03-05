@@ -7,9 +7,13 @@ import type * as Blocks from './blocks';
 import type * as Comments from './comments';
 import type * as Reviews from './reviews';
 import type * as Notifications from './notifications';
+import type * as Templates from './templates';
+import type * as Pages from './pages';
 
 export interface MoteurAPI {
     projects: typeof Projects;
+    templates: typeof Templates;
+    pages: typeof Pages;
     layouts: typeof Layouts;
     structures: typeof Structures;
     activity: Pick<typeof Activity, 'getLog' | 'getProjectLog' | 'getGlobalLog'>;
@@ -23,6 +27,7 @@ export interface MoteurAPI {
     };
     reviews: {
         submit: typeof Reviews.submitForReview;
+        submitPage: typeof Reviews.submitForPageReview;
         approve: typeof Reviews.approveReview;
         reject: typeof Reviews.rejectReview;
         get: typeof Reviews.getReviews;

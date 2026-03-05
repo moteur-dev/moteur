@@ -43,3 +43,19 @@ export function structureKey(structureId: string): string {
 export function structureListPrefix(): string {
     return 'structures/';
 }
+
+export function templateKey(templateId: string): string {
+    return `templates/${templateId}.json`;
+}
+
+export function templateListPrefix(): string {
+    return 'templates/';
+}
+
+export function pageKey(pageId: string): string {
+    return `pages/${pageId}.json`;
+}
+
+export function pageListPrefix(): string {
+    return 'pages/';
+}

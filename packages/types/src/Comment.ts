@@ -1,4 +1,4 @@
-export type CommentResourceType = 'entry' | 'layout';
+export type CommentResourceType = 'entry' | 'layout' | 'page';
 
 export interface Comment {
     id: string;

@@ -25,6 +25,69 @@ Soft-deletes: moves a project to `.trash/projects/{id}`.
 
 ---
 
+## 📄 Templates API
+
+Templates define the schema for pages (fields) in a project. Storage: `projects/{projectId}/templates/{templateId}.json`.
+
+### `Moteur.templates.listTemplates(projectId: string): Promise<TemplateSchema[]>`
+Returns all templates in the project.
+
+### `Moteur.templates.getTemplate(projectId: string, id: string): Promise<TemplateSchema>`
+Returns a single template by id (no auth).
+
+### `Moteur.templates.getTemplateWithAuth(user: User, projectId: string, id: string): Promise<TemplateSchema>`
+Returns a single template with project access check.
+
+### `Moteur.templates.createTemplate(projectId: string, user: User, data): Promise<TemplateSchema>`
+Creates a new template. `data` must include `id`, `label`, `fields` (and optionally `description`). `createdAt`/`updatedAt` are set automatically.
+
+### `Moteur.templates.updateTemplate(projectId: string, user: User, id: string, patch): Promise<TemplateSchema>`
+Updates a template with a partial payload.
+
+### `Moteur.templates.deleteTemplate(projectId: string, user: User, id: string): Promise<void>`
+Soft-deletes a template (moves to `.trash/templates/{id}.json`).
+
+### `Moteur.templates.validateTemplateById(projectId: string, id: string): Promise<ValidationResult>`
+Validates a template by id.
+
+---
+
+## 📃 Pages API
+
+Pages are template-based content instances with optional slug, parent, and status. Storage: `projects/{projectId}/pages/{pageId}.json`. They follow the same workflow as entries (draft → in_review → published) and can be submitted for review.
+
+### `Moteur.pages.listPages(projectId: string, options?): Promise<Page[]>`
+Returns pages, optionally filtered by `templateId`, `parentId`, or `status`.
+
+### `Moteur.pages.getPage(projectId: string, id: string): Promise<Page>`
+Returns a single page by id.
+
+### `Moteur.pages.getPageWithAuth(user: User, projectId: string, id: string): Promise<Page>`
+Returns a page with project access check.
+
+### `Moteur.pages.getPageBySlug(projectId: string, slug: string): Promise<Page | null>`
+Returns a page by slug, or `null` if not found.
+
+### `Moteur.pages.createPage(projectId: string, user: User, data): Promise<Page>`
+Creates a new page. `data` must include `templateId`, `label`, `fields`; optional `slug`, `parentId`, `status`. Id is generated. Validates fields against the template and enforces slug uniqueness and parent cycle checks.
+
+### `Moteur.pages.updatePage(projectId: string, user: User, id: string, patch): Promise<Page>`
+Updates a page. Respects publish guard (approved review required when `project.workflow.requireReview` is enabled).
+
+### `Moteur.pages.deletePage(projectId: string, user: User, id: string): Promise<void>`
+Soft-deletes a page. Children are moved to root (`parentId` cleared).
+
+### `Moteur.pages.validatePageById(projectId: string, id: string): Promise<ValidationResult>`
+Validates a page against its template.
+
+### `Moteur.pages.validateAllPages(projectId: string): Promise<ValidationResult[]>`
+Validates all pages in the project.
+
+### Page reviews
+Use `Moteur.reviews.submitPage(projectId, user, pageId, assignedTo?)` to submit a page for review. Approve/reject via `Moteur.reviews.approve` / `Moteur.reviews.reject` (same as entries; review records use `resourceType: 'page'`).
+
+---
+
 ## 📄 Layouts API
 
 ### `Moteur.layouts.listLayouts(project: string): Layout[]`

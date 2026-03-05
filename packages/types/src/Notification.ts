@@ -6,8 +6,10 @@ export interface Notification {
     userId: string;
     type: NotificationType;
     reviewId: string;
-    entryId: string;
-    modelId: string;
+    entryId?: string;
+    modelId?: string;
+    pageId?: string;
+    templateId?: string;
     read: boolean;
     createdAt: string;
 }

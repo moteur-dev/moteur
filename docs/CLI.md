@@ -107,6 +107,37 @@ The Moteur CLI allows you to manage projects, layouts, structures, blocks, and f
 
 ---
 
+## 📄 Templates
+
+| Command                                                          | Description                                  |
+|------------------------------------------------------------------|----------------------------------------------|
+| `templates list --project=site1`                                  | List templates in a project                  |
+| `templates get --project=site1 --id=landing-page`                 | Show the full template schema                |
+| `templates create --project=site1 [--file \| --data]`             | Create a new template                        |
+| `templates patch --project=site1 --id=landing-page [--file \| --data]` | Patch an existing template           |
+| `templates delete --project=site1 --id=landing-page`              | Move a template to the trash                 |
+| `templates validate --project=site1`                             | Validate all templates in the project        |
+| `templates validate --project=site1 --id=landing-page`             | Validate a single template                   |
+
+---
+
+## 📃 Pages
+
+| Command                                                          | Description                                      |
+|------------------------------------------------------------------|--------------------------------------------------|
+| `pages list --project=site1`                                     | List all pages                                   |
+| `pages list --project=site1 --template=landing-page`              | List pages for a template                        |
+| `pages list --project=site1 --parent=home`                        | List child pages of a parent                     |
+| `pages get --project=site1 --id=page123`                         | Show the full page data                          |
+| `pages get --project=site1 --slug=about-us`                      | Show page by slug                                |
+| `pages create --project=site1 [--file \| --data]`                | Create a new page                                |
+| `pages patch --project=site1 --id=page123 [--file \| --data]`    | Patch an existing page                            |
+| `pages delete --project=site1 --id=page123`                      | Move a page to the trash                         |
+| `pages validate --project=site1`                                  | Validate all pages in the project                |
+| `pages validate --project=site1 --id=page123`                     | Validate a single page                           |
+
+---
+
 ## 💬 Comments
 
 | Command                                                                 | Description                                              |

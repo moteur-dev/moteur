@@ -9,6 +9,8 @@ import { ModelSchema, Entry } from '@moteur/types/Model.js';
 import { Layout } from '@moteur/types/Layout.js';
 import { Block } from '@moteur/types/Block.js';
 import { StructureSchema } from '@moteur/types/Structure.js';
+import type { TemplateSchema } from '@moteur/types/Template.js';
+import type { Page } from '@moteur/types/Page.js';
 import { User } from '@moteur/types/User.js';
 
 // Event context uses explicit resource keys (like { project, user }) for clarity.
@@ -44,6 +46,22 @@ export interface EventMap {
     'layout.afterUpdate': { layout: Layout; user: User; projectId: string };
     'layout.beforeDelete': { layout: Layout; user: User; projectId: string };
     'layout.afterDelete': { layout: Layout; user: User; projectId: string };
+
+    // Templates (projectId for activity log)
+    'template.beforeCreate': { template: TemplateSchema; user: User; projectId: string };
+    'template.afterCreate': { template: TemplateSchema; user: User; projectId: string };
+    'template.beforeUpdate': { template: TemplateSchema; user: User; projectId: string };
+    'template.afterUpdate': { template: TemplateSchema; user: User; projectId: string };
+    'template.beforeDelete': { template: TemplateSchema; user: User; projectId: string };
+    'template.afterDelete': { template: TemplateSchema; user: User; projectId: string };
+
+    // Pages (projectId for activity log)
+    'page.beforeCreate': { page: Page; user: User; projectId: string };
+    'page.afterCreate': { page: Page; user: User; projectId: string };
+    'page.beforeUpdate': { page: Page; user: User; projectId: string };
+    'page.afterUpdate': { page: Page; user: User; projectId: string };
+    'page.beforeDelete': { page: Page; user: User; projectId: string };
+    'page.afterDelete': { page: Page; user: User; projectId: string };
 
     // Blocks
     'block.created': { block: Block; user: User };
@@ -86,6 +104,12 @@ export interface EventMap {
         projectId: string;
         entryId: string;
         modelId: string;
+        status: EntryStatus;
+    };
+    'review.pageStatusChanged': {
+        projectId: string;
+        pageId: string;
+        templateId: string;
         status: EntryStatus;
     };
 }

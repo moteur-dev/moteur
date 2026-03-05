@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
-import { getEntry, updateEntry } from '@moteur/core/entries.js';
+import { updateEntry } from '@moteur/core/entries.js';
 import type { EntryStatus } from '@moteur/types/Model.js';
 import { requireProjectAccess } from '../middlewares/auth.js';
 

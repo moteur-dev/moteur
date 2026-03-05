@@ -21,6 +21,8 @@ import commentsRouter, {
 } from './comments/index.js';
 import reviewsRouter, { openapi as reviewsSpec } from './reviews/index.js';
 import notificationsRouter, { openapi as notificationsSpec } from './notifications/index.js';
+import publicTemplatesRouter, { openapi as publicTemplatesSpec } from './templates/public.js';
+import publicPagesRouter, { openapi as publicPagesSpec } from './pages/public.js';
 
 const router: Router = Router();
 
@@ -32,6 +34,8 @@ router.use(remove);
 router.use(users);
 router.use(presenceFormState);
 router.use(debug);
+router.use('/:projectId/templates', publicTemplatesRouter);
+router.use('/:projectId/pages', publicPagesRouter);
 router.use('/:projectId/activity', activityRouter);
 router.use('/:projectId/comments', commentsRouter);
 router.use('/:projectId/reviews', reviewsRouter);
@@ -50,7 +54,9 @@ export const projectsSpecs = {
         activitySpec,
         commentsSpec,
         reviewsSpec,
-        notificationsSpec
+        notificationsSpec,
+        publicTemplatesSpec,
+        publicPagesSpec
     ),
     schemas: {
         ...createSchemas,

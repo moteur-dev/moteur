@@ -17,6 +17,14 @@ export function baseStructuresDir(projectId: string): string {
     return path.join(projectDir(projectId), 'structures');
 }
 
+export function baseTemplatesDir(projectId: string): string {
+    return path.join(projectDir(projectId), 'templates');
+}
+
+export function basePagesDir(projectId: string): string {
+    return path.join(projectDir(projectId), 'pages');
+}
+
 export function projectDir(projectId: string): string {
     return path.join(baseProjectsDir(), projectId);
 }
@@ -49,6 +57,14 @@ export function structureFilePath(projectId: string, structureId: string): strin
     return path.join(structureDir(projectId, structureId), 'structure.json');
 }
 
+export function templateFilePath(projectId: string, templateId: string): string {
+    return path.join(baseTemplatesDir(projectId), `${templateId}.json`);
+}
+
+export function pageFilePath(projectId: string, pageId: string): string {
+    return path.join(basePagesDir(projectId), `${pageId}.json`);
+}
+
 export function baseProjectsTrashDir(): string {
     return path.join(baseProjectsDir(), '.trash', 'projects');
 }
@@ -66,4 +82,12 @@ export function trashLayoutDir(projectId: string, layoutId: string): string {
 }
 export function trashStructureDir(projectId: string, structureId: string): string {
     return path.join(baseProjectsTrashDir(), projectId, 'structures', structureId);
+}
+
+export function trashTemplatesDir(projectId: string): string {
+    return path.join(baseProjectsTrashDir(), projectId, 'templates');
+}
+
+export function trashPagesDir(projectId: string): string {
+    return path.join(baseProjectsTrashDir(), projectId, 'pages');
 }

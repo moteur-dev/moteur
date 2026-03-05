@@ -5,9 +5,10 @@ import { getProject } from './projects.js';
 import { addComment } from './comments.js';
 import { getProjectStorage } from './utils/getProjectStorage.js';
 import { getJson, putJson } from './utils/storageAdapterUtils.js';
-import { REVIEWS_KEY, entryKey } from './utils/storageKeys.js';
+import { REVIEWS_KEY, entryKey, pageKey } from './utils/storageKeys.js';
 import { getModelSchema } from './models.js';
 import type { Entry } from '@moteur/types/Model.js';
+import type { Page } from '@moteur/types/Page.js';
 import { log, toActivityEvent } from './activityLogger.js';
 import { triggerEvent } from './utils/eventBus.js';
 import { createNotification } from './notifications.js';
@@ -177,49 +178,82 @@ export async function approveReview(
         list[idx] = updated;
         await putJson(storage, REVIEWS_KEY, list);
 
-        const entry = await getJson<Entry>(storage, entryKey(review.modelId, review.entryId));
-        if (entry) {
-            await putJson(storage, entryKey(review.modelId, review.entryId), {
-                ...entry,
-                status: 'published'
-            });
-        }
-
-        log(
-            toActivityEvent(
-                projectId,
-                'entry',
-                `${review.modelId}__${review.entryId}`,
-                'approved',
-                user
-            )
-        );
-
-        try {
-            await triggerEvent('review.approved', { projectId, review: updated });
-        } catch {
-            // never break on emit failure
-        }
-        try {
-            await triggerEvent('review.entryStatusChanged', {
-                projectId,
-                entryId: review.entryId,
-                modelId: review.modelId,
-                status: 'published'
-            });
-        } catch {
-            // never break on emit failure
-        }
-
-        try {
-            await createNotification(projectId, review.requestedBy, {
-                type: 'approved',
-                reviewId: updated.id,
-                entryId: review.entryId,
-                modelId: review.modelId
-            });
-        } catch {
-            // swallow
+        if (review.resourceType === 'page' && review.templateId && review.pageId) {
+            const page = await getJson<Page>(storage, pageKey(review.pageId));
+            if (page) {
+                await putJson(storage, pageKey(review.pageId), {
+                    ...page,
+                    status: 'published'
+                });
+            }
+            log(toActivityEvent(projectId, 'page', review.pageId, 'approved', user));
+            try {
+                await triggerEvent('review.approved', { projectId, review: updated });
+            } catch {
+                // never break on emit failure
+            }
+            try {
+                await triggerEvent('review.pageStatusChanged', {
+                    projectId,
+                    pageId: review.pageId,
+                    templateId: review.templateId,
+                    status: 'published'
+                });
+            } catch {
+                // never break on emit failure
+            }
+            try {
+                await createNotification(projectId, review.requestedBy, {
+                    type: 'approved',
+                    reviewId: updated.id,
+                    pageId: review.pageId,
+                    templateId: review.templateId
+                });
+            } catch {
+                // swallow
+            }
+        } else if (review.modelId && review.entryId) {
+            const entry = await getJson<Entry>(storage, entryKey(review.modelId, review.entryId));
+            if (entry) {
+                await putJson(storage, entryKey(review.modelId, review.entryId), {
+                    ...entry,
+                    status: 'published'
+                });
+            }
+            log(
+                toActivityEvent(
+                    projectId,
+                    'entry',
+                    `${review.modelId}__${review.entryId}`,
+                    'approved',
+                    user
+                )
+            );
+            try {
+                await triggerEvent('review.approved', { projectId, review: updated });
+            } catch {
+                // never break on emit failure
+            }
+            try {
+                await triggerEvent('review.entryStatusChanged', {
+                    projectId,
+                    entryId: review.entryId,
+                    modelId: review.modelId,
+                    status: 'published'
+                });
+            } catch {
+                // never break on emit failure
+            }
+            try {
+                await createNotification(projectId, review.requestedBy, {
+                    type: 'approved',
+                    reviewId: updated.id,
+                    entryId: review.entryId,
+                    modelId: review.modelId
+                });
+            } catch {
+                // swallow
+            }
         }
 
         try {
@@ -263,9 +297,13 @@ export async function rejectReview(
             throw new Error('Review is not pending');
         }
 
-        const resourceId = `${review.modelId}__${review.entryId}`;
+        const resourceId =
+            review.resourceType === 'page' && review.pageId
+                ? review.pageId
+                : `${review.modelId}__${review.entryId}`;
+        const resourceType = review.resourceType === 'page' ? 'page' : 'entry';
         const comment = await addComment(projectId, user, {
-            resourceType: 'entry',
+            resourceType,
             resourceId,
             body: commentBody.trim() || 'Rejected without comment.'
         });
@@ -283,41 +321,71 @@ export async function rejectReview(
         list[idx] = updated;
         await putJson(storage, REVIEWS_KEY, list);
 
-        const entry = await getJson<Entry>(storage, entryKey(review.modelId, review.entryId));
-        if (entry) {
-            await putJson(storage, entryKey(review.modelId, review.entryId), {
-                ...entry,
-                status: 'draft'
-            });
-        }
-
-        log(toActivityEvent(projectId, 'entry', resourceId, 'rejected', user));
-
-        try {
-            await triggerEvent('review.rejected', { projectId, review: updated });
-        } catch {
-            // never break on emit failure
-        }
-        try {
-            await triggerEvent('review.entryStatusChanged', {
-                projectId,
-                entryId: review.entryId,
-                modelId: review.modelId,
-                status: 'draft'
-            });
-        } catch {
-            // never break on emit failure
-        }
-
-        try {
-            await createNotification(projectId, review.requestedBy, {
-                type: 'rejected',
-                reviewId: updated.id,
-                entryId: review.entryId,
-                modelId: review.modelId
-            });
-        } catch {
-            // swallow
+        if (review.resourceType === 'page' && review.pageId) {
+            const page = await getJson<Page>(storage, pageKey(review.pageId));
+            if (page) {
+                await putJson(storage, pageKey(review.pageId), { ...page, status: 'draft' });
+            }
+            log(toActivityEvent(projectId, 'page', review.pageId, 'rejected', user));
+            try {
+                await triggerEvent('review.rejected', { projectId, review: updated });
+            } catch {
+                // never break on emit failure
+            }
+            try {
+                await triggerEvent('review.pageStatusChanged', {
+                    projectId,
+                    pageId: review.pageId,
+                    templateId: review.templateId ?? '',
+                    status: 'draft'
+                });
+            } catch {
+                // never break on emit failure
+            }
+            try {
+                await createNotification(projectId, review.requestedBy, {
+                    type: 'rejected',
+                    reviewId: updated.id,
+                    pageId: review.pageId,
+                    templateId: review.templateId
+                });
+            } catch {
+                // swallow
+            }
+        } else if (review.modelId && review.entryId) {
+            const entry = await getJson<Entry>(storage, entryKey(review.modelId, review.entryId));
+            if (entry) {
+                await putJson(storage, entryKey(review.modelId, review.entryId), {
+                    ...entry,
+                    status: 'draft'
+                });
+            }
+            log(toActivityEvent(projectId, 'entry', resourceId, 'rejected', user));
+            try {
+                await triggerEvent('review.rejected', { projectId, review: updated });
+            } catch {
+                // never break on emit failure
+            }
+            try {
+                await triggerEvent('review.entryStatusChanged', {
+                    projectId,
+                    entryId: review.entryId,
+                    modelId: review.modelId,
+                    status: 'draft'
+                });
+            } catch {
+                // never break on emit failure
+            }
+            try {
+                await createNotification(projectId, review.requestedBy, {
+                    type: 'rejected',
+                    reviewId: updated.id,
+                    entryId: review.entryId,
+                    modelId: review.modelId
+                });
+            } catch {
+                // swallow
+            }
         }
 
         try {
@@ -346,6 +414,9 @@ export async function getReviews(
         let out = list.filter(r => r.projectId === projectId);
         if (options?.modelId) out = out.filter(r => r.modelId === options.modelId);
         if (options?.entryId) out = out.filter(r => r.entryId === options.entryId);
+        if (options?.templateId) out = out.filter(r => r.templateId === options.templateId);
+        if (options?.pageId) out = out.filter(r => r.pageId === options.pageId);
+        if (options?.resourceType) out = out.filter(r => r.resourceType === options.resourceType);
         if (options?.status) out = out.filter(r => r.status === options.status);
         out.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         return out;
@@ -375,4 +446,117 @@ export async function hasApprovedReview(
 ): Promise<boolean> {
     const reviews = await getReviews(projectId, { modelId, entryId, status: 'approved' });
     return reviews.length > 0;
+}
+
+/**
+ * Returns true if the page has at least one approved review (used by publish guard).
+ */
+export async function hasApprovedReviewForPage(
+    projectId: string,
+    pageId: string
+): Promise<boolean> {
+    const reviews = await getReviews(projectId, {
+        pageId,
+        resourceType: 'page',
+        status: 'approved'
+    });
+    return reviews.length > 0;
+}
+
+/**
+ * Submit a page for review. Sets page status to 'in_review' and creates a Review record.
+ */
+export async function submitForPageReview(
+    projectId: string,
+    user: User,
+    pageId: string,
+    assignedTo?: string
+): Promise<Review> {
+    const project = await getProject(user, projectId);
+    if (!project.workflow?.enabled) {
+        throw new Error('Review workflow is not enabled for this project');
+    }
+
+    const storage = getProjectStorage(projectId);
+    const page = await getJson<Page>(storage, pageKey(pageId));
+    if (!page) {
+        throw new Error(`Page "${pageId}" not found in project "${projectId}".`);
+    }
+
+    const now = new Date().toISOString();
+    const list = (await getJson<Review[]>(storage, REVIEWS_KEY)) ?? [];
+
+    const pendingForPage = list.some(
+        r => r.resourceType === 'page' && r.pageId === pageId && r.status === 'pending'
+    );
+    if (pendingForPage) {
+        throw new Error('This page already has a pending review');
+    }
+
+    const requestedByName = normalizeUserName(user);
+    const review: Review = {
+        id: randomUUID(),
+        projectId,
+        resourceType: 'page',
+        templateId: page.templateId,
+        pageId,
+        status: 'pending',
+        requestedBy: user.id,
+        requestedByName,
+        ...(assignedTo && { assignedTo }),
+        createdAt: now
+    };
+    list.push(review);
+    await putJson(storage, REVIEWS_KEY, list);
+
+    await putJson(storage, pageKey(pageId), { ...page, status: 'in_review' });
+
+    log(toActivityEvent(projectId, 'page', pageId, 'submitted_for_review', user));
+
+    try {
+        await triggerEvent('review.submitted', { projectId, review });
+    } catch {
+        // never break on emit failure
+    }
+    try {
+        await triggerEvent('review.pageStatusChanged', {
+            projectId,
+            pageId,
+            templateId: page.templateId,
+            status: 'in_review'
+        });
+    } catch {
+        // never break on emit failure
+    }
+
+    const recipients: string[] = assignedTo
+        ? [assignedTo]
+        : getProjectUsers(projectId)
+              .filter(u => u.roles?.includes('reviewer') || u.roles?.includes('admin'))
+              .map(u => u.id);
+    for (const recipientId of recipients) {
+        try {
+            await createNotification(projectId, recipientId, {
+                type: 'review_requested',
+                reviewId: review.id,
+                pageId,
+                templateId: page.templateId
+            });
+        } catch {
+            // swallow per-recipient failure
+        }
+    }
+
+    try {
+        for (const recipientId of recipients) {
+            const recipient = getProjectUsers(projectId).find(u => u.id === recipientId);
+            if (recipient?.email) {
+                sendReviewEmail('review_requested', recipient, review, project).catch(() => {});
+            }
+        }
+    } catch {
+        // non-blocking, fail silently
+    }
+
+    return review;
 }

@@ -42,6 +42,26 @@ function registerActivityListeners() {
         log(toActivityEvent(projectId, 'entry', `${modelId}__${entry.id}`, deleted, user));
     });
 
+    onEvent('template.afterCreate', async ({ template, user, projectId }) => {
+        log(toActivityEvent(projectId, 'template', template.id, created, user));
+    });
+    onEvent('template.afterUpdate', async ({ template, user, projectId }) => {
+        log(toActivityEvent(projectId, 'template', template.id, updated, user));
+    });
+    onEvent('template.afterDelete', async ({ template, user, projectId }) => {
+        log(toActivityEvent(projectId, 'template', template.id, deleted, user));
+    });
+
+    onEvent('page.afterCreate', async ({ page, user, projectId }) => {
+        log(toActivityEvent(projectId, 'page', page.id, created, user));
+    });
+    onEvent('page.afterUpdate', async ({ page, user, projectId }) => {
+        log(toActivityEvent(projectId, 'page', page.id, updated, user));
+    });
+    onEvent('page.afterDelete', async ({ page, user, projectId }) => {
+        log(toActivityEvent(projectId, 'page', page.id, deleted, user));
+    });
+
     onEvent('layout.afterCreate', async ({ layout, user, projectId }) => {
         log(toActivityEvent(projectId, 'layout', layout.id, created, user));
     });

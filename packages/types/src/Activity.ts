@@ -2,6 +2,7 @@ export type ActivityResourceType =
     | 'entry'
     | 'layout'
     | 'page'
+    | 'template'
     | 'structure'
     | 'model'
     | 'project'
