@@ -106,6 +106,8 @@ Comments are stored per project in `comments.json`. All endpoints require JWT + 
 
 `resourceType` is `entry` or `layout`. For entries, `resourceId` is `modelId__entryId`; for layouts, `resourceId` is the layout ID. Comments are threaded (one level of replies via `parentId`) and broadcast in real time via WebSocket (see Presence API).
 
+Comment body length is limited; set `COMMENTS_MAX_BODY_LENGTH` (default 10000) to override. Requests with a body over the limit return 400 with a clear error message.
+
 ---
 
 ### 📐 Blueprints (global project templates)

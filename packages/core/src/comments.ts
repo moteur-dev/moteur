@@ -12,9 +12,18 @@ import { getJson, putJson } from './utils/storageAdapterUtils.js';
 import { COMMENTS_KEY } from './utils/storageKeys.js';
 import { log, toActivityEvent } from './activityLogger.js';
 import { triggerEvent } from './utils/eventBus.js';
+import { commentsConfig } from './config/commentsConfig.js';
 
 function normalizeUserName(user: User): string {
     return user?.name ?? user?.id ?? 'Unknown';
+}
+
+function validateCommentBody(body: string): void {
+    const trimmed = body.trim();
+    const max = commentsConfig.maxBodyLength;
+    if (trimmed.length > max) {
+        throw new Error(`Comment body must be at most ${max} characters (got ${trimmed.length}).`);
+    }
 }
 
 /**
@@ -34,6 +43,8 @@ export async function addComment(
             if (!parent) throw new Error('Parent comment not found');
             if (parent.parentId) throw new Error('Replies are one level deep only');
         }
+        const body = input.body.trim();
+        validateCommentBody(body);
         const now = new Date().toISOString();
         const comment: Comment = {
             id: randomUUID(),
@@ -43,7 +54,7 @@ export async function addComment(
             ...(input.fieldPath !== undefined && { fieldPath: input.fieldPath }),
             ...(input.blockId !== undefined && { blockId: input.blockId }),
             ...(input.parentId !== undefined && { parentId: input.parentId }),
-            body: input.body.trim(),
+            body,
             authorId: user.id,
             authorName: normalizeUserName(user),
             resolved: false,
@@ -208,10 +219,12 @@ export async function editComment(
         if (comment.authorId !== user.id) {
             throw new Error('Only the author can edit this comment');
         }
+        const trimmed = body.trim();
+        validateCommentBody(trimmed);
         const now = new Date().toISOString();
         const updated: Comment = {
             ...comment,
-            body: body.trim(),
+            body: trimmed,
             updatedAt: now
         };
         list[idx] = updated;

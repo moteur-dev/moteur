@@ -143,6 +143,23 @@ describe('comments', () => {
                 })
             ).rejects.toThrow();
         });
+
+        it('throws when body exceeds configured max length', async () => {
+            const prev = process.env.COMMENTS_MAX_BODY_LENGTH;
+            process.env.COMMENTS_MAX_BODY_LENGTH = '5';
+            try {
+                await expect(
+                    addComment(projectId, author, {
+                        resourceType: 'entry',
+                        resourceId: 'article__e1',
+                        body: '123456'
+                    })
+                ).rejects.toThrow(/at most 5 characters/);
+            } finally {
+                if (prev !== undefined) process.env.COMMENTS_MAX_BODY_LENGTH = prev;
+                else delete process.env.COMMENTS_MAX_BODY_LENGTH;
+            }
+        });
     });
 
     describe('getComments', () => {
@@ -317,6 +334,24 @@ describe('comments', () => {
             await expect(editComment(projectId, author, 'nonexistent', 'Text')).rejects.toThrow(
                 'Comment not found'
             );
+        });
+
+        it('throws when body exceeds configured max length', async () => {
+            const c = await addComment(projectId, author, {
+                resourceType: 'entry',
+                resourceId: 'article__e1',
+                body: 'Hi'
+            });
+            const prev = process.env.COMMENTS_MAX_BODY_LENGTH;
+            process.env.COMMENTS_MAX_BODY_LENGTH = '3';
+            try {
+                await expect(editComment(projectId, author, c.id, 'four')).rejects.toThrow(
+                    /at most 3 characters/
+                );
+            } finally {
+                if (prev !== undefined) process.env.COMMENTS_MAX_BODY_LENGTH = prev;
+                else delete process.env.COMMENTS_MAX_BODY_LENGTH;
+            }
         });
     });
 });
