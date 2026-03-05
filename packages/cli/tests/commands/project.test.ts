@@ -71,7 +71,9 @@ describe('projectsMenu commands', () => {
     });
 
     it('createProjectCommand logs creation message', async () => {
-        (createProject as vi.Mock).mockReturnValue({ id: 'p1', label: 'New Project' });
+        (createProject as vi.Mock).mockResolvedValue({
+            project: { id: 'p1', label: 'New Project' }
+        });
 
         await createProjectCommand({
             data: JSON.stringify({ label: 'New Project' }),

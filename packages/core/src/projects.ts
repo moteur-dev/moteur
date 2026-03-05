@@ -97,6 +97,8 @@ export async function createProject(
     } else if (!projectWithUsers.users.includes(user.id)) {
         projectWithUsers.users = [...projectWithUsers.users, user.id];
     }
+    // Ensure new projects are active
+    projectWithUsers.isActive = project.isActive !== undefined ? project.isActive : true;
 
     triggerEvent('project.beforeCreate', { project: projectWithUsers, user });
 

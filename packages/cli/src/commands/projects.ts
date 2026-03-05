@@ -70,7 +70,13 @@ export async function createProjectCommand(args: {
         }
     }
 
-    const created = createProject(user, project as ProjectSchema);
+    const result = await createProject(user, project as ProjectSchema);
+    if (result.validation?.issues?.length) {
+        if (!args.quiet) console.error('Validation failed:', result.validation.issues);
+        return undefined;
+    }
+    const created = result.project;
+    if (!created) return undefined;
     if (args.json) {
         return console.log(JSON.stringify(created, null, 2));
     }
