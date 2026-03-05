@@ -19,9 +19,9 @@ import '@moteur/core/fields/index.js';
 
 // Import commands so they self-register
 import './commands/auth.js';
-import './commands/project.js';
+import './commands/projects.js';
 import './commands/models.js';
-import './commands/layout.js';
+import './commands/layouts.js';
 import './commands/structures.js';
 import './commands/fields.js';
 import './commands/blocks.js';

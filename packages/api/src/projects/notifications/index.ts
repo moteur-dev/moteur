@@ -11,7 +11,7 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
     const unreadOnly = req.query.unreadOnly !== 'false' && req.query.unreadOnly !== '0';
     try {
         const notifications = await getNotifications(projectId, userId, unreadOnly);
-        return res.json(notifications);
+        return res.json({ notifications });
     } catch {
         return res.status(500).json({ error: 'Failed to get notifications' });
     }
@@ -33,7 +33,7 @@ router.post('/:id/read', requireProjectAccess, async (req: any, res: any) => {
     const userId = req.user!.id;
     try {
         const notification = await markRead(projectId, userId, id);
-        return res.json(notification);
+        return res.json({ notification });
     } catch (err: any) {
         return res.status(err.message?.includes('not found') ? 404 : 400).json({
             error: err?.message ?? 'Failed to mark as read'
@@ -54,7 +54,17 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 '200': {
                     description: 'List of notifications',
                     content: {
-                        'application/json': { schema: { type: 'array', items: { type: 'object' } } }
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    notifications: {
+                                        type: 'array',
+                                        items: { type: 'object' }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -71,7 +81,14 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             responses: {
                 '200': {
                     description: 'Notification',
-                    content: { 'application/json': { schema: { type: 'object' } } }
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: { notification: { type: 'object' } }
+                            }
+                        }
+                    }
                 },
                 '404': { description: 'Notification not found' }
             }

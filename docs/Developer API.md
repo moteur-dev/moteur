@@ -1,8 +1,8 @@
 # 🔧 Moteur Developer API Reference
 
-This reference describes the TypeScript API for reading, writing, and managing Moteur data in projects and namespaces.
+This reference describes the **programmatic TypeScript API** from `@moteur/core` (and `@moteur/types`) for reading, writing, and managing Moteur data. It is not the HTTP REST API; see [REST API.md](REST%20API.md) for that.
 
-> import { Moteur } from 'moteur';
+> import { Moteur } from '@moteur/core';
 
 ---
 
@@ -22,8 +22,6 @@ Applies a partial update to a project’s `project.json`.
 
 ### `Moteur.projects.deleteProject(user: User, id: string): void`
 Soft-deletes: moves a project to `.trash/projects/{id}`.
-
-### `Moteur.projects.validateProject(user: User, id: string, data)
 
 ---
 
@@ -151,7 +149,7 @@ Loads all available field types from namespace directories (`fields/{namespace}`
 
 ## 📦 Blocks API
 
-### `Moteur.blocks. loadBlocks(project?: string): Record<string, BlockSchema>`
+### `Moteur.blocks.loadBlocks(project?: string): Record<string, BlockSchema>`
 Loads all block schemas from namespace folders (`blocks/{namespace}`) and optionally from the given project (`projects/{id}/blocks`).
 
 ---

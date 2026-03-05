@@ -1,238 +1,184 @@
-## 📦 Public API (Headless Content Access)
+# REST API Reference
 
-These endpoints are safe for frontend apps, static site generators, or external consumers. All read-only.
+This document describes the **currently implemented** HTTP API. All paths are relative to the API base path (e.g. empty or `/api` via `API_BASE_PATH`). Authentication uses JWT (Bearer token) unless noted.
 
----
-
-### 📁 Layout Access
-
-| Method | Endpoint                                        | Description                                               |
-|--------|-------------------------------------------------|-----------------------------------------------------------|
-| GET    | `./:project/layouts`                  | List all available layouts (IDs and labels).              |
-| GET    | `./:project/layouts/:id`              | Get a layout's content, filtered by locale/context.       |
-| GET    | `./:project/layouts/:id/render`       | Render a layout to HTML/React/Vue/etc.                    |
+**Response convention:** List endpoints return a wrapper object `{ resourceName: T[] }`. Single-resource endpoints return `{ resourceName: T }` or `{ token, user }` for auth. Errors return `{ error: string }`.
 
 ---
 
-### 📁 Structure Access
-
-| Method | Endpoint                                        | Description                                               |
-|--------|-------------------------------------------------|-----------------------------------------------------------|
-| GET    | `./:project/structures`               | List all available structures (IDs and labels).           |
-| GET    | `./:project/structures/:id`           | Get a structure's content, filtered by locale/context.    |
-
----
-
-### 📁 Model Entry Access
-
-| Method | Endpoint                                                               | Description                                  |
-|--------|------------------------------------------------------------------------|----------------------------------------------|
-| GET    | `./:project/models/:model/entries`                           | List published entries for a specific model. |
-| GET    | `./:project/models/:model/entries/:id`                       | Get a specific entry's content.              |
-
----
-
-### 📦 Block & Field Definitions
-
-| Method | Endpoint                      | Description                                 |
-|--------|-------------------------------|---------------------------------------------|
-| GET    | `./blocks`          | List available block types and their fields.|
-| GET    | `./fields`          | List available field types and metadata.    |
-
----
-
-### 🧪 Preview Tool
-
-| Method | Endpoint              | Description                                           |
-|--------|-----------------------|-------------------------------------------------------|
-| POST   | `./preview` | Submit a layout (with context) to get rendered output.|
-
----
-
-## 🔐 Admin API (Authenticated Only)
-
-Restricted endpoints for creating, updating, and managing content and schemas.
-
----
-
-
-## 📁 Project Management
-
-| Method | Endpoint                            | Description                                  |
-|--------|-------------------------------------|----------------------------------------------|
-| GET    | `./admin/projects`        | List all projects                            |
-| GET    | `./admin/projects/:id`    | Get a single project's metadata              |
-| POST   | `./admin/projects`        | Create a new project (optional `blueprintId` in body to apply a blueprint template) |
-| PATCH  | `./admin/projects/:id`    | Update a project's metadata                  |
-| DELETE | `./admin/projects/:id`    | Delete a project and all its content         |
-
----
-
-### 📋 Activity Log (read-only)
-
-Activity events are recorded automatically when entries, layouts, structures, models, users, or blueprints are created, updated, or deleted.
-
-**Project-scoped activity** (requires JWT + project access):
-
-| Method | Endpoint                                                       | Description                                                                 |
-|--------|----------------------------------------------------------------|-----------------------------------------------------------------------------|
-| GET    | `./admin/projects/:project/activity`                           | Page of activity. Query: `limit` (default 50, max 200), `before` (ISO timestamp for next page). Response: `{ events, nextBefore? }`. |
-| GET    | `./admin/projects/:project/activity/:resourceType/:resourceId`  | Activity for a specific resource (newest first).                            |
-
-**Global (system) activity** (admin only): user and blueprint changes.
-
-| Method | Endpoint            | Description                                          |
-|--------|---------------------|------------------------------------------------------|
-| GET    | `./activity`        | Page of global activity. Query: `limit` (default 50, max 200), `before` (pagination). Response: `{ events, nextBefore? }`. |
-
-**`resourceType`** (project or global): `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
-For entries, use **`resourceId`** in the form `modelId__entryId` (double underscore). Global events have `projectId: "_system"`.
-
-Response shape: `{ events: ActivityEvent[] }`. Each event includes `id`, `projectId`, `resourceType`, `resourceId`, `action` (`created` \| `updated` \| `deleted` \| `published` \| `unpublished` \| `commented` \| `resolved` \| `submitted_for_review` \| `approved` \| `rejected`), `userId`, `userName`, optional `fieldPath` / `before` / `after`, and `timestamp` (ISO).
-
----
-
-### 💬 Comments
-
-Comments are stored per project in `comments.json`. All endpoints require JWT + project access.
+## 🔐 Auth (no JWT required for login)
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST   | `./admin/projects/:project/comments` | Create a comment. Body: `{ resourceType, resourceId, fieldPath?, blockId?, parentId?, body }`. Returns created `Comment`. |
-| GET    | `./admin/projects/:project/comments` | List comments. Query: `resourceType`, `resourceId` (required), `fieldPath?`, `includeResolved?` (default false). Returns `Comment[]`. |
-| PATCH  | `./admin/projects/:project/comments/:id` | Edit comment text. Body: `{ body }`. Only the author can edit. Returns updated `Comment`. |
-| POST   | `./admin/projects/:project/comments/:id/resolve` | Mark comment resolved. Any project member can resolve. Returns updated `Comment`. |
-| DELETE | `./admin/projects/:project/comments/:id` | Delete a comment. Only the author or an admin can delete. Returns 204 No Content. |
-
-`resourceType` is `entry` or `layout`. For entries, `resourceId` is `modelId__entryId`; for layouts, `resourceId` is the layout ID. Comments are threaded (one level of replies via `parentId`) and broadcast in real time via WebSocket (see Presence API).
-
-Comment body length is limited; set `COMMENTS_MAX_BODY_LENGTH` (default 10000) to override. Requests with a body over the limit return 400 with a clear error message.
+| POST | `/auth/login` | Log in. Body: `{ email, password }`. Returns `{ token, user }`. |
+| GET | `/auth/providers` | List auth providers. Returns `{ providers }`. |
+| POST | `/auth/refresh` | Refresh JWT. Returns `{ token }`. |
+| GET | `/auth/me` | Current user (requires JWT). Returns `{ user }` with projects. |
+| GET | `/auth/github` | GitHub OAuth (if enabled). |
+| GET | `/auth/github/callback` | GitHub OAuth callback. |
+| GET | `/auth/google` | Google OAuth (if enabled). |
+| GET | `/auth/google/callback` | Google OAuth callback. |
 
 ---
 
-### 📋 Review & Approval Workflow
+## 📁 Projects
 
-Requires `project.workflow.enabled`. All endpoints require JWT + project access. Approve/reject require `reviewer` or `admin` role.  
-**Full guide:** [Workflows.md](Workflows.md) — modes, roles, publish guard, notifications.
+All project endpoints require JWT. Project list/get/update/delete may require admin or project access depending on implementation.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST   | `./admin/projects/:project/models/:model/entries/:id/submit-review` | Submit an entry for review. Body: `{ assignedTo?: string }`. Returns created `Review`. |
-| GET    | `./admin/projects/:project/reviews` | List reviews. Query: `modelId?`, `entryId?`, `status?` (pending \| approved \| rejected). Returns `Review[]`. |
-| GET    | `./admin/projects/:project/reviews/:reviewId` | Get a single review. Returns `Review`. |
-| POST   | `./admin/projects/:project/reviews/:reviewId/approve` | Approve a review (reviewer/admin only). Entry is auto-published. Returns updated `Review`. 403 if user lacks role. |
-| POST   | `./admin/projects/:project/reviews/:reviewId/reject` | Reject a review (reviewer/admin only). Body: `{ reason: string }` (becomes a Comment). Entry returns to draft. Returns updated `Review`. 403 if user lacks role. |
+| GET | `/projects` | List all projects (admin). Returns `{ projects }`. |
+| GET | `/projects/:projectId` | Get one project. Returns `{ project }`. |
+| POST | `/projects` | Create a project. Body may include `blueprintId`. Returns created project. |
+| PATCH | `/projects/:projectId` | Update a project. Returns `{ project }`. |
+| DELETE | `/projects/:projectId` | Delete a project. |
+| GET | `/projects/:projectId/users` | List users with access to the project. Returns `{ users }`. |
 
 ---
 
-### 🔔 Notifications
+## 📋 Activity
 
-In-studio notifications for review events. Stored per project in `notifications.json`. All endpoints require JWT + project access.
+Activity events are recorded when entries, layouts, structures, models, users, or blueprints are created, updated, or deleted.
+
+**Project-scoped** (JWT + project access):
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET    | `./admin/projects/:project/notifications` | List notifications for current user. Query: `unreadOnly?` (default true). Returns `Notification[]`. |
-| POST   | `./admin/projects/:project/notifications/:id/read` | Mark a notification as read. Returns updated `Notification`. |
-| POST   | `./admin/projects/:project/notifications/read-all` | Mark all notifications as read for current user. Returns 204. |
+| GET | `/projects/:projectId/activity` | Page of activity. Query: `limit` (default 50, max 200), `before` (ISO timestamp for next page). Response: `{ events, nextBefore? }`. |
+| GET | `/projects/:projectId/activity/:resourceType/:resourceId` | Activity for one resource (newest first). |
+
+**Global** (admin only):
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/activity` | Page of global activity. Query: `limit`, `before`. Response: `{ events, nextBefore? }`. |
+
+**`resourceType`:** `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
+For entries, **`resourceId`** is `modelId__entryId`. Global events have `projectId: "_system"`.
 
 ---
 
-### 📐 Blueprints (global project templates)
+## 💬 Comments
 
-Blueprints are **global** (not per-project). Stored under **`data/blueprints/`** (override with `BLUEPRINTS_DIR`). Each file is `data/blueprints/<id>.json`. See [Blueprints.md](Blueprints.md) for the JSON shape and how “create from blueprint” works.
+Stored per project. All require JWT + project access.
 
-| Method | Endpoint                                 | Description                                  |
-|--------|------------------------------------------|----------------------------------------------|
-| GET    | `./blueprints`        | List all blueprints                          |
-| GET    | `./blueprints/:id`     | Get one blueprint by id                      |
-| POST   | `./blueprints`        | Create or replace a blueprint               |
-| PATCH  | `./blueprints/:id`     | Update a blueprint (partial)                 |
-| DELETE | `./blueprints/:id`     | Delete a blueprint                           |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/projects/:projectId/comments` | Create a comment. Body: `{ resourceType, resourceId, fieldPath?, blockId?, parentId?, body }`. Returns created comment. |
+| GET | `/projects/:projectId/comments` | List comments. Query: `resourceType`, `resourceId` (required), `fieldPath?`, `includeResolved?` (default false). Returns `{ comments }`. |
+| PATCH | `/projects/:projectId/comments/:id` | Edit comment. Body: `{ body }`. Author only. Returns updated comment. |
+| POST | `/projects/:projectId/comments/:id/resolve` | Mark resolved. Returns updated comment. |
+| DELETE | `/projects/:projectId/comments/:id` | Delete comment. Author or admin. Returns 204. |
 
----
-
-### 📁 Layout Management
-
-| Method | Endpoint                                             | Description                                  |
-|--------|------------------------------------------------------|----------------------------------------------|
-| GET    | `./admin/projects/:project/layouts`        | List all layouts (including drafts).         |
-| GET    | `./admin/projects/:project/layouts/:id`    | Get full layout definition.                  |
-| POST   | `./admin/projects/:project/layouts`        | Create a new layout.                         |
-| PUT    | `./admin/projects/:project/layouts/:id`    | Replace a layout entirely.                   |
-| PATCH  | `./admin/projects/:project/layouts/:id`    | Update part of a layout.                     |
-| DELETE | `./admin/projects/:project/layouts/:id`    | Delete a layout.                             |
+`resourceType` is `entry` or `layout`. For entries, `resourceId` is `modelId__entryId`. Comment body length limit: `COMMENTS_MAX_BODY_LENGTH` (default 10000).
 
 ---
 
-### 📁 Structure Management
+## 📋 Review & Approval Workflow
 
-| Method | Endpoint                                                | Description                                  |
-|--------|---------------------------------------------------------|----------------------------------------------|
-| GET    | `./admin/projects/:project/structures`        | List all layouts (including drafts).         |
-| GET    | `./admin/projects/:project/structures/:id`    | Get full layout definition.                  |
-| POST   | `./admin/projects/:project/structures`        | Create a new layout.                         |
-| PUT    | `./admin/projects/:project/structures/:id`    | Replace a layout entirely.                   |
-| PATCH  | `./admin/projects/:project/structures/:id`    | Update part of a layout.                     |
-| DELETE | `./admin/projects/:project/structures/:id`    | Delete a layout.                             |
+Requires `project.workflow.enabled`. Approve/reject require `reviewer` or `admin` role. See [Workflows.md](Workflows.md).
 
----
-
-### 🗃️ Model Schema Management
-
-| Method | Endpoint                                                | Description                                  |
-|--------|---------------------------------------------------------|----------------------------------------------|
-| GET    | `./admin/projects/:project/models`            | List all model schemas.                      |
-| GET    | `./admin/projects/:project/models/:id`        | Get a specific model schema.                 |
-| POST   | `./admin/projects/:project/models`            | Create a new model schema.                   |
-| PUT    | `./admin/projects/:project/models/:id`        | Replace a model schema entirely.             |
-| PATCH  | `./admin/projects/:project/models/:id`        | Update part of a model schema.               |
-| DELETE | `./admin/projects/:project/models/:id`        | Delete a model schema.                       |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/projects/:projectId/models/:modelId/entries/:entryId/submit-review` | Submit for review. Body: `{ assignedTo?: string }`. Returns `{ review }`. |
+| GET | `/projects/:projectId/reviews` | List reviews. Query: `modelId?`, `entryId?`, `status?` (pending \| approved \| rejected). Returns `{ reviews }`. |
+| GET | `/projects/:projectId/reviews/:reviewId` | Get one review. Returns `{ review }`. |
+| POST | `/projects/:projectId/reviews/:reviewId/approve` | Approve (reviewer/admin). Returns `{ review }`. |
+| POST | `/projects/:projectId/reviews/:reviewId/reject` | Reject. Body: `{ reason: string }`. Returns `{ review }`. |
 
 ---
 
-### 📁 Entry Management
+## 🔔 Notifications
 
-| Method | Endpoint                                                               | Description                                  |
-|--------|------------------------------------------------------------------------|----------------------------------------------|
-| GET    | `./admin/projects/:project/models/:model/entries`            | List all entries for a specific model.       |
-| GET    | `./admin/projects/:project/models/:model/entries/:id`        | Get a specific entry's data.                 |
-| POST   | `./admin/projects/:project/models/:model/entries`            | Create a new entry for a model.              |
-| PUT    | `./admin/projects/:project/models/:model/entries/:id`        | Replace an entry entirely.                   |
-| PATCH  | `./admin/projects/:project/models/:model/entries/:id`        | Update part of an entry.                     |
-| PATCH  | `./admin/projects/:project/models/:model/entries/:id/status` | Set entry status. Body: `{ status: 'draft' \| 'in_review' \| 'published' \| 'unpublished' }`. Admin can bypass review; others need an approved review to set `published` when `workflow.requireReview` is enabled. |
-| DELETE | `./admin/projects/:project/models/:model/entries/:id`        | Delete an entry.                             |
+Per-project notifications for review events. JWT + project access.
 
-
-### 🧱 Block Type Management
-
-| Method | Endpoint                          | Description                          |
-|--------|-----------------------------------|--------------------------------------|
-| GET    | `./admin/blocks`        | List all block types.                |
-| GET    | `./admin/blocks/:id`    | Get a specific block schema.         |
-| POST   | `./admin/blocks`        | Create a new block type.             |
-| PUT    | `./admin/blocks/:id`    | Replace a block type schema.         |
-| PATCH  | `./admin/blocks/:id`    | Partially update a block type.       |
-| DELETE | `./admin/blocks/:id`    | Delete a block type.                 |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects/:projectId/notifications` | List for current user. Query: `unreadOnly?` (default true). Returns `{ notifications }`. |
+| POST | `/projects/:projectId/notifications/:id/read` | Mark as read. Returns updated notification. |
+| POST | `/projects/:projectId/notifications/read-all` | Mark all read. Returns 204. |
 
 ---
 
-### 🧩 Field Type Management
+## 📐 Blueprints (global)
 
-| Method | Endpoint                          | Description                          |
-|--------|-----------------------------------|--------------------------------------|
-| GET    | `./admin/fields`        | List all field types.                |
-| GET    | `./admin/fields/:id`    | Get a specific field schema.         |
-| POST   | `./admin/fields`        | Create a new field type.             |
-| PUT    | `./admin/fields/:id`    | Replace a field type schema.         |
-| PATCH  | `./admin/fields/:id`    | Partially update a field type.       |
-| DELETE | `./admin/fields/:id`    | Delete a field type.                 |
+Global project templates. Stored under `data/blueprints/` (override: `BLUEPRINTS_DIR`). See [Blueprints.md](Blueprints.md). All require admin.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/blueprints` | List blueprints. Returns `{ blueprints }`. |
+| GET | `/blueprints/:blueprintId` | Get one. Returns `{ blueprint }`. |
+| POST | `/blueprints` | Create or replace. Body: full blueprint JSON. |
+| PATCH | `/blueprints/:blueprintId` | Partial update. |
+| DELETE | `/blueprints/:blueprintId` | Delete. |
 
 ---
 
-### 🛠 Utilities
+## 🗃️ Models
 
-| Method | Endpoint                            | Description                                        |
-|--------|-------------------------------------|----------------------------------------------------|
-| POST   | `./admin/validate`        | Validate a layout against the current schema.      |
-| POST   | `./admin/render-preview`  | Render a layout with context for preview/editor.   |
-| GET    | `./admin/usage`           | Show where blocks/fields are used in layouts.      |
+Under a project. JWT + project access. Path param: `projectId`, `modelId`.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects/:projectId/models` | List model schemas. Returns `{ models }`. |
+| GET | `/projects/:projectId/models/:modelId` | Get one. Returns `{ model }`. |
+| POST | `/projects/:projectId/models` | Create. Returns created model. |
+| PATCH | `/projects/:projectId/models/:modelId` | Update. Returns `{ model }`. |
+| DELETE | `/projects/:projectId/models/:modelId` | Delete. |
+
+---
+
+## 📁 Entries
+
+Under a project and model. JWT + project access. Path param: `projectId`, `modelId`, `entryId`.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects/:projectId/models/:modelId/entries` | List entries. Returns `{ entries }`. |
+| GET | `/projects/:projectId/models/:modelId/entries/:entryId` | Get one. Returns `{ entry }`. |
+| POST | `/projects/:projectId/models/:modelId/entries` | Create. Returns created entry. |
+| PATCH | `/projects/:projectId/models/:modelId/entries/:entryId` | Update. Returns `{ entry }`. |
+| DELETE | `/projects/:projectId/models/:modelId/entries/:entryId` | Delete. |
+| POST | `/projects/:projectId/models/:modelId/entries/:entryId/submit-review` | Submit for review (see Workflow). |
+| PATCH | `/projects/:projectId/models/:modelId/entries/:entryId/status` | Set status. Body: `{ status: 'draft' | 'in_review' | 'published' | 'unpublished' }`. Admin can bypass review when `workflow.requireReview` is enabled. |
+
+---
+
+## 🤖 AI
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/ai/generate-entry` | Generate entry (project access). |
+| POST | `/ai/generate-fields` | Generate fields (admin). |
+| POST | `/ai/generate-image` | Generate image (auth). |
+
+---
+
+## 👁 Presence (debug)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects/:projectId/presence/debug` | Debug presence state. |
+| DELETE | `/projects/presence/form-state/:screenId` | Clear form state. |
+
+---
+
+## 📄 OpenAPI
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `{basePath}/openapi.json` | OpenAPI 3 spec. |
+| (UI) | `/docs` | Swagger UI. |
+
+---
+
+## 📌 Planned (not yet mounted)
+
+The following are **not** currently mounted; they may be added in a future release:
+
+- **Public API (headless):** read-only layouts, structures, model entries, blocks/fields list, preview (no auth).
+- **Layout CRUD:** list/create/update/delete layouts under a project.
+- **Structure CRUD:** list/create/update/delete structures under a project.
+- **Admin blocks/fields:** global block/field type management and utilities (validate, render-preview, usage).
+
+Until then, use the **Developer API** ([Developer API.md](Developer%20API.md)) from `@moteur/core` for layouts and structures.

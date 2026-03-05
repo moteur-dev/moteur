@@ -2,7 +2,7 @@ import inquirer from 'inquirer';
 import { listProjects } from '@moteur/core/projects.js';
 import { showProjectMenu } from './projectMenu.js';
 import { showWelcomeBanner } from '../utils/showWelcomeBanner.js';
-import { createProjectCommand } from '../commands/project.js';
+import { createProjectCommand } from '../commands/projects.js';
 import { User } from '@moteur/types/User.js';
 import { cliLoadUser } from '../utils/auth.js';
 
