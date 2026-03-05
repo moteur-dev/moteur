@@ -110,7 +110,7 @@ describe('POST /blueprints', () => {
 
         expect(res.status).toBe(201);
         expect(res.body).toEqual(body);
-        expect(mockCreateBlueprint).toHaveBeenCalledWith(body);
+        expect(mockCreateBlueprint).toHaveBeenCalledWith(body, undefined);
     });
 
     it('returns 400 when id is missing', async () => {
@@ -149,10 +149,14 @@ describe('PATCH /blueprints/:blueprintId', () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual(updated);
-        expect(mockUpdateBlueprint).toHaveBeenCalledWith('blog', {
-            name: 'Blog (updated)',
-            description: 'New desc'
-        });
+        expect(mockUpdateBlueprint).toHaveBeenCalledWith(
+            'blog',
+            {
+                name: 'Blog (updated)',
+                description: 'New desc'
+            },
+            undefined
+        );
     });
 
     it('returns 404 when blueprint not found', async () => {
@@ -178,7 +182,7 @@ describe('DELETE /blueprints/:blueprintId', () => {
 
         expect(res.status).toBe(204);
         expect(res.body).toEqual({});
-        expect(mockDeleteBlueprint).toHaveBeenCalledWith('blog');
+        expect(mockDeleteBlueprint).toHaveBeenCalledWith('blog', undefined);
     });
 
     it('returns 400 when deleteBlueprint throws', async () => {

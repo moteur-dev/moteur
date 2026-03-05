@@ -68,6 +68,30 @@ Restricted endpoints for creating, updating, and managing content and schemas.
 
 ---
 
+### 📋 Activity Log (read-only)
+
+Activity events are recorded automatically when entries, layouts, structures, models, users, or blueprints are created, updated, or deleted.
+
+**Project-scoped activity** (requires JWT + project access):
+
+| Method | Endpoint                                                       | Description                                                                 |
+|--------|----------------------------------------------------------------|-----------------------------------------------------------------------------|
+| GET    | `./admin/projects/:project/activity`                           | Page of activity. Query: `limit` (default 50, max 200), `before` (ISO timestamp for next page). Response: `{ events, nextBefore? }`. |
+| GET    | `./admin/projects/:project/activity/:resourceType/:resourceId`  | Activity for a specific resource (newest first).                            |
+
+**Global (system) activity** (admin only): user and blueprint changes.
+
+| Method | Endpoint            | Description                                          |
+|--------|---------------------|------------------------------------------------------|
+| GET    | `./activity`        | Page of global activity. Query: `limit` (default 50, max 200), `before` (pagination). Response: `{ events, nextBefore? }`. |
+
+**`resourceType`** (project or global): `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
+For entries, use **`resourceId`** in the form `modelId__entryId` (double underscore). Global events have `projectId: "_system"`.
+
+Response shape: `{ events: ActivityEvent[] }`. Each event includes `id`, `projectId`, `resourceType`, `resourceId`, `action` (`created` \| `updated` \| `deleted` \| `published` \| `unpublished`), `userId`, `userName`, optional `fieldPath` / `before` / `after`, and `timestamp` (ISO).
+
+---
+
 ### 📐 Blueprints (global project templates)
 
 Blueprints are **global** (not per-project). Stored under **`data/blueprints/`** (override with `BLUEPRINTS_DIR`). Each file is `data/blueprints/<id>.json`. See [Blueprints.md](Blueprints.md) for the JSON shape and how “create from blueprint” works.

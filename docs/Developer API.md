@@ -65,6 +65,25 @@ Moves a structure to `.trash/structures/{id}` in the given project.
 
 ---
 
+## 📋 Activity API
+
+Read-only access to the activity log (who did what, when). Events are recorded automatically when entries, layouts, pages, structures, models, users, or blueprints are created, updated, or deleted.
+
+### `Moteur.activity.getLog(projectId: string, resourceType: string, resourceId: string): Promise<ActivityEvent[]>`
+Returns activity events for a specific resource (newest first).  
+`resourceType` is one of: `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
+For entries, use `resourceId` in the form `modelId__entryId` (double underscore).  
+For global (user/blueprint) activity, use `projectId: "_system"`.
+
+### `Moteur.activity.getProjectLog(projectId: string, limit?: number, before?: string): Promise<ActivityLogPage>`
+Returns a page of activity for the project (newest first). Default `limit` is 50. Use `projectId: "_system"` for global activity.  
+**Pagination:** pass `before` (ISO timestamp of the oldest event from the previous page) to load older events. The result includes `events` and optionally `nextBefore` (use as `before` for the next page).
+
+### `Moteur.activity.getGlobalLog(limit?: number, before?: string): Promise<ActivityLogPage>`
+Returns a page of global (system) activity: user and blueprint changes. Default `limit` is 50. Supports `before` for pagination (same as `getProjectLog`).
+
+---
+
 ## 🧩 Fields API
 
 ### `Moteur.fields.loadFields(): Record<string, Field>`

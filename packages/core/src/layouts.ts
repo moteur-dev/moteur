@@ -9,6 +9,7 @@ import { assertUserCanAccessProject } from './utils/access.js';
 import { getProject } from './projects.js';
 import { layoutFilePath, trashLayoutDir } from './utils/pathUtils.js';
 import { getProjectStorage } from './utils/getProjectStorage.js';
+import { triggerEvent } from './utils/eventBus.js';
 import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
 import { layoutKey, layoutListPrefix } from './utils/storageKeys.js';
 
@@ -65,7 +66,9 @@ export async function createLayout(user: User, projectId: string, layout: Layout
         throw new Error(`Layout with ID "${layout.id}" already exists in project "${projectId}"`);
     }
 
+    triggerEvent('layout.beforeCreate', { layout, user, projectId });
     await putJson(storage, layoutKey(layout.id), layout);
+    triggerEvent('layout.afterCreate', { layout, user, projectId });
     return layout;
 }
 
@@ -90,12 +93,16 @@ export async function updateLayout(
     if (updated.meta?.audit) {
         updated.meta.audit.revision = (current.meta?.audit?.revision ?? 0) + 1;
     }
+    triggerEvent('layout.beforeUpdate', { layout: updated, user, projectId });
     await putJson(storage, layoutKey(id), updated);
+    triggerEvent('layout.afterUpdate', { layout: updated, user, projectId });
     return updated;
 }
 
 export async function deleteLayout(user: User, projectId: string, id: string): Promise<void> {
-    await getLayout(user, projectId, id);
+    const layout = await getLayout(user, projectId, id);
+
+    triggerEvent('layout.beforeDelete', { layout, user, projectId });
 
     const source = layoutFilePath(projectId, id);
     const destDir = trashLayoutDir(projectId, id);
@@ -103,6 +110,8 @@ export async function deleteLayout(user: User, projectId: string, id: string): P
 
     fs.mkdirSync(destDir, { recursive: true });
     fs.renameSync(source, dest);
+
+    triggerEvent('layout.afterDelete', { layout, user, projectId });
 }
 
 export function renderLayout(

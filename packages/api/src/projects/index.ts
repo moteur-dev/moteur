@@ -11,6 +11,10 @@ import users, { openapi as usersSpec } from './users.js';
 
 import presenceFormState, { openapi as presenceFormStateSpec } from './presence/formState.js';
 import debug, { openapi as debugSpec } from './presence/debug.js';
+import activityRouter, {
+    openapi as activitySpec,
+    schemas as activitySchemas
+} from './activity/index.js';
 
 const router: Router = Router();
 
@@ -22,6 +26,7 @@ router.use(remove);
 router.use(users);
 router.use(presenceFormState);
 router.use(debug);
+router.use('/:projectId/activity', activityRouter);
 
 export const projectsSpecs = {
     paths: mergePathSpecs(
@@ -32,10 +37,12 @@ export const projectsSpecs = {
         deleteSpec,
         usersSpec,
         presenceFormStateSpec,
-        debugSpec
+        debugSpec,
+        activitySpec
     ),
     schemas: {
-        ...createSchemas
+        ...createSchemas,
+        ...activitySchemas
     }
 };
 

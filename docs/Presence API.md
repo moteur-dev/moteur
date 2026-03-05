@@ -121,6 +121,30 @@ Sent to the joining user (if `screenId` is defined). Hydrates the form with the 
 
 ---
 
+## 📋 `activity:event`
+
+**Server → All in project room**
+
+Emitted when an activity event is logged (entry, layout, structure, model, or project created, updated, or deleted). Payload is an `ActivityEvent` (see Activity Log / REST API). Clients in the room can use this for a live activity feed.
+
+```ts
+{
+  id: string;
+  projectId: string;
+  resourceType: 'entry' | 'layout' | 'page' | 'structure' | 'model' | 'project';
+  resourceId: string;
+  action: 'created' | 'updated' | 'deleted' | 'published' | 'unpublished';
+  userId: string;
+  userName: string;
+  fieldPath?: string;
+  before?: unknown;
+  after?: unknown;
+  timestamp: string; // ISO
+}
+```
+
+---
+
 ## 🧠 Data Structures
 
 ### `Presence`

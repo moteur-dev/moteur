@@ -63,12 +63,12 @@ export async function createModelSchema(
         throw new Error(`Model schema "${schema.id}" already exists in project "${projectId}".`);
     }
 
-    triggerEvent('model.beforeCreate', { model: schema, user });
+    triggerEvent('model.beforeCreate', { model: schema, user, projectId });
 
     schema.fields = schema.fields || {};
     await putJson(storage, modelKey(schema.id), schema);
 
-    triggerEvent('model.afterCreate', { model: schema, user });
+    triggerEvent('model.afterCreate', { model: schema, user, projectId });
     return schema;
 }
 
@@ -81,10 +81,10 @@ export async function updateModelSchema(
     const current = await getModelSchema(user, projectId, schemaId);
     const updated = { ...current, ...patch };
 
-    triggerEvent('model.beforeUpdate', { model: updated, user });
+    triggerEvent('model.beforeUpdate', { model: updated, user, projectId });
     const storage = getProjectStorage(projectId);
     await putJson(storage, modelKey(schemaId), updated);
-    triggerEvent('model.afterUpdate', { model: updated, user });
+    triggerEvent('model.afterUpdate', { model: updated, user, projectId });
     return updated;
 }
 
@@ -95,7 +95,7 @@ export async function deleteModelSchema(
 ): Promise<void> {
     const current = await getModelSchema(user, projectId, schemaId);
 
-    triggerEvent('model.beforeDelete', { model: current, user });
+    triggerEvent('model.beforeDelete', { model: current, user, projectId });
 
     const base = baseModelsDir(projectId);
     const source = path.join(base, schemaId);
@@ -105,5 +105,5 @@ export async function deleteModelSchema(
     fs.mkdirSync(destDir, { recursive: true });
     fs.renameSync(source, dest);
 
-    triggerEvent('model.afterDelete', { model: current, user });
+    triggerEvent('model.afterDelete', { model: current, user, projectId });
 }

@@ -150,7 +150,7 @@ export async function createProjectFromBlueprint(
         }
         if (template.structures?.length) {
             for (const structure of template.structures) {
-                await createStructure(projectId, structure);
+                await createStructure(projectId, structure, user);
             }
         }
     } catch (err) {

@@ -22,11 +22,16 @@ import blueprintsRoutes, {
 } from './blueprints/index.js';
 import modelsRoute, { modelsSpecs } from './models/index.js';
 import entriesRoute, { entriesSpecs } from './entries/index.js';
+import activityGlobalRoute, { openapi as activityGlobalSpec } from './activity/index.js';
 
 import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
 import { createPresenceServer } from '@moteur/presence';
 import { validateStorageConfig } from '@moteur/core/config/storageConfig.js';
+import { onEvent } from '@moteur/core/utils/eventBus.js';
+
+// Load core so activity log plugin registers and writes activity on resource changes
+import '@moteur/core';
 
 // CORS: restrict to explicit origins. Set CORS_ORIGINS (comma-separated) in production.
 function getCorsOrigin(): string | string[] {
@@ -61,6 +66,7 @@ const mergedApiSpecs = await mergePluginSpecs({
         ...authSpecs.paths,
         ...projectsSpecs.paths,
         ...blueprintsSpec,
+        ...activityGlobalSpec,
         ...modelsSpecs.paths,
         ...entriesSpecs.paths
     },
@@ -87,6 +93,7 @@ app.use(basePath, openapiRoute);
 app.use(basePath + '/auth', authRoutes);
 app.use(basePath + '/ai', aiRoutes);
 app.use(basePath + '/blueprints', blueprintsRoutes);
+app.use(basePath + '/activity', activityGlobalRoute);
 app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
@@ -107,8 +114,15 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 // 🔧 Create HTTP server wrapper
 const httpServer = createServer(app);
 
-// ✅ Plug in presence socket engine
-createPresenceServer(httpServer);
+// ✅ Plug in presence socket engine and broadcast activity events to project room
+const io = createPresenceServer(httpServer);
+onEvent('activity.logged', async ctx => {
+    try {
+        io.to(ctx.event.projectId).emit('activity:event', ctx.event);
+    } catch {
+        // never break on emit failure
+    }
+});
 
 // Validate storage paths before accepting connections
 validateStorageConfig();

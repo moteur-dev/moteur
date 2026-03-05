@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { StructureSchema } from '@moteur/types/Structure.js';
+import type { User } from '@moteur/types/User.js';
 import { validateStructure } from './validators/validateStructure.js';
 import { normalizeType } from './utils/normalizeType.js';
 import { isValidId } from './utils/idUtils.js';
@@ -8,6 +9,11 @@ import { baseProjectsDir } from './utils/pathUtils.js';
 import { getProjectStorage } from './utils/getProjectStorage.js';
 import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
 import { structureKey, structureListPrefix } from './utils/storageKeys.js';
+import { triggerEvent } from './utils/eventBus.js';
+
+function systemUser(): User {
+    return { id: 'system', name: 'System', isActive: true, email: '', roles: [], projects: [] };
+}
 
 function loadFromDir(dirPath: string, registry: Record<string, StructureSchema>): void {
     if (!fs.existsSync(dirPath)) return;
@@ -87,7 +93,8 @@ export async function getStructure(id: string, project?: string): Promise<Struct
 /** Create a new structure in a given project */
 export async function createStructure(
     project: string,
-    schema: StructureSchema
+    schema: StructureSchema,
+    user?: User
 ): Promise<StructureSchema> {
     if (!isValidId(project)) {
         throw new Error(`Invalid projectId: "${project}"`);
@@ -107,7 +114,10 @@ export async function createStructure(
         throw new Error(`Structure "${schema.type}" already exists`);
     }
 
+    const u = user ?? systemUser();
+    triggerEvent('structure.beforeCreate', { structure: schema, user: u, projectId: project });
     await putJson(storage, structureKey(schema.type), schema);
+    triggerEvent('structure.afterCreate', { structure: schema, user: u, projectId: project });
     return schema;
 }
 
@@ -115,7 +125,8 @@ export async function createStructure(
 export async function updateStructure(
     project: string,
     id: string,
-    patch: Partial<StructureSchema>
+    patch: Partial<StructureSchema>,
+    user?: User
 ): Promise<StructureSchema> {
     if (!isValidId(project)) {
         throw new Error(`Invalid projectId: "${project}"`);
@@ -139,26 +150,37 @@ export async function updateStructure(
         throw new Error(`Structure validation failed: ${errorMessages}`);
     }
 
+    const u = user ?? systemUser();
+    triggerEvent('structure.beforeUpdate', { structure: updated, user: u, projectId: project });
     await putJson(storage, structureKey(id), updated);
+    triggerEvent('structure.afterUpdate', { structure: updated, user: u, projectId: project });
     return updated;
 }
 
 /** Soft-delete (trash) a structure in a project */
-export async function deleteStructure(project: string, id: string): Promise<void> {
+export async function deleteStructure(project: string, id: string, user?: User): Promise<void> {
     if (!isValidId(project)) {
         throw new Error(`Invalid projectId: "${project}"`);
     }
     if (!isValidId(id)) {
         throw new Error(`Invalid structureId: "${id}"`);
     }
+    const storage = getProjectStorage(project);
+    const current = await getJson<StructureSchema>(storage, structureKey(id));
+    if (!current) {
+        throw new Error(`Structure ${id} not found in project ${project}`);
+    }
+
+    const u = user ?? systemUser();
+    triggerEvent('structure.beforeDelete', { structure: current, user: u, projectId: project });
+
     const base = baseProjectsDir();
     const source = path.join(base, project, 'structures', id, 'structure.json');
     const trashDir = path.join(base, project, '.trash', 'structures');
     const dest = path.join(trashDir, `${id}.json`);
 
-    if (!fs.existsSync(source)) {
-        throw new Error(`Structure ${id} not found in project ${project}`);
-    }
     fs.mkdirSync(trashDir, { recursive: true });
     fs.renameSync(source, dest);
+
+    triggerEvent('structure.afterDelete', { structure: current, user: u, projectId: project });
 }
