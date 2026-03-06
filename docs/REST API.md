@@ -102,15 +102,21 @@ Per-project notifications for review events. JWT + project access.
 
 ## 📐 Blueprints (global)
 
-Global project templates. Stored under `data/blueprints/` (override: `BLUEPRINTS_DIR`). See [Blueprints.md](Blueprints.md). All require admin.
+Global templates (project, model, or structure). Stored under `data/blueprints/<kind>/` (override: `BLUEPRINTS_DIR`). See [Blueprints.md](Blueprints.md). All require admin.
+
+**Project blueprints:**
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/blueprints` | List blueprints. Returns `{ blueprints }`. |
-| GET | `/blueprints/:blueprintId` | Get one. Returns `{ blueprint }`. |
-| POST | `/blueprints` | Create or replace. Body: full blueprint JSON. |
-| PATCH | `/blueprints/:blueprintId` | Partial update. |
-| DELETE | `/blueprints/:blueprintId` | Delete. |
+| GET | `/blueprints/projects` | List project blueprints. Returns `{ blueprints }`. |
+| GET | `/blueprints/projects/:id` | Get one. Returns `{ blueprint }`. |
+| POST | `/blueprints/projects` | Create. Body: full blueprint JSON. |
+| PATCH | `/blueprints/projects/:id` | Partial update. |
+| DELETE | `/blueprints/projects/:id` | Delete. |
+
+**Model blueprints:** Same pattern under `/blueprints/models` and `/blueprints/models/:id`.
+
+**Structure blueprints:** Same pattern under `/blueprints/structures` and `/blueprints/structures/:id`.
 
 ---
 
@@ -122,7 +128,7 @@ Under a project. JWT + project access. Path param: `projectId`, `modelId`.
 |--------|----------|-------------|
 | GET | `/projects/:projectId/models` | List model schemas. Returns `{ models }`. |
 | GET | `/projects/:projectId/models/:modelId` | Get one. Returns `{ model }`. |
-| POST | `/projects/:projectId/models` | Create. Returns created model. |
+| POST | `/projects/:projectId/models` | Create. Body: full model schema, or **blueprintId** (model blueprint id) plus optional overrides (e.g. id, label). Returns created model. |
 | PATCH | `/projects/:projectId/models/:modelId` | Update. Returns `{ model }`. |
 | DELETE | `/projects/:projectId/models/:modelId` | Delete. |
 

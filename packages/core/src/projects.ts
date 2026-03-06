@@ -16,6 +16,7 @@ import { PROJECT_KEY } from './utils/storageKeys.js';
 import type { LocalStorageOptions } from '@moteur/types/Storage.js';
 import { removeProjectFromAllUsers, addProjectToUser } from './users.js';
 import { getBlueprint } from './blueprints.js';
+import type { BlueprintTemplate } from '@moteur/types/Blueprint.js';
 import { createModelSchema } from './models.js';
 import { createLayout } from './layouts.js';
 import { createStructure } from './structures.js';
@@ -132,11 +133,15 @@ export async function createProjectFromBlueprint(
 
     let blueprint;
     try {
-        blueprint = getBlueprint(blueprintId);
+        blueprint = getBlueprint('project', blueprintId);
     } catch {
         return result;
     }
-    const template = blueprint.template;
+    // Only project blueprints (kind missing or 'project') define project template
+    const kind = blueprint.kind ?? 'project';
+    if (kind !== 'project') return result;
+
+    const template = blueprint.template as BlueprintTemplate | undefined;
     if (!template) return result;
 
     try {
