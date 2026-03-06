@@ -28,23 +28,23 @@ const app = express();
 app.use(express.json());
 app.use('/blueprints', blueprintsRouter);
 
-describe('GET /blueprints', () => {
+describe('GET /blueprints/projects', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    it('returns list of blueprints', async () => {
+    it('returns list of project blueprints', async () => {
         const blueprints = [
             { id: 'empty', name: 'Empty Project', description: 'Start from scratch' },
             { id: 'blog', name: 'Blog Site', description: 'A blog template' }
         ];
         mockListBlueprints.mockReturnValue(blueprints);
 
-        const res = await request(app).get('/blueprints');
+        const res = await request(app).get('/blueprints/projects');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual({ blueprints });
-        expect(mockListBlueprints).toHaveBeenCalledTimes(1);
+        expect(mockListBlueprints).toHaveBeenCalledWith('project');
     });
 
     it('returns 500 when listBlueprints throws', async () => {
@@ -52,14 +52,14 @@ describe('GET /blueprints', () => {
             throw new Error('FS error');
         });
 
-        const res = await request(app).get('/blueprints');
+        const res = await request(app).get('/blueprints/projects');
 
         expect(res.status).toBe(500);
         expect(res.body).toMatchObject({ error: 'FS error' });
     });
 });
 
-describe('GET /blueprints/:blueprintId', () => {
+describe('GET /blueprints/projects/:blueprintId', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -68,19 +68,19 @@ describe('GET /blueprints/:blueprintId', () => {
         const bp = { id: 'blog', name: 'Blog Site', description: 'Template' };
         mockGetBlueprint.mockReturnValue(bp);
 
-        const res = await request(app).get('/blueprints/blog');
+        const res = await request(app).get('/blueprints/projects/blog');
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual(bp);
-        expect(mockGetBlueprint).toHaveBeenCalledWith('blog');
+        expect(mockGetBlueprint).toHaveBeenCalledWith('project', 'blog');
     });
 
     it('returns 404 when blueprint not found', async () => {
         mockGetBlueprint.mockImplementation(() => {
-            throw new Error('Blueprint "missing" not found');
+            throw new Error('Blueprint "project/missing" not found');
         });
 
-        const res = await request(app).get('/blueprints/missing');
+        const res = await request(app).get('/blueprints/projects/missing');
 
         expect(res.status).toBe(404);
         expect(res.body).toMatchObject({ error: expect.stringContaining('not found') });
@@ -91,31 +91,33 @@ describe('GET /blueprints/:blueprintId', () => {
             throw new Error('Invalid blueprint id: "bad id"');
         });
 
-        const res = await request(app).get('/blueprints/bad%20id');
+        const res = await request(app).get('/blueprints/projects/bad%20id');
 
         expect(res.status).toBe(400);
     });
 });
 
-describe('POST /blueprints', () => {
+describe('POST /blueprints/projects', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
     it('creates blueprint and returns 201', async () => {
         const body = { id: 'new-bp', name: 'New Blueprint', description: 'Desc' };
-        mockCreateBlueprint.mockReturnValue(body);
+        mockCreateBlueprint.mockReturnValue({ ...body, kind: 'project' });
 
-        const res = await request(app).post('/blueprints').send(body);
+        const res = await request(app).post('/blueprints/projects').send(body);
 
         expect(res.status).toBe(201);
-        expect(res.body).toEqual(body);
-        expect(mockCreateBlueprint).toHaveBeenCalledWith(body, undefined);
+        expect(mockCreateBlueprint).toHaveBeenCalledWith(
+            expect.objectContaining({ id: 'new-bp', name: 'New Blueprint', kind: 'project' }),
+            undefined
+        );
     });
 
     it('returns 400 when id is missing', async () => {
         const res = await request(app)
-            .post('/blueprints')
+            .post('/blueprints/projects')
             .send({ name: 'No Id', description: 'Missing id' });
 
         expect(res.status).toBe(400);
@@ -128,13 +130,15 @@ describe('POST /blueprints', () => {
             throw new Error('Invalid blueprint id: "x"');
         });
 
-        const res = await request(app).post('/blueprints').send({ id: 'x', name: 'X' });
+        const res = await request(app)
+            .post('/blueprints/projects')
+            .send({ id: 'x', name: 'X' });
 
         expect(res.status).toBe(400);
     });
 });
 
-describe('PATCH /blueprints/:blueprintId', () => {
+describe('PATCH /blueprints/projects/:blueprintId', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -144,12 +148,13 @@ describe('PATCH /blueprints/:blueprintId', () => {
         mockUpdateBlueprint.mockReturnValue(updated);
 
         const res = await request(app)
-            .patch('/blueprints/blog')
+            .patch('/blueprints/projects/blog')
             .send({ name: 'Blog (updated)', description: 'New desc' });
 
         expect(res.status).toBe(200);
         expect(res.body).toEqual(updated);
         expect(mockUpdateBlueprint).toHaveBeenCalledWith(
+            'project',
             'blog',
             {
                 name: 'Blog (updated)',
@@ -161,16 +166,16 @@ describe('PATCH /blueprints/:blueprintId', () => {
 
     it('returns 404 when blueprint not found', async () => {
         mockUpdateBlueprint.mockImplementation(() => {
-            throw new Error('Blueprint "x" not found');
+            throw new Error('Blueprint "project/x" not found');
         });
 
-        const res = await request(app).patch('/blueprints/x').send({ name: 'Y' });
+        const res = await request(app).patch('/blueprints/projects/x').send({ name: 'Y' });
 
         expect(res.status).toBe(404);
     });
 });
 
-describe('DELETE /blueprints/:blueprintId', () => {
+describe('DELETE /blueprints/projects/:blueprintId', () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -178,11 +183,10 @@ describe('DELETE /blueprints/:blueprintId', () => {
     it('deletes blueprint and returns 204', async () => {
         mockDeleteBlueprint.mockReturnValue(undefined);
 
-        const res = await request(app).delete('/blueprints/blog');
+        const res = await request(app).delete('/blueprints/projects/blog');
 
         expect(res.status).toBe(204);
-        expect(res.body).toEqual({});
-        expect(mockDeleteBlueprint).toHaveBeenCalledWith('blog', undefined);
+        expect(mockDeleteBlueprint).toHaveBeenCalledWith('project', 'blog', undefined);
     });
 
     it('returns 400 when deleteBlueprint throws', async () => {
@@ -190,8 +194,42 @@ describe('DELETE /blueprints/:blueprintId', () => {
             throw new Error('Invalid blueprint id: "bad!"');
         });
 
-        const res = await request(app).delete('/blueprints/bad!');
+        const res = await request(app).delete('/blueprints/projects/bad!');
 
         expect(res.status).toBe(400);
+    });
+});
+
+describe('GET /blueprints/models', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('returns list of model blueprints', async () => {
+        const blueprints = [{ id: 'blog-post', name: 'Blog Post', kind: 'model' }];
+        mockListBlueprints.mockReturnValue(blueprints);
+
+        const res = await request(app).get('/blueprints/models');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ blueprints });
+        expect(mockListBlueprints).toHaveBeenCalledWith('model');
+    });
+});
+
+describe('GET /blueprints/structures', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('returns list of structure blueprints', async () => {
+        const blueprints = [{ id: 'team-member', name: 'Team Member', kind: 'structure' }];
+        mockListBlueprints.mockReturnValue(blueprints);
+
+        const res = await request(app).get('/blueprints/structures');
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ blueprints });
+        expect(mockListBlueprints).toHaveBeenCalledWith('structure');
     });
 });

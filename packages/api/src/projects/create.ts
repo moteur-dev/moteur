@@ -21,6 +21,7 @@ router.post('/', requireAuth, async (req: any, res: any) => {
                 .status(400)
                 .json({ validation: result.validation.issues, error: 'Validation failed' });
         }
+        // TODO (optional): send email to creator/owner that a new project was created
         return res.status(201).json(result.project);
     } catch (err: any) {
         return res.status(400).json({ error: err.message });

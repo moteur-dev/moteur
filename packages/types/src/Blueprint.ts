@@ -12,13 +12,35 @@ export interface BlueprintTemplate {
     structures?: StructureSchema[];
 }
 
+/** Discriminator for blueprint kind. Default is 'project' when omitted. */
+export type BlueprintKind = 'project' | 'model' | 'structure';
+
 /**
- * Project blueprint: reusable template with metadata and optional
- * models, layouts, and structures to apply to a new project.
+ * Template for a model blueprint (kind === 'model').
+ * Single model schema to instantiate in a project.
+ */
+export interface ModelBlueprintTemplate {
+    model: ModelSchema;
+}
+
+/**
+ * Template for a structure blueprint (kind === 'structure').
+ * Single structure schema to instantiate in a project.
+ */
+export interface StructureBlueprintTemplate {
+    structure: StructureSchema;
+}
+
+/**
+ * Blueprint: reusable template with metadata.
+ * - kind 'project' (or omitted): template is BlueprintTemplate (models, layouts, structures).
+ * - kind 'model': template is ModelBlueprintTemplate (single model).
+ * - kind 'structure': template is StructureBlueprintTemplate (single structure).
  */
 export interface BlueprintSchema {
     id: string;
     name: string;
     description?: string;
-    template?: BlueprintTemplate;
+    kind?: BlueprintKind;
+    template?: BlueprintTemplate | ModelBlueprintTemplate | StructureBlueprintTemplate;
 }

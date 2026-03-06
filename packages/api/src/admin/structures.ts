@@ -6,6 +6,8 @@ import {
     updateStructure,
     deleteStructure
 } from '@moteur/core/structures';
+import { getBlueprint } from '@moteur/core/blueprints.js';
+import type { StructureSchema } from '@moteur/types/Structure.js';
 
 type StructureParams = { project: string };
 type StructureWithIdParams = { project: string; id: string };
@@ -32,10 +34,28 @@ router.get('/:id', (req: Request<StructureWithIdParams>, res: Response) => {
     }
 });
 
-router.post('/', (req: Request<StructureParams>, res: Response) => {
+router.post('/', async (req: Request<StructureParams>, res: Response) => {
     const { project } = req.params;
     try {
-        const structure = createStructure(project, req.body);
+        const body = req.body || {};
+        let schema: StructureSchema;
+
+        if (body.blueprintId) {
+            const blueprint = getBlueprint('structure', body.blueprintId);
+            if ((blueprint.kind ?? 'project') !== 'structure') {
+                return res.status(400).json({ error: 'Blueprint is not a structure blueprint' });
+            }
+            const template = blueprint.template as { structure: StructureSchema } | undefined;
+            if (!template?.structure) {
+                return res.status(400).json({ error: 'Blueprint has no template.structure' });
+            }
+            const { blueprintId: _b, ...overrides } = body;
+            schema = { ...template.structure, ...overrides } as StructureSchema;
+        } else {
+            schema = body as StructureSchema;
+        }
+
+        const structure = await createStructure(project, schema, req.user);
         res.status(201).json(structure);
     } catch (err) {
         res.status(400).json({ error: (err as Error).message });
