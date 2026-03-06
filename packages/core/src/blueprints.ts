@@ -37,9 +37,7 @@ function migrateBlueprintsToSubdirs(): void {
     if (!fs.existsSync(dir)) return;
 
     const entries = fs.readdirSync(dir, { withFileTypes: true });
-    const rootJsonFiles = entries.filter(
-        e => e.isFile() && e.name.endsWith('.json')
-    );
+    const rootJsonFiles = entries.filter(e => e.isFile() && e.name.endsWith('.json'));
     if (rootJsonFiles.length === 0) return;
 
     const projectsDir = kindSubdir('project');
@@ -127,9 +125,14 @@ function validateBlueprintPayload(blueprint: BlueprintSchema): void {
         if (!t?.structure) {
             throw new Error('Blueprint kind "structure" requires template.structure');
         }
-        const structResult = validateStructure(t.structure as Parameters<typeof validateStructure>[0]);
+        const structResult = validateStructure(
+            t.structure as Parameters<typeof validateStructure>[0]
+        );
         if (structResult.issues.some(i => i.type === 'error')) {
-            const msg = structResult.issues.filter(i => i.type === 'error').map(i => `${i.path}: ${i.message}`).join('; ');
+            const msg = structResult.issues
+                .filter(i => i.type === 'error')
+                .map(i => `${i.path}: ${i.message}`)
+                .join('; ');
             throw new Error(`Blueprint template.structure validation failed: ${msg}`);
         }
     }

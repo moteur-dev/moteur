@@ -106,9 +106,14 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
 export const schemas: OpenAPIV3.ComponentsObject['schemas'] = {
     NewModelInput: {
         type: 'object',
-        description: 'Full model schema, or blueprintId + optional overrides (id, label, description, fields, etc.) to create from a model blueprint.',
+        description:
+            'Full model schema, or blueprintId + optional overrides (id, label, description, fields, etc.) to create from a model blueprint.',
         properties: {
-            blueprintId: { type: 'string', description: 'Optional. If set, create from this model blueprint; other fields act as overrides.' },
+            blueprintId: {
+                type: 'string',
+                description:
+                    'Optional. If set, create from this model blueprint; other fields act as overrides.'
+            },
             id: { type: 'string' },
             label: { type: 'string' },
             description: { type: 'string' },

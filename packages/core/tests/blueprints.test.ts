@@ -163,9 +163,9 @@ describe('blueprints', () => {
 
     describe('updateBlueprint', () => {
         it('throws when blueprint does not exist', () => {
-            expect(() =>
-                updateBlueprint('project', 'nonexistent', { name: 'New' })
-            ).toThrow('not found');
+            expect(() => updateBlueprint('project', 'nonexistent', { name: 'New' })).toThrow(
+                'not found'
+            );
         });
 
         it('merges patch and preserves id', () => {

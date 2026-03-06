@@ -130,9 +130,7 @@ describe('POST /blueprints/projects', () => {
             throw new Error('Invalid blueprint id: "x"');
         });
 
-        const res = await request(app)
-            .post('/blueprints/projects')
-            .send({ id: 'x', name: 'X' });
+        const res = await request(app).post('/blueprints/projects').send({ id: 'x', name: 'X' });
 
         expect(res.status).toBe(400);
     });
