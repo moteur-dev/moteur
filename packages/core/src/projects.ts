@@ -85,6 +85,19 @@ export async function getProject(user: User, projectId: string): Promise<Project
     return { ...project, id: projectId };
 }
 
+/**
+ * Load project by id without user check. For internal use only (e.g. API key verification).
+ * Returns null if project does not exist.
+ */
+export async function getProjectById(projectId: string): Promise<ProjectSchema | null> {
+    if (!isValidId(projectId)) return null;
+    if (!isExistingProjectId(projectId)) return null;
+    const storage = getProjectStorage(projectId);
+    const project = await getJson<ProjectSchema>(storage, PROJECT_KEY);
+    if (!project || !project.id) return null;
+    return { ...project, id: projectId };
+}
+
 /** Returns ISO timestamp for audit backfill (file mtime or now). */
 function getAuditFallbackTimestamp(projectId: string): string {
     try {

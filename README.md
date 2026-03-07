@@ -20,6 +20,8 @@ It uses flat JSON files for storage, supports modular data definitions, and has 
 - Field-level validators (fully pluggable, project-specific or module-based)  
 - Interactive CLI for managing projects, models, entries, layouts, structures, templates, and pages  
 - REST API with JWT auth and role-based access; admin endpoints for full CRUD  
+- **API Collections**: named, configured views of project data for headless/SSG consumers; one project API key per project, read-only key auth  
+- **Request logging & rate limiting**: admin and public requests counted separately for audit and billing; optional audit log file; configurable rate limits (see [REST API](docs/REST%20API.md) and [Configuration](docs/Configuration.md))  
 - Project-based scoping to isolate content and configurations  
 - No database dependencies ? works anywhere Node.js runs  
 - Extensible by design: add your own fields, blocks, validators, and renderers without modifying the core  
@@ -55,6 +57,9 @@ It uses flat JSON files for storage, supports modular data definitions, and has 
 
 ### Projects
 The top-level unit. Everything in Moteur is scoped to a **project**: models, entries, layouts, structures, templates, and pages live inside a project. Projects can be created from a **project blueprint** (optional) to apply initial models, layouts, and structures.
+
+### Collections (API)
+A **Collection** is a named, configured view of project data for external consumers (frontends, mobile apps, static site generators). Each project has one **API key**. Collections define which models and pages that key can see, with optional field selection, status filters, and reference resolution depth. Key auth is read-only (GET only). See [Public API and Collections](docs/Public%20API%20and%20Collections.md) for a short setup guide, [REST API](docs/REST%20API.md) for endpoints, and [Developer API](docs/Developer%20API.md) for programmatic access.
 
 ### Blueprints
 Reusable templates with a **kind**. Stored under `data/blueprints/<kind>/`.

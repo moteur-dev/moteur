@@ -1,4 +1,5 @@
 export * from './Activity';
+export * from './ApiCollection';
 export * from './Audit';
 export * from './Comment';
 export * from './Notification';

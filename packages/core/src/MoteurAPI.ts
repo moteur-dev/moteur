@@ -9,6 +9,8 @@ import type * as Reviews from './reviews';
 import type * as Notifications from './notifications';
 import type * as Templates from './templates';
 import type * as Pages from './pages';
+import type * as ApiCollections from './apiCollections';
+import type * as ProjectApiKey from './projectApiKey';
 
 export interface MoteurAPI {
     projects: typeof Projects;
@@ -37,5 +39,17 @@ export interface MoteurAPI {
         get: typeof Notifications.getNotifications;
         markRead: typeof Notifications.markRead;
         markAllRead: typeof Notifications.markAllRead;
+    };
+    collections: {
+        list: typeof ApiCollections.listCollections;
+        get: typeof ApiCollections.getCollection;
+        create: typeof ApiCollections.createCollection;
+        update: typeof ApiCollections.updateCollection;
+        delete: typeof ApiCollections.deleteCollection;
+    };
+    projectApiKey: {
+        generate: typeof ProjectApiKey.generateKey;
+        rotate: typeof ProjectApiKey.rotateKey;
+        revoke: typeof ProjectApiKey.revokeKey;
     };
 }

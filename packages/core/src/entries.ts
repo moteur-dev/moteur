@@ -11,6 +11,48 @@ import { triggerEvent } from './utils/eventBus.js';
 import { getProjectStorage } from './utils/getProjectStorage.js';
 import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
 import { entryKey, entryListPrefix } from './utils/storageKeys.js';
+import type { EntryStatus } from '@moteur/types/Model.js';
+
+/** Options for listing entries without user (e.g. API key / collection pipeline). */
+export interface ListEntriesForProjectOptions {
+    status?: EntryStatus | EntryStatus[];
+    locale?: string;
+}
+
+/**
+ * List entries for a project/model without user check. For internal use (e.g. collection API).
+ */
+export async function listEntriesForProject(
+    projectId: string,
+    modelId: string,
+    options?: ListEntriesForProjectOptions
+): Promise<Entry[]> {
+    const storage = getProjectStorage(projectId);
+    const ids = await storage.list(entryListPrefix(modelId));
+    const entries: Entry[] = [];
+    for (const id of ids) {
+        const key = entryKey(modelId, id);
+        const entry = await getJson<Entry>(storage, key);
+        if (entry) entries.push(entry);
+    }
+    const statusFilter = options?.status ?? ['published'];
+    const statuses = Array.isArray(statusFilter) ? statusFilter : [statusFilter];
+    return entries.filter(e => statuses.includes((e.status ?? 'draft') as EntryStatus));
+}
+
+/**
+ * Get one entry by id without user check. For internal use (e.g. collection API). Returns null if not found.
+ */
+export async function getEntryForProject(
+    projectId: string,
+    modelId: string,
+    entryId: string
+): Promise<Entry | null> {
+    if (!entryId || !isValidId(entryId)) return null;
+    const storage = getProjectStorage(projectId);
+    const entry = await getJson<Entry>(storage, entryKey(modelId, entryId));
+    return entry ?? null;
+}
 
 export async function listEntries(
     user: User,
