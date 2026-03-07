@@ -23,10 +23,11 @@ export function requestClassifier(req: Request, res: Response, next: NextFunctio
 
     // Public API: project-scoped read endpoints (collections, pages, templates)
     // Pattern: .../projects/:projectId/collections/... or .../projects/:projectId/pages or .../projects/:projectId/templates
-    const projectsMatch = path.match(/\/projects\/([^/]+)(?:\/(collections|pages|templates))(?:\/|$)/);
+    const projectsMatch = path.match(
+        /\/projects\/([^/]+)(?:\/(collections|pages|templates))(?:\/|$)/
+    );
     if (projectsMatch) {
         const projectId = projectsMatch[1];
-        const resource = projectsMatch[2];
         // Count as public: collections (API key), pages, templates (public read)
         (req as any).apiRequestType = 'public';
         (req as any).apiRequestProjectId = projectId;

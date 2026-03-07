@@ -42,7 +42,7 @@ export const publicRateLimiter = rateLimit({
     legacyHeaders: false,
     keyGenerator: (req: Request) => {
         const projectId = (req as any).apiRequestProjectId;
-        return projectId ? `public:${projectId}` : (req.ip || 'unknown');
+        return projectId ? `public:${projectId}` : req.ip || 'unknown';
     },
     message: { error: 'Too many requests for this project; try again later.' }
 });

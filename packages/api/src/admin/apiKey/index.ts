@@ -1,10 +1,6 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
-import {
-    generateKey,
-    rotateKey,
-    revokeKey
-} from '@moteur/core/projectApiKey.js';
+import { generateKey, rotateKey, revokeKey } from '@moteur/core/projectApiKey.js';
 import { getProject } from '@moteur/core/projects.js';
 import { requireProjectAccess } from '../../middlewares/auth.js';
 
@@ -73,7 +69,9 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         post: {
             summary: 'Generate project API key',
             tags: ['Admin API Key'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: {
                 '201': {
                     description: 'Returns rawKey (once) and prefix',
@@ -97,7 +95,9 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         post: {
             summary: 'Rotate project API key',
             tags: ['Admin API Key'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '200': { description: 'New rawKey and prefix' } }
         }
     },
@@ -105,13 +105,17 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         get: {
             summary: 'Get API key metadata (prefix and createdAt only)',
             tags: ['Admin API Key'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '200': { description: 'prefix, createdAt' } }
         },
         delete: {
             summary: 'Revoke API key',
             tags: ['Admin API Key'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '204': { description: 'Revoked' } }
         }
     }

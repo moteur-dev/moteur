@@ -22,10 +22,7 @@ export async function listCollections(projectId: string): Promise<ApiCollection[
     return list;
 }
 
-export async function getCollection(
-    projectId: string,
-    id: string
-): Promise<ApiCollection | null> {
+export async function getCollection(projectId: string, id: string): Promise<ApiCollection | null> {
     const list = await loadCollections(projectId);
     return list.find(c => c.id === id) ?? null;
 }

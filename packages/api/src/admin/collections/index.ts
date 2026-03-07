@@ -82,13 +82,17 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         get: {
             summary: 'List collections (JWT + project access)',
             tags: ['Admin Collections'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '200': { description: 'List of collections' } }
         },
         post: {
             summary: 'Create collection',
             tags: ['Admin Collections'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             requestBody: {
                 content: {
                     'application/json': {
@@ -123,7 +127,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
                 { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
             ],
-            responses: { '200': { description: 'Updated collection' }, '404': { description: 'Not found' } }
+            responses: {
+                '200': { description: 'Updated collection' },
+                '404': { description: 'Not found' }
+            }
         },
         delete: {
             summary: 'Delete collection',

@@ -17,12 +17,7 @@ router.use('/:projectId/collections', adminCollectionsRouter);
 router.use('/:projectId/api-key', adminApiKeyRouter);
 
 export const adminSpecs = {
-    paths: mergePathSpecs(
-        adminTemplatesSpec,
-        adminPagesSpec,
-        adminCollectionsSpec,
-        adminApiKeySpec
-    )
+    paths: mergePathSpecs(adminTemplatesSpec, adminPagesSpec, adminCollectionsSpec, adminApiKeySpec)
 };
 
 export default router;

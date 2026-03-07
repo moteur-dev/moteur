@@ -78,5 +78,8 @@ export async function verifyKey(projectId: string, rawKey: string): Promise<bool
     if (!project?.apiKey?.hash) return false;
     const hash = hashKey(key);
     if (hash.length !== project.apiKey.hash.length) return false;
-    return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(project.apiKey.hash, 'hex'));
+    return crypto.timingSafeEqual(
+        Buffer.from(hash, 'hex'),
+        Buffer.from(project.apiKey.hash, 'hex')
+    );
 }

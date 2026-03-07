@@ -17,7 +17,8 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
             tags: ['Admin Usage'],
             responses: {
                 '200': {
-                    description: 'admin: { total, windowStart }, public: { byProject: { [projectId]: { total, windowStart } } }'
+                    description:
+                        'admin: { total, windowStart }, public: { byProject: { [projectId]: { total, windowStart } } }'
                 }
             }
         }

@@ -53,7 +53,14 @@ describe('GET /projects/:projectId/collections (public API)', () => {
     it('returns 200 and list when API key is valid', async () => {
         vi.mocked(verifyKey).mockResolvedValue(true);
         vi.mocked(listCollections).mockResolvedValue([
-            { id: 'c1', projectId: 'demo', label: 'Blog', resources: [], createdAt: '', updatedAt: '' }
+            {
+                id: 'c1',
+                projectId: 'demo',
+                label: 'Blog',
+                resources: [],
+                createdAt: '',
+                updatedAt: ''
+            }
         ]);
         const res = await request(app)
             .get('/projects/demo/collections')
@@ -91,11 +98,16 @@ describe('GET /projects/:projectId/collections/:collectionId', () => {
     });
 
     it('returns 200 and collection when found', async () => {
-        const col = { id: 'c1', projectId: 'demo', label: 'API', resources: [], createdAt: '', updatedAt: '' };
+        const col = {
+            id: 'c1',
+            projectId: 'demo',
+            label: 'API',
+            resources: [],
+            createdAt: '',
+            updatedAt: ''
+        };
         vi.mocked(getCollection).mockResolvedValue(col);
-        const res = await request(app)
-            .get('/projects/demo/collections/c1')
-            .set('x-api-key', 'key');
+        const res = await request(app).get('/projects/demo/collections/c1').set('x-api-key', 'key');
         expect(res.status).toBe(200);
         expect(res.body.label).toBe('API');
     });

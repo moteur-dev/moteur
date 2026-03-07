@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-    recalculateFromContent,
-    getWindowKey
-} from '../../scripts/recalculate-usage.js';
+import { recalculateFromContent, getWindowKey } from '../../scripts/recalculate-usage.js';
 
 describe('recalculate-usage', () => {
     describe('getWindowKey', () => {
@@ -20,9 +17,29 @@ describe('recalculate-usage', () => {
     describe('recalculateFromContent', () => {
         it('aggregates admin and public by project (window all)', () => {
             const content = [
-                JSON.stringify({ timestamp: '2025-03-07T12:00:00.000Z', type: 'admin', method: 'GET', path: '/admin/projects', statusCode: 200 }),
-                JSON.stringify({ timestamp: '2025-03-07T12:01:00.000Z', type: 'public', projectId: 'blog', method: 'GET', path: '/projects/blog/collections', statusCode: 200 }),
-                JSON.stringify({ timestamp: '2025-03-07T12:02:00.000Z', type: 'public', projectId: 'blog', method: 'GET', path: '/projects/blog/pages', statusCode: 200 })
+                JSON.stringify({
+                    timestamp: '2025-03-07T12:00:00.000Z',
+                    type: 'admin',
+                    method: 'GET',
+                    path: '/admin/projects',
+                    statusCode: 200
+                }),
+                JSON.stringify({
+                    timestamp: '2025-03-07T12:01:00.000Z',
+                    type: 'public',
+                    projectId: 'blog',
+                    method: 'GET',
+                    path: '/projects/blog/collections',
+                    statusCode: 200
+                }),
+                JSON.stringify({
+                    timestamp: '2025-03-07T12:02:00.000Z',
+                    type: 'public',
+                    projectId: 'blog',
+                    method: 'GET',
+                    path: '/projects/blog/pages',
+                    statusCode: 200
+                })
             ].join('\n');
             const result = recalculateFromContent(content, 'all');
             expect(result.source).toBe('inline');
@@ -33,8 +50,20 @@ describe('recalculate-usage', () => {
 
         it('buckets by day when window is day', () => {
             const content = [
-                JSON.stringify({ timestamp: '2025-03-07T10:00:00.000Z', type: 'admin', method: 'GET', path: '/admin', statusCode: 200 }),
-                JSON.stringify({ timestamp: '2025-03-08T10:00:00.000Z', type: 'admin', method: 'GET', path: '/admin', statusCode: 200 })
+                JSON.stringify({
+                    timestamp: '2025-03-07T10:00:00.000Z',
+                    type: 'admin',
+                    method: 'GET',
+                    path: '/admin',
+                    statusCode: 200
+                }),
+                JSON.stringify({
+                    timestamp: '2025-03-08T10:00:00.000Z',
+                    type: 'admin',
+                    method: 'GET',
+                    path: '/admin',
+                    statusCode: 200
+                })
             ].join('\n');
             const result = recalculateFromContent(content, 'day');
             expect(result.totals['2025-03-07'].admin).toBe(1);
@@ -44,8 +73,20 @@ describe('recalculate-usage', () => {
         it('skips invalid lines and non-admin/public types', () => {
             const content = [
                 'not json',
-                JSON.stringify({ timestamp: '2025-03-07T12:00:00.000Z', type: null, method: 'GET', path: '/auth', statusCode: 200 }),
-                JSON.stringify({ timestamp: '2025-03-07T12:00:00.000Z', type: 'admin', method: 'GET', path: '/admin', statusCode: 200 })
+                JSON.stringify({
+                    timestamp: '2025-03-07T12:00:00.000Z',
+                    type: null,
+                    method: 'GET',
+                    path: '/auth',
+                    statusCode: 200
+                }),
+                JSON.stringify({
+                    timestamp: '2025-03-07T12:00:00.000Z',
+                    type: 'admin',
+                    method: 'GET',
+                    path: '/admin',
+                    statusCode: 200
+                })
             ].join('\n');
             const result = recalculateFromContent(content, 'all');
             expect(result.totals.all.admin).toBe(1);
