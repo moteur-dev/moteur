@@ -1,0 +1,23 @@
+{
+  "id": "blog",
+  "name": "Blog",
+  "description": "A simple blog with a Post model and a basic page template.",
+  "kind": "project",
+  "template": {
+    "models": [
+      {
+        "id": "post",
+        "label": "Post",
+        "description": "Blog post entry",
+        "modelType": "content",
+        "fields": {
+          "title": { "type": "core/text", "label": "Title", "options": { "multilingual": true } },
+          "excerpt": { "type": "core/textarea", "label": "Excerpt", "options": { "multilingual": true } },
+          "body": { "type": "core/rich-text", "label": "Body", "options": { "multilingual": true } }
+        }
+      }
+    ],
+    "layouts": [],
+    "structures": []
+  }
+}

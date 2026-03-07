@@ -1,0 +1,19 @@
+{
+  "id": "blog-post",
+  "name": "Blog Post",
+  "description": "Content model for a single blog post with title, excerpt, and body.",
+  "kind": "model",
+  "template": {
+    "model": {
+      "id": "post",
+      "label": "Blog Post",
+      "description": "A single blog post",
+      "modelType": "content",
+      "fields": {
+        "title": { "type": "core/text", "label": "Title", "options": { "multilingual": true } },
+        "excerpt": { "type": "core/textarea", "label": "Excerpt", "options": { "multilingual": true } },
+        "body": { "type": "core/rich-text", "label": "Body", "options": { "multilingual": true } }
+      }
+    }
+  }
+}

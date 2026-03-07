@@ -1,0 +1,33 @@
+{
+  "id": "seo",
+  "name": "SEO",
+  "description": "Search engine optimization fields for entries or pages.",
+  "kind": "structure",
+  "template": {
+    "structure": {
+      "type": "project/seo",
+      "label": "SEO",
+      "description": "Search engine optimization fields.",
+      "fields": {
+        "seoTitle": {
+          "type": "core/text",
+          "label": "SEO Title",
+          "options": { "multilingual": true }
+        },
+        "seoDescription": {
+          "type": "core/textarea",
+          "label": "SEO Description",
+          "options": { "multilingual": true }
+        },
+        "seoImage": {
+          "type": "core/image",
+          "label": "SEO Image"
+        },
+        "canonicalUrl": {
+          "type": "core/url",
+          "label": "Canonical URL"
+        }
+      }
+    }
+  }
+}

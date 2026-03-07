@@ -18,7 +18,7 @@
 
 ## 🚀 Setup
 
-> This project uses pnpm to handle packages in a monorepo.
+> This project uses pnpm to handle multiple packages in a monorepo.
 `npm install -g pnpm`
 
 1. Clone the repo:

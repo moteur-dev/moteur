@@ -81,6 +81,7 @@ const router: Router = Router();
 router.use('/projects', createKindRouter('project'));
 router.use('/models', createKindRouter('model'));
 router.use('/structures', createKindRouter('structure'));
+router.use('/templates', createKindRouter('template'));
 
 export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
     '/blueprints/projects': {
@@ -412,6 +413,116 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 '400': { description: 'Invalid id' }
             }
         }
+    },
+    '/blueprints/templates': {
+        get: {
+            summary: 'List template blueprints',
+            tags: ['Blueprints'],
+            responses: {
+                '200': {
+                    description: 'List of template blueprints',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    blueprints: {
+                                        type: 'array',
+                                        items: { $ref: '#/components/schemas/Blueprint' }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        post: {
+            summary: 'Create a template blueprint',
+            tags: ['Blueprints'],
+            requestBody: {
+                required: true,
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/Blueprint' }
+                    }
+                }
+            },
+            responses: {
+                '201': {
+                    description: 'Blueprint created',
+                    content: {
+                        'application/json': {
+                            schema: { $ref: '#/components/schemas/Blueprint' }
+                        }
+                    }
+                },
+                '400': { description: 'Validation error' }
+            }
+        }
+    },
+    '/blueprints/templates/{blueprintId}': {
+        get: {
+            summary: 'Get a template blueprint by id',
+            tags: ['Blueprints'],
+            parameters: [
+                { name: 'blueprintId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: {
+                '200': {
+                    description: 'Blueprint',
+                    content: {
+                        'application/json': {
+                            schema: { $ref: '#/components/schemas/Blueprint' }
+                        }
+                    }
+                },
+                '404': { description: 'Blueprint not found' }
+            }
+        },
+        patch: {
+            summary: 'Update a template blueprint',
+            tags: ['Blueprints'],
+            parameters: [
+                { name: 'blueprintId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: {
+                content: {
+                    'application/json': {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                name: { type: 'string' },
+                                description: { type: 'string' },
+                                template: { $ref: '#/components/schemas/BlueprintTemplate' }
+                            }
+                        }
+                    }
+                }
+            },
+            responses: {
+                '200': {
+                    description: 'Updated blueprint',
+                    content: {
+                        'application/json': {
+                            schema: { $ref: '#/components/schemas/Blueprint' }
+                        }
+                    }
+                },
+                '404': { description: 'Blueprint not found' }
+            }
+        },
+        delete: {
+            summary: 'Delete a template blueprint',
+            tags: ['Blueprints'],
+            parameters: [
+                { name: 'blueprintId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: {
+                '204': { description: 'Blueprint deleted' },
+                '400': { description: 'Invalid id' }
+            }
+        }
     }
 };
 
@@ -425,7 +536,7 @@ export const schemas: OpenAPIV3.ComponentsObject['schemas'] = {
             description: { type: 'string' },
             kind: {
                 type: 'string',
-                enum: ['project', 'model', 'structure'],
+                enum: ['project', 'model', 'structure', 'template'],
                 description: 'Blueprint kind; set by route for create.'
             },
             template: { $ref: '#/components/schemas/BlueprintTemplate' }
@@ -447,7 +558,16 @@ export const schemas: OpenAPIV3.ComponentsObject['schemas'] = {
                 items: { type: 'object' }
             },
             model: { $ref: '#/components/schemas/Model' },
-            structure: { type: 'object' }
+            structure: { type: 'object' },
+            template: {
+                type: 'object',
+                properties: {
+                    id: { type: 'string' },
+                    label: { type: 'string' },
+                    description: { type: 'string' },
+                    fields: { type: 'object', additionalProperties: true }
+                }
+            }
         }
     }
 };

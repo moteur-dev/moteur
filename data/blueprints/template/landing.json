@@ -1,0 +1,19 @@
+{
+  "id": "landing",
+  "name": "Landing Page",
+  "description": "Hero, features, CTA",
+  "kind": "template",
+  "template": {
+    "template": {
+      "id": "landing",
+      "label": "Landing Page",
+      "description": "Hero, features, CTA",
+      "fields": {
+        "heroTitle": { "type": "core/text", "label": "Hero Title" },
+        "heroSubtitle": { "type": "core/rich-text", "label": "Hero Subtitle" },
+        "ctaLabel": { "type": "core/text", "label": "CTA Button Label" },
+        "ctaUrl": { "type": "core/link", "label": "CTA URL" }
+      }
+    }
+  }
+}

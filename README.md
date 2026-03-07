@@ -5,149 +5,163 @@ It uses flat JSON files for storage, supports modular data definitions, and has 
 
 ---
 
-## 🚀 Features
+## Features
 
 - Flat-file JSON storage for portability and simplicity  
 - Framework-agnostic renderers (HTML, CLI, API)  
 - Custom & nested block support for flexible content structures  
 - Full multilingual support for all fields  
 - Conditional rendering by locale, user roles, or custom logic  
+- **Blueprints**: reusable templates for projects, models, structures, and page templates  
+- **Seeds**: one-command setup to populate blueprints from canonical seed files  
+- **Moteur Studio** (admin UI): list pages and create wizards for all core objects  
 - Modules system for bundling field, block, and structure definitions  
 - Plugins system for dynamic logic (validators, renderers, APIs)  
 - Field-level validators (fully pluggable, project-specific or module-based)  
-- Interactive CLI for managing projects, entries, layouts, and structures  
-- Secure API endpoints with JWT authentication and role-based access control  
+- Interactive CLI for managing projects, models, entries, layouts, structures, templates, and pages  
+- REST API with JWT auth and role-based access; admin endpoints for full CRUD  
 - Project-based scoping to isolate content and configurations  
-- Dynamic asset handling (e.g., image resizing) via optional plugins  
-- Developer-friendly JSON schemas for data definitions  
-- Easy-to-integrate with static site generators or custom headless frontends  
-- No database dependencies – works anywhere Node.js runs  
+- No database dependencies ? works anywhere Node.js runs  
 - Extensible by design: add your own fields, blocks, validators, and renderers without modifying the core  
 
 ---
 
-## 🛠️ Typical Workflow
+## Quick start
 
-1. **Configuration**  
-   Administrators set up which core field types and block definitions are available in Moteur.
+1. **Install and build** (from the `moteur` directory):
+   ```bash
+   pnpm install && pnpm run build
+   ```
 
-2. **Schema Definition**  
-   Site administrators create new block schemas (and optionally new field types) to match content needs.
+2. **Seed blueprints** (optional ? copies seed files into `data/blueprints/` when missing):
+   ```bash
+   pnpm run seed
+   # Or overwrite existing: pnpm run seed:force
+   ```
 
-3. **Content Creation**  
-   Content editors assemble sections by adding blocks, selecting block types, and filling in fields as defined by the schemas.
+3. **Run the API**:
+   ```bash
+   pnpm run server:dev
+   ```
 
-4. **Rendering**  
-   The system renders sections and blocks using the chosen framework or adapter, supporting multilingual and conditional logic as needed.
-
----
-
-# 🗝️ Moteur: Core Concepts
-
-## 🔹 Projects
-The top-level unit for your content and configuration. Everything in Moteur is scoped to a project.
-
-- Defines:
-  - Project details (id, label, locale)
-  - Which **Modules** and **Plugins** to use
-  - **Users** and **Teams** with access
+4. **Run the Studio** (from `moteur-admin`): create and manage projects, models, templates, structures, layouts, blocks, pages, and entries from the UI.
+   ```bash
+   cd ../moteur-admin && pnpm install && pnpm run dev
+   ```
 
 ---
 
-## 🔹 Layouts & Blocks
-**Layouts** define how pages and entries are structured visually.
+## Core concepts
 
-- **Layouts**: reusable page structures (header, footer, main content areas). A collection of blocks.
-- **Blocks**: reusable components (content units) inside layouts.
+### Projects
+The top-level unit. Everything in Moteur is scoped to a **project**: models, entries, layouts, structures, templates, and pages live inside a project. Projects can be created from a **project blueprint** (optional) to apply initial models, layouts, and structures.
 
-Blocks are defined by a `Block Schema` (a collection of fields). Instances of blocks are simply blocks inside layouts.  
-Layouts are typically used inside a Page, an Entry, or as reusable components anywhere.
+### Blueprints
+Reusable templates with a **kind**. Stored under `data/blueprints/<kind>/`.
 
----
+| Kind | Purpose |
+|------|---------|
+| **project** | Apply initial models, layouts, structures when creating a new project. |
+| **model** | Create a model in a project from a predefined schema (e.g. Blog Post, Basic Page). |
+| **structure** | Create a project structure from a predefined schema (e.g. Publishable, SEO). |
+| **template** | Create a page template in a project from a predefined schema (e.g. Landing, Article). |
 
-## 🔹 Models & Entries
-**Models** define the schema for a structured content object (like “Product” or “Article”).
+Create and edit blueprints via the **Blueprints** section in the Studio or the REST API. When creating a model, structure, or template, you can pass `blueprintId` to instantiate from a blueprint and optionally override fields.
 
-- Example: fields like `title`, `price`, `description`.
+### Models & Entries
+- **Models** define the schema for a content type (e.g. Product, Article): id, label, description, and a set of **fields**.
+- **Entries** are instances of a model, holding the actual data. They support workflow status (draft, in_review, published) and validation.
 
-**Entries** are **instances** of models, holding real data.
+### Structures
+**Structures** are reusable bundles of fields (e.g. Publishable, SEO, Team Member). They have a `type` (e.g. `project/seo`), label, and `fields`. Project-scoped structures live in the project storage; core structures are read-only. Use structure blueprints to add common structures quickly.
 
-- Example: an actual “Red T-shirt” product entry.
+### Templates & Pages
+- **Templates** (page templates) define the schema for a page: id, label, description, and **fields**. They are project-scoped.
+- **Pages** are content instances created from a template: templateId, label, slug, optional parent, status, and field values. Use **template blueprints** to create templates from presets (e.g. Landing, Article).
 
----
+### Layouts & Blocks
+- **Layouts** are ordered lists of **blocks** (with optional metadata). They define how content is composed (e.g. hero, sections, footer).
+- **Blocks** are content units with a type and data. Block *schemas* are registered globally (e.g. core/hero, core/text); block *instances* live inside layouts. Layouts are project-scoped and can be created from the Studio or API.
 
-## 🔹 Templates & Pages
-**Templates** (also called **Page Templates**) define how **Pages** are built.
+### Fields
+Atomic data types used inside models, structures, blocks, and templates: e.g. `core/text`, `core/rich-text`, `core/image`, `core/select`. Custom field types can be registered via the field registry.
 
-- **Templates**: reusable page schemas (like “Blog Post Template”).
-- **Pages**: actual top-level content created from a template (like “Home”, “About”).
+### Users & access
+**Users** have credentials and roles (e.g. admin). Access is project-based. The API uses JWT and project-scoped middlewares (`requireAdmin`, `requireProjectAccess`).
 
----
-
-## 🔹 Users & Teams
-**Users**: people with login credentials and access rights.
-
-**Teams** (future): groups of users sharing access to projects.
-
----
-
-## 🔹 Fields & Structures
-**Fields**: atomic data types (text, number, boolean, etc.).
-
-**Structures**: reusable **bundles of fields** (like a “Team Member” group).
-
----
-
-## 🔹 Modules & Plugins
-**Modules**: bundles of data definitions (fields, blocks, structures, models, templates).
-
-- Examples:
-  - Core modules (`core`)
-  - Custom modules (`custom1`, `marketing`)
-
-**Plugins**: executable logic (validators, renderers, dynamic endpoints).  
-Plugins can also provide their own modules.
+### Modules & Plugins
+- **Modules**: bundles of definitions (fields, blocks, structures). Core provides the default set.
+- **Plugins**: executable logic (validators, renderers, activity log, etc.) that can hook into events and expose APIs.
 
 ---
 
-## 🚀 Summary
-✅ Everything is **scoped to a project**  
-✅ **Layouts** and **Blocks** shape the visual structure  
-✅ **Models** and **Templates** define structured content types  
-✅ **Entries** and **Pages** are the actual data/content  
-✅ **Fields** and **Structures** are the building blocks  
-✅ **Users** and (future) **Teams** control access  
-✅ **Modules** hold data definitions and **Plugins** add dynamic logic  
+## Seeds
+
+Canonical blueprint seed files live under `data/seeds/blueprints/`:
+
+- `project/` ? e.g. empty, blog
+- `model/` ? e.g. blog-post, basic-page
+- `structure/` ? e.g. publishable, seo
+- `template/` ? e.g. landing, article, default
+
+Run **`pnpm run seed`** to copy missing seeds into `data/blueprints/`. Use **`pnpm run seed:force`** to overwrite existing blueprint files. See `data/seeds/README.md` for details.
 
 ---
 
-## 🛠️ Available fields (core)
+## Moteur Studio (admin UI)
+
+The **moteur-admin** app (Moteur Studio) provides:
+
+- **Projects**: list, create (with optional project blueprint), project details
+- **Models**: list, create (Model Wizard with model blueprints), model editor
+- **Structures**: list, create (Structure Wizard with structure blueprints), structure editor
+- **Templates**: list, create (Template Wizard with template blueprints), template editor
+- **Pages**: list, create (Page Wizard), page editor
+- **Layouts**: list, create (Layout Wizard), layout editor (placeholder)
+- **Blocks**: list, create (Block Wizard)
+- **Entries**: list per model, create (Entry Wizard), entry editor
+- **Blueprints**: list by kind (Projects, Models, Structures, Templates), create/edit via JSON
+
+List pages support search, sort, and list/card view where applicable. Wizards that support blueprints load options from the API and send `blueprintId` when creating from a blueprint.
+
+---
+
+## Typical workflow
+
+1. **Configuration** ? Set up field types, block definitions, and (optionally) seed blueprints.
+2. **Schema definition** ? Create models, structures, and page templates (from scratch or from blueprints).
+3. **Content creation** ? Create entries (from models), pages (from templates), and layouts (from blocks).
+4. **Rendering** ? Use the HTML renderer, API, or your own adapter to output content.
+
+---
+
+## Available fields (core)
 
 | Name               | Description                          | Usage                                      | Fields / Value                     | Options / Meta            |
 |--------------------|--------------------------------------|--------------------------------------------|------------------------------------|---------------------------|
-| **core/boolean**    | True/false toggle                    | Toggles, flags, visibility                 | `value`: boolean                   | `default`                 |
-| **core/color**      | Color picker or color string         | Backgrounds, highlights, accent colors     | `value`: hex/rgb string            | `default`                 |
-| **core/image**      | Image with optional alt text         | Thumbnails, hero images, icons             | `src`, `alt`: multilingual         | —                         |
-| **core/link**       | Accessible hyperlink                 | Buttons, CTAs, external/internal links     | `url`, `label`, `ariaLabel`        | `target`, `rel`, `meta`  |
-| **core/list**       | Repeated items (values or objects)   | Bullet points, tags, grouped inputs        | `items`: field definition          | `minItems`, `maxItems`    |
-| **core/markdown**   | Markdown content (renders to HTML)   | Content blocks, notes, formatted text      | `content`: multilingual Markdown   | —                         |
-| **core/number**     | Numeric input                        | Ordering, scores, prices, metrics          | `value`: number                    | `min`, `max`, `step`      |
-| **core/object**     | Group of custom subfields            | Nested input groups, form-style data       | `fields`: inline definition        | `showLabel`, `display`    |
-| **core/rich-text**  | Rich HTML-formatted content          | Summaries, bios, content blocks            | `content`: multilingual HTML       | —                         |
-| **core/select**     | Select from predefined options       | Layout choice, alignment, tag level        | `value`: string                    | `options[]`, `default`    |
-| **core/structure**  | Reusable schema-based object         | Team members, addresses, prices, etc.      | `schema`: ID or inline, `value`    | Custom renderer (optional)|
-| **core/text**       | Simple text string                   | Titles, labels, captions, metadata         | `text`: string (multilingual)      | —                         |
-| **core/url**        | Simple URL string                    | Video embed links, social links            | `url`: string                      | —                         |
-| **core/video**      | Embedded video player                | YouTube, Vimeo, self-hosted videos         | `url`, `alt`, `provider` (optional)| `autoplay`, `loop`, `muted` |
+| **core/boolean**   | True/false toggle                    | Toggles, flags, visibility                 | `value`: boolean                   | `default`                 |
+| **core/color**     | Color picker or color string         | Backgrounds, highlights, accent colors     | `value`: hex/rgb string            | `default`                 |
+| **core/image**     | Image with optional alt text         | Thumbnails, hero images, icons             | `src`, `alt`: multilingual        | ?                         |
+| **core/link**      | Accessible hyperlink                 | Buttons, CTAs, external/internal links     | `url`, `label`, `ariaLabel`        | `target`, `rel`, `meta`   |
+| **core/list**      | Repeated items (values or objects)   | Bullet points, tags, grouped inputs        | `items`: field definition          | `minItems`, `maxItems`    |
+| **core/markdown**  | Markdown content (renders to HTML)  | Content blocks, notes, formatted text      | `content`: multilingual Markdown  | ?                         |
+| **core/number**    | Numeric input                        | Ordering, scores, prices, metrics          | `value`: number                    | `min`, `max`, `step`      |
+| **core/object**    | Group of custom subfields            | Nested input groups, form-style data       | `fields`: inline definition        | `showLabel`, `display`     |
+| **core/rich-text** | Rich HTML-formatted content          | Summaries, bios, content blocks            | `content`: multilingual HTML       | ?                         |
+| **core/select**    | Select from predefined options       | Layout choice, alignment, tag level        | `value`: string                    | `options[]`, `default`    |
+| **core/structure** | Reusable schema-based object         | Team members, addresses, prices, etc.       | `schema`: ID or inline, `value`    | Custom renderer (optional)|
+| **core/text**      | Simple text string                   | Titles, labels, captions, metadata         | `text`: string (multilingual)      | ?                         |
+| **core/url**       | Simple URL string                    | Video embed links, social links            | `url`: string                      | ?                         |
+| **core/video**     | Embedded video player                | YouTube, Vimeo, self-hosted videos         | `url`, `alt`, `provider` (optional)| `autoplay`, `loop`, `muted` |
 
 ---
 
-## 🛠️ Available blocks (core)
+## Available blocks (core)
 
 | Name               | Description                         | Usage / Purpose                               | Key Fields                          |
 |--------------------|-------------------------------------|-----------------------------------------------|-------------------------------------|
 | **core/accordion** | Expandable list of sections         | FAQs, multi-step guides, collapsible content  | `items`: list of `title`, `content` |
-| **core/container** | Container for nested blocks         | Layout control, columns, grouped content      | `blocks[]`, `style`, `alignment`    |
+| **core/container**| Container for nested blocks         | Layout control, columns, grouped content      | `blocks[]`, `style`, `alignment`    |
 | **core/gallery**   | Image grid or carousel              | Showcases, product images, event photos       | `images[]`, `layout`, `columns`     |
 | **core/hero**      | Large banner with title/cta         | Page header, promo block                      | `title`, `subtitle`, `image`, `cta` |
 | **core/image**     | Full-width or decorative image      | Separators, illustrations, standalone images  | `src`, `alt`, `caption`             |
@@ -160,16 +174,19 @@ Plugins can also provide their own modules.
 
 ---
 
-## 💻 How to use
+## How to use
 
 **With the CLI:**
 
 ```bash
-npm run cli
+pnpm run cli
 ```
 
 **With the REST API:**
 
 ```bash
-GET http://localhost:3000/moteur/projects/:projectId/models/:model/entries
+GET http://localhost:3000/projects/:projectId/models
+GET http://localhost:3000/projects/:projectId/models/:modelId/entries
 ```
+
+See the API docs (e.g. `/docs` when the server is running) for full endpoint reference.

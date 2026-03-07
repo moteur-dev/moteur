@@ -1,0 +1,11 @@
+{
+  "id": "empty",
+  "name": "Empty Project",
+  "description": "No pages, models, layouts, or structures. Start from scratch.",
+  "kind": "project",
+  "template": {
+    "models": [],
+    "layouts": [],
+    "structures": []
+  }
+}

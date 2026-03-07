@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { BlockSchema } from '@moteur/types/Block.js';
-//import { htmlRenderer } from '@/renderers/html/htmlBlockRenderer.js';
+import { storageConfig } from './config/storageConfig.js';
 import { isValidId } from './utils/idUtils.js';
 import { isExistingProjectId } from './utils/fileUtils.js';
 import { normalizeType } from './utils/normalizeType.js';
@@ -17,7 +17,7 @@ export function listBlocks(projectId?: string): Record<string, BlockSchema> {
     console.log(`Loading blocks for project: ${projectId || 'all'}`);
 
     for (const namespace of namespaces) {
-        const root = path.resolve(`data/${namespace}/blocks`);
+        const root = path.join(storageConfig.dataRoot, 'data', namespace, 'blocks');
 
         if (!fs.existsSync(root)) {
             console.warn(`Blocks directory not found for namespace: ${namespace}`);
@@ -64,4 +64,32 @@ export function getBlock(type: string, project?: string): BlockSchema {
         throw new Error(`Block type "${type}" not found`);
     }
     return blocks[type];
+}
+
+export function createBlock(schema: BlockSchema): BlockSchema {
+    if (!schema || !schema.type) {
+        throw new Error('Block schema must have a "type" field');
+    }
+    const namespace = 'core';
+    const slug = schema.type.includes('/') ? schema.type.split('/')[1] : schema.type;
+    const safeSlug = slug.replace(/[^a-z0-9-_]/gi, '-').toLowerCase() || 'block';
+    const normalizedType = `${namespace}/${safeSlug}`;
+    const root = path.join(storageConfig.dataRoot, 'data', namespace, 'blocks');
+    if (!fs.existsSync(root)) {
+        fs.mkdirSync(root, { recursive: true });
+    }
+    const filePath = path.join(root, `${safeSlug}.json`);
+    if (fs.existsSync(filePath)) {
+        throw new Error(`Block type "${normalizedType}" already exists`);
+    }
+    const toWrite = {
+        type: normalizedType,
+        label: schema.label ?? safeSlug.charAt(0).toUpperCase() + safeSlug.slice(1),
+        description: schema.description,
+        category: schema.category,
+        fields: schema.fields ?? {},
+        optionsSchema: schema.optionsSchema
+    };
+    fs.writeFileSync(filePath, JSON.stringify(toWrite, null, 4), 'utf-8');
+    return toWrite as BlockSchema;
 }

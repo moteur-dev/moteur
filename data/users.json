@@ -7,7 +7,9 @@
     "roles": [
       "admin"
     ],
-    "projects": ["testy"],
+    "projects": [
+      "testy"
+    ],
     "isActive": true,
     "avatar": "/avatars/64/tv-person.png"
   },
@@ -20,7 +22,22 @@
     "roles": [
       "admin"
     ],
-    "projects": ["testy"],
+    "projects": [
+      "testy"
+    ],
     "avatar": "/avatars/64/lion.png"
+  },
+  {
+    "id": "mat",
+    "isActive": true,
+    "email": "mat@locomotive.ca",
+    "name": "Mat",
+    "passwordHash": "$2b$10$VBfe5wDlRdyk99byJEoDhOLDXEynlPl5aq.dhfvfei/XdriPJEJr2",
+    "roles": [
+      "admin"
+    ],
+    "projects": [
+      "trr"
+    ]
   }
 ]
