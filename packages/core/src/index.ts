@@ -10,6 +10,7 @@ import * as Reviews from './reviews.js';
 import * as Notifications from './notifications.js';
 import * as ApiCollections from './apiCollections.js';
 import * as ProjectApiKey from './projectApiKey.js';
+import * as Assets from './assets/assetService.js';
 
 import type { MoteurAPI } from './MoteurAPI.js';
 
@@ -24,6 +25,7 @@ import './plugins/LocalJsonStorageAdapter.js';
 import './plugins/S3StorageAdapter.js';
 
 import './fields/index.js';
+import './assets/index.js';
 
 export const Moteur: MoteurAPI = {
     projects: Projects,
@@ -68,6 +70,18 @@ export const Moteur: MoteurAPI = {
         generate: ProjectApiKey.generateKey,
         rotate: ProjectApiKey.rotateKey,
         revoke: ProjectApiKey.revokeKey
+    },
+    assets: {
+        upload: Assets.uploadAsset,
+        list: Assets.listAssets,
+        get: Assets.getAsset,
+        update: Assets.updateAsset,
+        delete: Assets.deleteAsset,
+        move: Assets.moveToFolder,
+        regenerate: Assets.regenerateVariants,
+        migrateProvider: Assets.migrateProvider,
+        getConfig: Assets.getAssetConfig,
+        updateConfig: Assets.updateAssetConfig
     }
 };
 

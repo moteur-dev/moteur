@@ -6,6 +6,8 @@ This document describes the **currently implemented** HTTP API. All paths are re
 
 **Project API key (one per project):** For collection endpoints you can send the key in header `x-api-key` or query `?apiKey=...`. Key auth is **read-only** (GET only); non-GET requests with only an API key return 403. JWT and API key can coexist; JWT takes precedence.
 
+**Webhooks (no auth):** `POST /webhooks/mux` and `POST /webhooks/vimeo` are mounted at the application level (outside admin auth). Requests are verified using the provider’s webhook signature; invalid signatures receive **400**. Register the URLs in the Mux/Vimeo dashboard and set the corresponding secrets in env. Processing is asynchronous after responding **200**.
+
 **Request logging & rate limiting:** All API requests are classified as **admin** or **public**. Counts are kept in two separate buckets so you can audit and apply different limits (e.g. no limit on admin, per-project limit on public). See [Request logging, rate limiting, and security](#-request-logging-rate-limiting-and-security) below. For a single list of env vars, see [Configuration](Configuration.md).
 
 ---
@@ -143,6 +145,17 @@ Global templates (project, model, or structure). Stored under `data/blueprints/<
 **Model blueprints:** Same pattern under `/blueprints/models` and `/blueprints/models/:id`.
 
 **Structure blueprints:** Same pattern under `/blueprints/structures` and `/blueprints/structures/:id`.
+
+---
+
+## 📁 Webhooks (signature-verified, no JWT)
+
+These endpoints are called by the video providers. They are **not** under `/admin` and do not require JWT. Signature verification is performed first; on failure the response is **400** with no side effects. On success the server responds **200** immediately and processes the payload asynchronously.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/webhooks/mux` | Mux webhook. Header: `mux-signature`. Configure URL and signing secret in Mux dashboard. |
+| POST | `/webhooks/vimeo` | Vimeo webhook. Header: `x-vimeo-signature` or `vimeo-signature`. Configure URL and secret in Vimeo. |
 
 ---
 

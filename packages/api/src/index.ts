@@ -25,7 +25,12 @@ import entriesRoute, { entriesSpecs } from './entries/index.js';
 import activityGlobalRoute, { openapi as activityGlobalSpec } from './activity/index.js';
 import adminRoutes, { adminSpecs } from './admin/index.js';
 import adminUsageRouter, { openapi as adminUsageSpec } from './admin/usage.js';
+import adminAssetsMigrateRouter from './admin/assets/migrate.js';
 import blocksRouter from './public/blocks.js';
+import webhooksAssetsRouter from './webhooks/assets.js';
+import path from 'path';
+import fs from 'fs';
+import { storageConfig } from '@moteur/core/config/storageConfig.js';
 
 import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 import { requestClassifier } from './middlewares/requestClassifier.js';
@@ -39,6 +44,28 @@ import { onEvent } from '@moteur/core/utils/eventBus.js';
 
 // Load core so activity log plugin registers and writes activity on resource changes
 import '@moteur/core';
+import { setVideoProvidersConfig } from '@moteur/core/assets/providerRegistry.js';
+
+if (process.env.MUX_TOKEN_ID && process.env.MUX_TOKEN_SECRET && process.env.MUX_WEBHOOK_SECRET) {
+    setVideoProvidersConfig({
+        active: 'mux',
+        keepLocalCopy: process.env.MUX_KEEP_LOCAL_COPY === 'true',
+        mux: {
+            tokenId: process.env.MUX_TOKEN_ID,
+            tokenSecret: process.env.MUX_TOKEN_SECRET,
+            webhookSecret: process.env.MUX_WEBHOOK_SECRET
+        }
+    });
+} else if (process.env.VIMEO_ACCESS_TOKEN && process.env.VIMEO_WEBHOOK_SECRET) {
+    setVideoProvidersConfig({
+        active: 'vimeo',
+        keepLocalCopy: process.env.VIMEO_KEEP_LOCAL_COPY === 'true',
+        vimeo: {
+            accessToken: process.env.VIMEO_ACCESS_TOKEN,
+            webhookSecret: process.env.VIMEO_WEBHOOK_SECRET
+        }
+    });
+}
 
 // CORS: restrict to explicit origins. Set CORS_ORIGINS (comma-separated) in production.
 function getCorsOrigin(): string | string[] {
@@ -55,6 +82,19 @@ function getCorsOrigin(): string | string[] {
 // Create Express app
 const app = express();
 
+const basePath = process.env.API_BASE_PATH || '';
+
+// Webhooks need raw body for signature verification (mount before json parser)
+app.use(
+    basePath + '/webhooks',
+    express.raw({ type: 'application/json', limit: '1mb' }),
+    (req: any, _res, next) => {
+        if (Buffer.isBuffer(req.body)) req.rawBody = req.body.toString('utf8');
+        next();
+    },
+    webhooksAssetsRouter
+);
+
 const bodyLimit = process.env.API_BODY_LIMIT || '1mb';
 app.use(express.json({ limit: bodyLimit }));
 
@@ -66,8 +106,6 @@ app.use(
         allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
     })
 );
-
-const basePath = process.env.API_BASE_PATH || '';
 
 // Request classification (admin vs public), usage logging, and rate limiting
 app.use(basePath, requestClassifier);
@@ -117,7 +155,27 @@ app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
 app.use(basePath + '/admin/usage', adminUsageRouter);
 app.use(basePath + '/admin/projects', adminRoutes);
+app.use(basePath + '/admin/assets', adminAssetsMigrateRouter);
 app.use('/api/moteur/blocks', blocksRouter);
+
+// Static assets (local adapter): GET /static/assets/:projectId/:variantKey/:filename
+app.get(
+    '/static/assets/:projectId/:variantKey/:filename',
+    (req: express.Request, res: express.Response): void => {
+        const { projectId, variantKey, filename } = req.params;
+        const projectsDir = storageConfig.projectsDir;
+        const filePath = path.join(projectsDir, projectId, 'assets', variantKey, filename);
+        if (!path.normalize(filePath).startsWith(path.join(projectsDir, projectId))) {
+            res.status(400).end();
+            return;
+        }
+        if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+            res.status(404).end();
+            return;
+        }
+        res.sendFile(filePath);
+    }
+);
 
 // Global error handler: centralizes errors and avoids leaking stack traces
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -214,6 +272,25 @@ onEvent('review.pageStatusChanged', async ctx => {
             pageId: ctx.pageId,
             templateId: ctx.templateId,
             status: ctx.status
+        });
+    } catch {
+        // never break on emit failure
+    }
+});
+
+onEvent('asset:ready', async ctx => {
+    try {
+        io.to(ctx.asset.projectId).emit('asset:ready', ctx.asset);
+    } catch {
+        // never break on emit failure
+    }
+});
+onEvent('asset:error', async ctx => {
+    try {
+        io.to(ctx.projectId).emit('asset:error', {
+            id: ctx.id,
+            projectId: ctx.projectId,
+            error: ctx.error
         });
     } catch {
         // never break on emit failure
