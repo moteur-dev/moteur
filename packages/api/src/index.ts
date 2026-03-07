@@ -12,7 +12,7 @@ import cors from 'cors';
 import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 
-import openapiRoute, { baseSpec } from './openapi.js';
+import { baseSpec } from './openapi.js';
 import aiRoutes, { aiSpecs } from './ai/index.js';
 import authRoutes, { authSpecs } from './auth/index.js';
 import projectRoutes, { projectsSpecs } from './projects/index.js';
@@ -24,6 +24,7 @@ import modelsRoute, { modelsSpecs } from './models/index.js';
 import entriesRoute, { entriesSpecs } from './entries/index.js';
 import activityGlobalRoute, { openapi as activityGlobalSpec } from './activity/index.js';
 import adminRoutes, { adminSpecs } from './admin/index.js';
+import blocksRouter from './public/blocks.js';
 
 import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
 
@@ -91,7 +92,6 @@ router.get('/openapi.json', async (req, res) => {
 app.use(basePath, router);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(mergedApiSpecs));
 
-app.use(basePath, openapiRoute);
 app.use(basePath + '/auth', authRoutes);
 app.use(basePath + '/ai', aiRoutes);
 app.use(basePath + '/blueprints', blueprintsRoutes);
@@ -100,6 +100,7 @@ app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
 app.use(basePath + '/admin/projects', adminRoutes);
+app.use('/api/moteur/blocks', blocksRouter);
 
 // Global error handler: centralizes errors and avoids leaking stack traces
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
