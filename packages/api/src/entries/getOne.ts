@@ -2,6 +2,8 @@ import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
 
 import { getEntry } from '@moteur/core/entries.js';
+import { getModelSchema } from '@moteur/core/models.js';
+import { resolveEntryAssets } from '@moteur/core/assets/assetResolver.js';
 import { requireProjectAccess } from '../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
@@ -14,9 +16,13 @@ router.get('/:entryId', requireProjectAccess, async (req: any, res: any) => {
     }
 
     try {
-        const entry = await getEntry(req.user!, projectId, modelId, entryId);
+        let entry = await getEntry(req.user!, projectId, modelId, entryId);
         if (!entry) {
             return res.status(404).json({ error: 'Entry not found' });
+        }
+        if (req.query.resolveAssets === '1') {
+            const schema = await getModelSchema(req.user!, projectId, modelId);
+            entry = await resolveEntryAssets(projectId, entry, schema);
         }
         return res.json({ entry });
     } catch (err: any) {

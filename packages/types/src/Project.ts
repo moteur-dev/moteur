@@ -1,3 +1,5 @@
+import type { AssetType, VideoProviderId } from './Asset.js';
+import type { VariantDefinition } from './VariantDefinition.js';
 import { Audit } from './Audit';
 import { Field } from './Field';
 
@@ -39,8 +41,31 @@ export interface ProjectSchema {
         createdAt: string;
     };
 
+    assetConfig?: {
+        variants: VariantDefinition[];
+        maxUploadSizeMb?: number; // default 50
+        allowedTypes?: AssetType[]; // default: all three
+        adapter?: 'local' | 's3' | 'r2';
+        adapterConfig?: Record<string, any>;
+    };
+
     meta?: {
         audit?: Audit;
+    };
+}
+
+/** Global instance-level video provider config (not in project.json). */
+export interface VideoProvidersConfig {
+    active?: VideoProviderId;
+    keepLocalCopy?: boolean;
+    mux?: {
+        tokenId: string;
+        tokenSecret: string;
+        webhookSecret: string;
+    };
+    vimeo?: {
+        accessToken: string;
+        webhookSecret: string;
     };
 }
 

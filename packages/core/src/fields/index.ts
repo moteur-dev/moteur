@@ -17,3 +17,5 @@ import './core/text.js';
 import './core/textarea.js';
 import './core/url.js';
 import './core/video.js';
+import './core/asset.js';
+import './core/asset-list.js';

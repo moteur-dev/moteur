@@ -9,6 +9,8 @@ import {
     validatePageById,
     validateAllPages
 } from '@moteur/core/pages.js';
+import { getTemplate } from '@moteur/core/templates.js';
+import { resolvePageAssets } from '@moteur/core/assets/assetResolver.js';
 import { submitForPageReview } from '@moteur/core/reviews.js';
 import type { EntryStatus } from '@moteur/types/Model.js';
 import { requireProjectAccess } from '../../middlewares/auth.js';
@@ -52,7 +54,11 @@ router.get('/:id', requireProjectAccess, async (req: any, res: any) => {
     const { projectId, id } = req.params;
     if (!projectId || !id) return res.status(400).json({ error: 'Missing projectId or id' });
     try {
-        const page = await getPage(req.user!, projectId, id);
+        let page = await getPage(req.user!, projectId, id);
+        if (req.query.resolveAssets === '1') {
+            const template = await getTemplate(projectId, page.templateId);
+            page = await resolvePageAssets(projectId, page, template);
+        }
         return res.json(page);
     } catch (err: any) {
         return res.status(404).json({ error: err?.message ?? 'Page not found' });

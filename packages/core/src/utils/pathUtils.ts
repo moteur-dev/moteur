@@ -25,6 +25,10 @@ export function basePagesDir(projectId: string): string {
     return path.join(projectDir(projectId), 'pages');
 }
 
+export function baseAssetsDir(projectId: string): string {
+    return path.join(projectDir(projectId), 'assets');
+}
+
 export function projectDir(projectId: string): string {
     return path.join(baseProjectsDir(), projectId);
 }
@@ -63,6 +67,21 @@ export function templateFilePath(projectId: string, templateId: string): string 
 
 export function pageFilePath(projectId: string, pageId: string): string {
     return path.join(basePagesDir(projectId), `${pageId}.json`);
+}
+
+/** Original asset file path: assets/original/{id}-{filename} */
+export function assetOriginalPath(projectId: string, assetId: string, filename: string): string {
+    return path.join(baseAssetsDir(projectId), 'original', `${assetId}-${filename}`);
+}
+
+/** Variant path: assets/{variantKey}/{id}.{ext} */
+export function assetVariantPath(
+    projectId: string,
+    variantKey: string,
+    assetId: string,
+    ext: string
+): string {
+    return path.join(baseAssetsDir(projectId), variantKey, `${assetId}.${ext}`);
 }
 
 export function baseProjectsTrashDir(): string {

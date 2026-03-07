@@ -11,6 +11,7 @@ import type * as Templates from './templates';
 import type * as Pages from './pages';
 import type * as ApiCollections from './apiCollections';
 import type * as ProjectApiKey from './projectApiKey';
+import type * as Assets from './assets/assetService';
 
 export interface MoteurAPI {
     projects: typeof Projects;
@@ -51,5 +52,17 @@ export interface MoteurAPI {
         generate: typeof ProjectApiKey.generateKey;
         rotate: typeof ProjectApiKey.rotateKey;
         revoke: typeof ProjectApiKey.revokeKey;
+    };
+    assets: {
+        upload: typeof Assets.uploadAsset;
+        list: typeof Assets.listAssets;
+        get: typeof Assets.getAsset;
+        update: typeof Assets.updateAsset;
+        delete: typeof Assets.deleteAsset;
+        move: typeof Assets.moveToFolder;
+        regenerate: typeof Assets.regenerateVariants;
+        migrateProvider: typeof Assets.migrateProvider;
+        getConfig: typeof Assets.getAssetConfig;
+        updateConfig: typeof Assets.updateAssetConfig;
     };
 }

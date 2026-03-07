@@ -159,6 +159,20 @@ Use `--json` on list/add/resolve/edit for raw JSON output. `--project` can be om
 
 ---
 
+## 📁 Assets
+
+| Command | Description |
+|---------|-------------|
+| `assets list --project=site1` | List project assets. Optional: `--type=image`, `--folder=/press`, `--json`. |
+| `assets get --project=site1 --id=abc123` | Show a single asset. `--json` for raw output. |
+| `assets delete --project=site1 --id=abc123` | Delete an asset (does not cascade to entries). |
+| `assets regenerate --project=site1` | Regenerate image variants for all images. Optional: `--id=abc --id=def` for specific assets. |
+| `assets config --project=site1` | Show asset config (variants, adapter; secrets redacted). `--json` for raw. |
+| `assets config --project=site1 --set-adapter=s3` | Set storage adapter (e.g. `local`, `s3`, `r2`). |
+| `assets migrate-provider --to=vimeo` | Migrate videos to a provider (instance-wide). Required: `--to` (`mux` \| `vimeo` \| `local`). Optional: `--from=mux`, `--project=site1` (or multiple `--project`), `--keepLocalCopy`. Returns `{ processed, errors, skipped }`. |
+
+---
+
 ## 🧩 Fields & 📦 Blocks
 
 Field and block type listings are available from the **interactive CLI menu** (run the CLI without a command). Top-level `fields list` and `blocks list` commands are not currently registered; use the menu or the Developer API for programmatic access.

@@ -49,6 +49,16 @@ export async function getModelSchema(
     return schema;
 }
 
+/** Load model schema without user check. For internal use (e.g. asset resolution in public API). */
+export async function getModelSchemaForProject(
+    projectId: string,
+    schemaId: string
+): Promise<ModelSchema | null> {
+    if (!isValidId(schemaId)) return null;
+    const storage = getProjectStorage(projectId);
+    return getJson<ModelSchema>(storage, modelKey(schemaId));
+}
+
 export async function createModelSchema(
     user: User,
     projectId: string,

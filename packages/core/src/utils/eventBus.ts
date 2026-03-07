@@ -12,6 +12,7 @@ import { StructureSchema } from '@moteur/types/Structure.js';
 import type { TemplateSchema } from '@moteur/types/Template.js';
 import type { Page } from '@moteur/types/Page.js';
 import { User } from '@moteur/types/User.js';
+import type { Asset } from '@moteur/types/Asset.js';
 
 // Event context uses explicit resource keys (like { project, user }) for clarity.
 export interface EventMap {
@@ -112,6 +113,14 @@ export interface EventMap {
         templateId: string;
         status: EntryStatus;
     };
+
+    // Assets
+    'asset:processing': { id: string; projectId: string };
+    'asset:uploaded': { asset: Asset };
+    'asset:ready': { asset: Asset };
+    'asset:error': { id: string; projectId: string; error: string };
+    'asset:updated': { asset: Asset };
+    'asset:deleted': { id: string };
 }
 
 // Listener type

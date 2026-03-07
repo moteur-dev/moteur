@@ -4,6 +4,8 @@
  */
 export const PROJECT_KEY = 'project.json';
 
+export const ASSETS_KEY = 'assets.json';
+
 export const API_COLLECTIONS_KEY = 'api-collections.json';
 
 export const ACTIVITY_KEY = 'activity.json';
