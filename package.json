@@ -11,6 +11,8 @@
     "clean": "rimraf dist packages/*/dist",
     "cli": "node dist/src/cli.js",
     "cli:dev": "tsx src/cli.ts",
+    "seed": "pnpm run cli -- seed",
+    "seed:force": "pnpm run cli -- seed --force",
     "server": "node dist/src/api.js",
     "server:dev": "tsx packages/api/src/index.ts",
     "test": "pnpm -r run test",

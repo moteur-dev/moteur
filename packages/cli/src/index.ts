@@ -29,6 +29,7 @@ import './commands/entries.js';
 import './commands/templates.js';
 import './commands/pages.js';
 import './commands/comments.js';
+import './commands/seed.js';
 import { showHelp, showCommandHelp } from './commands/help.js';
 
 const [command, subcommand, ...rest] = process.argv.slice(2);

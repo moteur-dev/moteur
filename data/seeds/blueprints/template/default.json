@@ -1,0 +1,17 @@
+{
+  "id": "default",
+  "name": "Default Page",
+  "description": "Basic page with title and content. Use for generic pages.",
+  "kind": "template",
+  "template": {
+    "template": {
+      "id": "default",
+      "label": "Default Page",
+      "description": "Basic page with title and content",
+      "fields": {
+        "title": { "type": "core/text", "label": "Title" },
+        "content": { "type": "core/rich-text", "label": "Content" }
+      }
+    }
+  }
+}
