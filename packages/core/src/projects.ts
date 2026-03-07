@@ -5,7 +5,7 @@ import { User } from '@moteur/types/User.js';
 import { ValidationResult } from '@moteur/types/ValidationResult.js';
 import { isValidId } from './utils/idUtils.js';
 import { isExistingProjectId } from './utils/fileUtils.js';
-import { projectDir, baseProjectsDir } from './utils/pathUtils.js';
+import { projectDir, baseProjectsDir, projectFilePath } from './utils/pathUtils.js';
 import { assertUserCanAccessProject, assertUserCanCreateProject } from './utils/access.js';
 import { triggerEvent } from './utils/eventBus.js';
 import { validateProject } from './validators/validateProject.js';
@@ -55,12 +55,45 @@ export async function getProject(user: User, projectId: string): Promise<Project
     }
 
     const storage = getProjectStorage(projectId);
-    const project = await getJson<ProjectSchema>(storage, PROJECT_KEY);
+    let project = await getJson<ProjectSchema>(storage, PROJECT_KEY);
     if (!project || !project.id) {
         throw new Error(`Project "${projectId}" not found`);
     }
+
+    // Backfill audit for projects created before audit plugin or without meta.audit
+    const audit = project.meta?.audit;
+    const needsAuditBackfill = !audit?.createdAt || !audit?.updatedAt;
+    if (needsAuditBackfill) {
+        const fallback = getAuditFallbackTimestamp(projectId);
+        project = {
+            ...project,
+            meta: {
+                ...project.meta,
+                audit: {
+                    createdAt: audit?.createdAt ?? fallback,
+                    updatedAt: audit?.updatedAt ?? fallback,
+                    createdBy: audit?.createdBy,
+                    updatedBy: audit?.updatedBy,
+                    revision: audit?.revision ?? 1
+                }
+            }
+        };
+        await putJson(storage, PROJECT_KEY, project);
+    }
+
     assertUserCanAccessProject(user, { ...project, id: projectId });
     return { ...project, id: projectId };
+}
+
+/** Returns ISO timestamp for audit backfill (file mtime or now). */
+function getAuditFallbackTimestamp(projectId: string): string {
+    try {
+        const filePath = projectFilePath(projectId);
+        const stat = fs.statSync(filePath);
+        return stat.mtime.toISOString();
+    } catch {
+        return new Date().toISOString();
+    }
 }
 
 export function listProjects(user: User): ProjectSchema[] {

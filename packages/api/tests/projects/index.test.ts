@@ -48,4 +48,21 @@ describe('projectsSpecs export', () => {
         expect(projectsSpecs.paths).toHaveProperty('/projects/{projectId}');
         expect(projectsSpecs.schemas).toHaveProperty('NewProjectInput');
     });
+
+    it('should include activity log, comments, reviews, and notifications in OpenAPI paths', () => {
+        expect(projectsSpecs.paths).toHaveProperty('/projects/{projectId}/activity');
+        expect(projectsSpecs.paths).toHaveProperty(
+            '/projects/{projectId}/activity/{resourceType}/{resourceId}'
+        );
+        expect(projectsSpecs.paths).toHaveProperty('/projects/{projectId}/comments');
+        expect(projectsSpecs.paths).toHaveProperty('/projects/{projectId}/comments/{id}');
+        expect(projectsSpecs.paths).toHaveProperty('/projects/{projectId}/comments/{id}/resolve');
+        expect(projectsSpecs.paths).toHaveProperty('/projects/{projectId}/reviews');
+        expect(projectsSpecs.paths).toHaveProperty('/projects/{projectId}/notifications');
+    });
+
+    it('should include Activity and Comment schemas for docs', () => {
+        expect(projectsSpecs.schemas).toHaveProperty('ActivityEvent');
+        expect(projectsSpecs.schemas).toHaveProperty('Comment');
+    });
 });
