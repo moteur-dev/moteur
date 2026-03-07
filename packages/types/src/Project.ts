@@ -32,6 +32,13 @@ export interface ProjectSchema {
         requireReview: boolean; // if true, authors cannot publish without approval; admins can always bypass
     };
 
+    /** Project API key (one per project). Raw key is never stored; only hash and prefix. */
+    apiKey?: {
+        hash: string;
+        prefix: string; // first 8 chars for display e.g. "mk_live_xxxx..."
+        createdAt: string;
+    };
+
     meta?: {
         audit?: Audit;
     };

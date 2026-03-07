@@ -1,8 +1,12 @@
 # REST API Reference
 
-This document describes the **currently implemented** HTTP API. All paths are relative to the API base path (e.g. empty or `/api` via `API_BASE_PATH`). Authentication uses JWT (Bearer token) unless noted.
+This document describes the **currently implemented** HTTP API. All paths are relative to the API base path (e.g. empty or `/api` via `API_BASE_PATH`). Authentication uses JWT (Bearer token) or **project API key** for collection endpoints (see Collections).
 
-**Response convention:** List endpoints return a wrapper object `{ resourceName: T[] }`. Single-resource endpoints return `{ resourceName: T }` or `{ token, user }` for auth. Errors return `{ error: string }`.
+**Response convention:** List endpoints return a wrapper object `{ resourceName: T[] }` or a bare array where noted. Single-resource endpoints return `{ resourceName: T }` or `{ token, user }` for auth. Errors return `{ error: string }`.
+
+**Project API key (one per project):** For collection endpoints you can send the key in header `x-api-key` or query `?apiKey=...`. Key auth is **read-only** (GET only); non-GET requests with only an API key return 403. JWT and API key can coexist; JWT takes precedence.
+
+**Request logging & rate limiting:** All API requests are classified as **admin** or **public**. Counts are kept in two separate buckets so you can audit and apply different limits (e.g. no limit on admin, per-project limit on public). See [Request logging, rate limiting, and security](#-request-logging-rate-limiting-and-security) below. For a single list of env vars, see [Configuration](Configuration.md).
 
 ---
 
@@ -55,6 +59,28 @@ Activity events are recorded when entries, layouts, structures, models, users, o
 
 **`resourceType`:** `entry`, `layout`, `page`, `structure`, `model`, `project`, `user`, `blueprint`.  
 For entries, **`resourceId`** is `modelId__entryId`. Global events have `projectId: "_system"`.
+
+---
+
+## 📦 Collections (Public API)
+
+Named views of project data for external consumers. Authenticate with **project API key** (header `x-api-key` or query `apiKey`) or JWT. Default status filter is **published** when using API key only; with JWT the collection’s status filter is respected.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects/:projectId/collections` | List collections. Returns array of collections. |
+| GET | `/projects/:projectId/collections/:collectionId` | Get one collection. |
+| GET | `/projects/:projectId/collections/:collectionId/:resourceId/entries` | List entries for a model resource. Pipeline: status filter → reference resolution → field selection. |
+| GET | `/projects/:projectId/collections/:collectionId/:resourceId/entries/:id` | One entry. Same pipeline. |
+| GET | `/projects/:projectId/collections/:collectionId/pages` | List pages (filtered by collection page resource). |
+| GET | `/projects/:projectId/collections/:collectionId/pages/:id` | One page by id. |
+| GET | `/projects/:projectId/collections/:collectionId/pages/by-slug/:slug` | One page by slug. |
+
+**Field selection:** Collection resources can define `fields: string[]`; only those top-level field names are returned. Omit or empty = all fields.
+
+**Status filter:** Per resource, `filters.status` (default `['published']`). With API key only, only published content is returned.
+
+**Reference resolution:** Per resource, `resolve: 0 | 1 | 2` controls how deep reference-like values (`{ id, type }`) in entry data are expanded.
 
 ---
 
@@ -120,6 +146,43 @@ Global templates (project, model, or structure). Stored under `data/blueprints/<
 
 ---
 
+## 📊 Admin — Usage (request counts)
+
+JWT + admin only. Returns current request counts in two buckets: **admin** (global) and **public** (per project). Use for audit and future billing/limits.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/usage` | Returns `{ admin: { total, windowStart }, public: { byProject: { [projectId]: { total, windowStart } } } }`. |
+
+---
+
+## 🔑 Admin — Project API Key
+
+JWT + project access. One key per project. Raw key is returned only on generate/rotate and never again.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/admin/projects/:projectId/api-key/generate` | Generate key. Body: none. Returns `{ prefix, rawKey, message }`. Store rawKey securely. |
+| POST | `/admin/projects/:projectId/api-key/rotate` | Rotate key. Returns new `{ prefix, rawKey, message }`. |
+| DELETE | `/admin/projects/:projectId/api-key` | Revoke key. 204. |
+| GET | `/admin/projects/:projectId/api-key` | Key metadata only: `{ prefix, createdAt }` (never raw or hash). |
+
+---
+
+## 📦 Admin — Collections
+
+JWT + project access. CRUD for API collections (define which models/pages and field/status/resolve options are exposed).
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/projects/:projectId/collections` | List collections. |
+| GET | `/admin/projects/:projectId/collections/:id` | Get one. |
+| POST | `/admin/projects/:projectId/collections` | Create. Body: `{ label, description?, resources? }`. |
+| PATCH | `/admin/projects/:projectId/collections/:id` | Update. |
+| DELETE | `/admin/projects/:projectId/collections/:id` | Hard delete. 204. |
+
+---
+
 ## 🗃️ Models
 
 Under a project. JWT + project access. Path param: `projectId`, `modelId`.
@@ -175,6 +238,36 @@ Under a project and model. JWT + project access. Path param: `projectId`, `model
 |--------|----------|-------------|
 | GET | `{basePath}/openapi.json` | OpenAPI 3 spec. |
 | (UI) | `/docs` | Swagger UI. |
+
+---
+
+## 🛡 Request logging, rate limiting, and security
+
+**Classification:** Every request is classified as **admin** or **public**. Admin = any path under `/admin/`. Public = project-scoped read endpoints: `/projects/:projectId/collections/*`, `/projects/:projectId/pages`, `/projects/:projectId/templates`. Counts are stored in two separate places so limits can differ (e.g. no limit on admin, per-project limit on public).
+
+**Audit log:** If `API_REQUEST_LOG_FILE` (absolute path) or `API_REQUEST_LOG_DIR` is set, each admin and public request is appended as a JSON line (timestamp, type, projectId, method, path, statusCode, durationMs). **API key and Authorization header are never logged.** Use log rotation (e.g. logrotate) and retain logs as needed for audit or billing disputes.
+
+**Rate limiting:**
+
+| Scope | Key | Default | Env |
+|-------|-----|---------|-----|
+| Admin | IP | 10000 / 15 min (effectively off) | `API_RATE_LIMIT_ADMIN_MAX` |
+| Public | projectId | 1000 / 15 min per project | `API_RATE_LIMIT_PUBLIC_MAX` |
+
+When exceeded, response is **429** with `{ error: "Too many requests..." }`. Set env to `0` to keep default (admin: high, public: 1000). For multiple API instances, use a shared store (e.g. Redis) with express-rate-limit; see the package docs.
+
+**Security:** [Helmet](https://helmetjs.github.io/) is enabled by default (security headers). Set `HELMET_DISABLED=1` to disable (e.g. local Swagger). Set `HELMET_CSP_DISABLED=1` to disable Content-Security-Policy only. Request body size is limited by `API_BODY_LIMIT` (default `1mb`).
+
+**Billing / long-term counts:** In-memory counts reset on restart. To recalculate from the audit log (e.g. for billing or monthly reports), run the recalculation script on the same log file:
+
+```bash
+# From repo root (log path as arg or via API_REQUEST_LOG_FILE / API_REQUEST_LOG_DIR)
+npx tsx packages/api/scripts/recalculate-usage.ts /var/log/api-requests.log
+# Optional: bucket by day or month
+USAGE_WINDOW=month npx tsx packages/api/scripts/recalculate-usage.ts /var/log/api-requests.log
+```
+
+Output is JSON: `{ source, window, totals: { [windowKey]: { admin, public: { [projectId]: count } } } }`. Use `USAGE_WINDOW=day` or `USAGE_WINDOW=month` to get per-period breakdowns.
 
 ---
 

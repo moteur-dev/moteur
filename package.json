@@ -18,7 +18,8 @@
     "test": "pnpm -r run test",
     "test:watch": "pnpm -r run test -- --watch",
     "lint": "pnpm -r lint && eslint . --ext .ts",
-    "lint:fix": "pnpm -r lint:fix && eslint . --ext .ts"
+    "lint:fix": "pnpm -r lint:fix && eslint . --ext .ts",
+    "usage:recalc": "tsx packages/api/scripts/recalculate-usage.ts"
   },
   "dependencies": {
     "@moteur/api": "workspace:*",

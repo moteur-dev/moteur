@@ -24,9 +24,14 @@ import modelsRoute, { modelsSpecs } from './models/index.js';
 import entriesRoute, { entriesSpecs } from './entries/index.js';
 import activityGlobalRoute, { openapi as activityGlobalSpec } from './activity/index.js';
 import adminRoutes, { adminSpecs } from './admin/index.js';
+import adminUsageRouter, { openapi as adminUsageSpec } from './admin/usage.js';
 import blocksRouter from './public/blocks.js';
 
 import { mergePluginSpecs } from './utils/mergePluginSpecs.js';
+import { requestClassifier } from './middlewares/requestClassifier.js';
+import { usageLogging } from './middlewares/usageLogging.js';
+import { adminRateLimiter, publicRateLimitGate } from './middlewares/rateLimit.js';
+import { securityHeaders } from './middlewares/security.js';
 
 import { createPresenceServer } from '@moteur/presence';
 import { validateStorageConfig } from '@moteur/core/config/storageConfig.js';
@@ -49,16 +54,26 @@ function getCorsOrigin(): string | string[] {
 
 // Create Express app
 const app = express();
-app.use(express.json());
+
+const bodyLimit = process.env.API_BODY_LIMIT || '1mb';
+app.use(express.json({ limit: bodyLimit }));
+
+app.use(securityHeaders);
 app.use(
     cors({
         origin: getCorsOrigin(),
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization']
+        allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
     })
 );
 
 const basePath = process.env.API_BASE_PATH || '';
+
+// Request classification (admin vs public), usage logging, and rate limiting
+app.use(basePath, requestClassifier);
+app.use(basePath, usageLogging);
+app.use(basePath + '/admin', adminRateLimiter);
+app.use(basePath, publicRateLimitGate);
 
 const mergedApiSpecs = await mergePluginSpecs({
     ...baseSpec,
@@ -71,7 +86,8 @@ const mergedApiSpecs = await mergePluginSpecs({
         ...activityGlobalSpec,
         ...modelsSpecs.paths,
         ...entriesSpecs.paths,
-        ...adminSpecs.paths
+        ...adminSpecs.paths,
+        ...adminUsageSpec
     },
     components: {
         ...baseSpec.components,
@@ -99,6 +115,7 @@ app.use(basePath + '/activity', activityGlobalRoute);
 app.use(basePath + '/projects', projectRoutes);
 app.use(basePath + '/projects/:projectId/models', modelsRoute);
 app.use(basePath + '/projects/:projectId/models/:modelId/entries', entriesRoute);
+app.use(basePath + '/admin/usage', adminUsageRouter);
 app.use(basePath + '/admin/projects', adminRoutes);
 app.use('/api/moteur/blocks', blocksRouter);
 

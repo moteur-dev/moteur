@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 import projectsRouter, { projectsSpecs } from '../../src/projects';
 
-// fake middleware override to inject user
+// fake middleware override to inject user; pass-through for collection/auth middlewares
 vi.mock('../../src/middlewares/auth', () => ({
     requireAdmin: (req: any, _res: any, next: any) => {
         req.user = { id: 'admin1', roles: ['admin'] };
@@ -17,7 +17,10 @@ vi.mock('../../src/middlewares/auth', () => ({
     requireProjectAccess: (req: any, _res: any, next: any) => {
         req.user = { id: 'admin1', roles: ['admin'] };
         next();
-    }
+    },
+    optionalAuth: (_req: any, _res: any, next: any) => next(),
+    apiKeyAuth: (_req: any, _res: any, next: any) => next(),
+    requireCollectionAuth: (_req: any, _res: any, next: any) => next()
 }));
 
 const app = express();

@@ -25,6 +25,42 @@ Soft-deletes: moves a project to `.trash/projects/{id}`.
 
 ---
 
+## 🔑 Project API Key (Developer API)
+
+One API key per project. Raw key is never stored; only a hash and prefix. Use for headless/collection access.
+
+### `Moteur.projectApiKey.generate(projectId: string, user: User): Promise<{ rawKey: string; prefix: string }>`
+Generates a new project API key. Returns the raw key **once**; store it securely. Throws if the project already has a key (use rotate instead).
+
+### `Moteur.projectApiKey.rotate(projectId: string, user: User): Promise<{ rawKey: string; prefix: string }>`
+Replaces the existing key with a new one. Returns the new raw key **once**.
+
+### `Moteur.projectApiKey.revoke(projectId: string, user: User): Promise<void>`
+Removes the API key from the project entirely.
+
+---
+
+## 📦 API Collections (Developer API)
+
+Collections define a named, configured view of project data for external consumers (e.g. frontends, static site generators). Stored per project in `api-collections.json`.
+
+### `Moteur.collections.list(projectId: string): Promise<ApiCollection[]>`
+Returns all collections for the project.
+
+### `Moteur.collections.get(projectId: string, id: string): Promise<ApiCollection | null>`
+Returns a single collection by id, or `null` if not found.
+
+### `Moteur.collections.create(projectId: string, user: User, data: { label: string; description?: string; resources?: ApiCollectionResource[] }): Promise<ApiCollection>`
+Creates a new collection.
+
+### `Moteur.collections.update(projectId: string, user: User, id: string, patch: { label?: string; description?: string; resources?: ApiCollectionResource[] }): Promise<ApiCollection>`
+Updates a collection (label, description, and/or resources).
+
+### `Moteur.collections.delete(projectId: string, user: User, id: string): Promise<void>`
+Hard-deletes a collection (no trash).
+
+---
+
 ## 📄 Templates API
 
 Templates define the schema for pages (fields) in a project. Storage: `projects/{projectId}/templates/{templateId}.json`.
