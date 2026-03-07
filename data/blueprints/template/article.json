@@ -1,0 +1,18 @@
+{
+  "id": "article",
+  "name": "Article",
+  "description": "Title, body, author",
+  "kind": "template",
+  "template": {
+    "template": {
+      "id": "article",
+      "label": "Article",
+      "description": "Title, body, author",
+      "fields": {
+        "title": { "type": "core/text", "label": "Title" },
+        "body": { "type": "core/rich-text", "label": "Body" },
+        "author": { "type": "core/text", "label": "Author" }
+      }
+    }
+  }
+}

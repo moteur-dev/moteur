@@ -7,6 +7,7 @@ import {
     deleteTemplate,
     validateTemplateById
 } from '@moteur/core/templates.js';
+import { getBlueprint } from '@moteur/core/blueprints.js';
 import { requireProjectAccess } from '../../middlewares/auth.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
@@ -39,7 +40,27 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
     if (!projectId) return res.status(400).json({ error: 'Missing projectId' });
     try {
         const body = req.body as Record<string, unknown>;
-        const data = { ...body, projectId } as Parameters<typeof createTemplate>[2];
+        let data: Parameters<typeof createTemplate>[2];
+
+        if (body.blueprintId) {
+            const blueprint = getBlueprint('template', body.blueprintId as string);
+            if ((blueprint.kind ?? 'project') !== 'template') {
+                return res.status(400).json({ error: 'Blueprint is not a template blueprint' });
+            }
+            const t = blueprint.template as { template?: { id?: string; label: string; description?: string; fields?: Record<string, unknown> } } | undefined;
+            if (!t?.template) {
+                return res.status(400).json({ error: 'Blueprint has no template.template' });
+            }
+            const { blueprintId: _b, ...overrides } = body;
+            const merged = { ...t.template, ...overrides };
+            const id =
+                (merged.id as string) ??
+                ((merged.label as string)?.replace(/[^a-z0-9-_]/gi, '-').toLowerCase() || 'template');
+            data = { ...merged, id, projectId } as Parameters<typeof createTemplate>[2];
+        } else {
+            data = { ...body, projectId } as Parameters<typeof createTemplate>[2];
+        }
+
         const template = await createTemplate(projectId, req.user!, data);
         return res.status(201).json(template);
     } catch (err: any) {

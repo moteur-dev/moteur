@@ -8,8 +8,9 @@ import { writeJson } from './utils/fileUtils.js';
 import { triggerEvent } from './utils/eventBus.js';
 import { validateModel } from './validators/validateModel.js';
 import { validateStructure } from './validators/validateStructure.js';
+import { validateTemplate } from './validators/validateTemplate.js';
 
-const BLUEPRINT_KINDS: BlueprintKind[] = ['project', 'model', 'structure'];
+const BLUEPRINT_KINDS: BlueprintKind[] = ['project', 'model', 'structure', 'template'];
 
 function systemUser(): User {
     return { id: 'system', name: 'System', isActive: true, email: '', roles: [], projects: [] };
@@ -134,6 +135,24 @@ function validateBlueprintPayload(blueprint: BlueprintSchema): void {
                 .map(i => `${i.path}: ${i.message}`)
                 .join('; ');
             throw new Error(`Blueprint template.structure validation failed: ${msg}`);
+        }
+    } else if (k === 'template') {
+        const t = blueprint.template as { template?: { id?: string; label?: string; description?: string; fields?: unknown } } | undefined;
+        if (!t?.template) {
+            throw new Error('Blueprint kind "template" requires template.template');
+        }
+        const templateForValidation = {
+            ...t.template,
+            id: t.template.id ?? 'placeholder',
+            projectId: 'placeholder'
+        };
+        const templateResult = validateTemplate(templateForValidation as Parameters<typeof validateTemplate>[0]);
+        if (templateResult.issues.some(i => i.type === 'error')) {
+            const msg = templateResult.issues
+                .filter(i => i.type === 'error')
+                .map(i => `${i.path}: ${i.message}`)
+                .join('; ');
+            throw new Error(`Blueprint template.template validation failed: ${msg}`);
         }
     }
 }

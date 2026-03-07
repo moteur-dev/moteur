@@ -1,0 +1,38 @@
+{
+  "id": "publishable",
+  "name": "Publishable",
+  "description": "Fields for publishing status and slugs. Add to models or structures that need draft/published workflow.",
+  "kind": "structure",
+  "template": {
+    "structure": {
+      "type": "project/publishable",
+      "label": "Publishable",
+      "description": "Fields that control publishing status and slugs.",
+      "fields": {
+        "status": {
+          "type": "core/select",
+          "label": "Status",
+          "options": {
+            "choices": [
+              { "value": "draft", "label": "Draft" },
+              { "value": "published", "label": "Published" },
+              { "value": "archived", "label": "Archived" }
+            ],
+            "allowEmpty": false
+          }
+        },
+        "slug": {
+          "type": "core/text",
+          "label": "Slug",
+          "description": "URL-friendly identifier.",
+          "options": { "multilingual": false }
+        },
+        "publishDate": {
+          "type": "core/text",
+          "label": "Publish Date",
+          "options": { "multilingual": false }
+        }
+      }
+    }
+  }
+}
