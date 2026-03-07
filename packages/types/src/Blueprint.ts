@@ -63,5 +63,9 @@ export interface BlueprintSchema {
     name: string;
     description?: string;
     kind?: BlueprintKind;
-    template?: BlueprintTemplate | ModelBlueprintTemplate | StructureBlueprintTemplate | TemplateBlueprintTemplate;
+    template?:
+        | BlueprintTemplate
+        | ModelBlueprintTemplate
+        | StructureBlueprintTemplate
+        | TemplateBlueprintTemplate;
 }

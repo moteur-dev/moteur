@@ -23,7 +23,8 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
 
 router.get('/:layoutId', requireProjectAccess, async (req: any, res: any) => {
     const { projectId, layoutId } = req.params;
-    if (!projectId || !layoutId) return res.status(400).json({ error: 'Missing projectId or layoutId' });
+    if (!projectId || !layoutId)
+        return res.status(400).json({ error: 'Missing projectId or layoutId' });
     try {
         const layout = await getLayout(req.user!, projectId, layoutId);
         return res.json(layout);
@@ -45,7 +46,8 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
 
 router.patch('/:layoutId', requireProjectAccess, async (req: any, res: any) => {
     const { projectId, layoutId } = req.params;
-    if (!projectId || !layoutId) return res.status(400).json({ error: 'Missing projectId or layoutId' });
+    if (!projectId || !layoutId)
+        return res.status(400).json({ error: 'Missing projectId or layoutId' });
     try {
         const updated = await updateLayout(req.user!, projectId, layoutId, req.body);
         return res.json(updated);
@@ -56,7 +58,8 @@ router.patch('/:layoutId', requireProjectAccess, async (req: any, res: any) => {
 
 router.delete('/:layoutId', requireProjectAccess, async (req: any, res: any) => {
     const { projectId, layoutId } = req.params;
-    if (!projectId || !layoutId) return res.status(400).json({ error: 'Missing projectId or layoutId' });
+    if (!projectId || !layoutId)
+        return res.status(400).json({ error: 'Missing projectId or layoutId' });
     try {
         await deleteLayout(req.user!, projectId, layoutId);
         return res.status(204).send();

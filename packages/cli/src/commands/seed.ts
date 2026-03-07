@@ -11,11 +11,11 @@ export async function seedCommand(args: { force?: boolean; json?: boolean; quiet
         if (!args.quiet) {
             if (copied.length > 0) {
                 console.log('Seeded blueprints:');
-                copied.forEach((f) => console.log(`  + ${f}`));
+                copied.forEach(f => console.log(`  + ${f}`));
             }
             if (skipped.length > 0) {
                 console.log('Skipped (already exist; use --force to overwrite):');
-                skipped.forEach((f) => console.log(`  - ${f}`));
+                skipped.forEach(f => console.log(`  - ${f}`));
             }
             if (copied.length === 0 && skipped.length === 0) {
                 console.log('No seed files found under data/seeds/blueprints/');
@@ -29,6 +29,7 @@ export async function seedCommand(args: { force?: boolean; json?: boolean; quiet
 
 cliRegistry.register('seed', {
     name: '',
-    description: 'Copy blueprint seeds from data/seeds/blueprints/ to data/blueprints/ (only when missing)',
-    action: seedCommand,
+    description:
+        'Copy blueprint seeds from data/seeds/blueprints/ to data/blueprints/ (only when missing)',
+    action: seedCommand
 });

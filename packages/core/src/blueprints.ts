@@ -137,7 +137,9 @@ function validateBlueprintPayload(blueprint: BlueprintSchema): void {
             throw new Error(`Blueprint template.structure validation failed: ${msg}`);
         }
     } else if (k === 'template') {
-        const t = blueprint.template as { template?: { id?: string; label?: string; description?: string; fields?: unknown } } | undefined;
+        const t = blueprint.template as
+            | { template?: { id?: string; label?: string; description?: string; fields?: unknown } }
+            | undefined;
         if (!t?.template) {
             throw new Error('Blueprint kind "template" requires template.template');
         }
@@ -146,7 +148,9 @@ function validateBlueprintPayload(blueprint: BlueprintSchema): void {
             id: t.template.id ?? 'placeholder',
             projectId: 'placeholder'
         };
-        const templateResult = validateTemplate(templateForValidation as Parameters<typeof validateTemplate>[0]);
+        const templateResult = validateTemplate(
+            templateForValidation as Parameters<typeof validateTemplate>[0]
+        );
         if (templateResult.issues.some(i => i.type === 'error')) {
             const msg = templateResult.issues
                 .filter(i => i.type === 'error')

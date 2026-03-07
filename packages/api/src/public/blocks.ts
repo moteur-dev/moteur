@@ -11,7 +11,7 @@ router.get('/', (_req, res) => {
 });
 
 // POST /api/moteur/blocks
-router.post('/', (req, res) => {
+router.post('/', (req: any, res: any) => {
     try {
         const schema = req.body;
         if (!schema || typeof schema !== 'object') {

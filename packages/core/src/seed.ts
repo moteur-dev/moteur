@@ -24,7 +24,9 @@ export function runSeed(options: SeedOptions = {}): { copied: string[]; skipped:
     const blueprintsDir = storageConfig.blueprintsDir;
 
     if (!fs.existsSync(seedsDir)) {
-        throw new Error(`Seeds directory not found: ${seedsDir}. Run from the moteur repo or set SEEDS_DIR.`);
+        throw new Error(
+            `Seeds directory not found: ${seedsDir}. Run from the moteur repo or set SEEDS_DIR.`
+        );
     }
 
     const copied: string[] = [];
@@ -37,7 +39,7 @@ export function runSeed(options: SeedOptions = {}): { copied: string[]; skipped:
         const kindDest = path.join(blueprintsDir, kind);
         fs.mkdirSync(kindDest, { recursive: true });
 
-        const files = fs.readdirSync(kindSeeds).filter((f) => f.endsWith('.json'));
+        const files = fs.readdirSync(kindSeeds).filter(f => f.endsWith('.json'));
         for (const file of files) {
             const src = path.join(kindSeeds, file);
             const dest = path.join(kindDest, file);

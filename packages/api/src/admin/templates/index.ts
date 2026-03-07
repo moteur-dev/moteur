@@ -47,7 +47,16 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
             if ((blueprint.kind ?? 'project') !== 'template') {
                 return res.status(400).json({ error: 'Blueprint is not a template blueprint' });
             }
-            const t = blueprint.template as { template?: { id?: string; label: string; description?: string; fields?: Record<string, unknown> } } | undefined;
+            const t = blueprint.template as
+                | {
+                      template?: {
+                          id?: string;
+                          label: string;
+                          description?: string;
+                          fields?: Record<string, unknown>;
+                      };
+                  }
+                | undefined;
             if (!t?.template) {
                 return res.status(400).json({ error: 'Blueprint has no template.template' });
             }
@@ -55,7 +64,8 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
             const merged = { ...t.template, ...overrides };
             const id =
                 (merged.id as string) ??
-                ((merged.label as string)?.replace(/[^a-z0-9-_]/gi, '-').toLowerCase() || 'template');
+                ((merged.label as string)?.replace(/[^a-z0-9-_]/gi, '-').toLowerCase() ||
+                    'template');
             data = { ...merged, id, projectId } as Parameters<typeof createTemplate>[2];
         } else {
             data = { ...body, projectId } as Parameters<typeof createTemplate>[2];
