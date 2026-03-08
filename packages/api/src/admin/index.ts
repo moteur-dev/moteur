@@ -8,6 +8,7 @@ import adminCollectionsRouter, { openapi as adminCollectionsSpec } from './colle
 import adminApiKeyRouter, { openapi as adminApiKeySpec } from './apiKey/index.js';
 import adminAssetsRouter from './assets/index.js';
 import adminAssetConfigRouter from './assetConfig.js';
+import adminNavigationsRouter from './navigations/index.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -19,6 +20,7 @@ router.use('/:projectId/collections', adminCollectionsRouter);
 router.use('/:projectId/api-key', adminApiKeyRouter);
 router.use('/:projectId/assets', adminAssetsRouter);
 router.use('/:projectId/asset-config', adminAssetConfigRouter);
+router.use('/:projectId/navigations', adminNavigationsRouter);
 
 export const adminSpecs = {
     paths: mergePathSpecs(adminTemplatesSpec, adminPagesSpec, adminCollectionsSpec, adminApiKeySpec)

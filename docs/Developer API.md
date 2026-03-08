@@ -61,6 +61,33 @@ Hard-deletes a collection (no trash).
 
 ---
 
+## 🧭 Navigations API
+
+Navigations are **independent of the page tree**: named, ordered, nested menus (e.g. Header, Footer). Items can link to pages (resolved at read time), custom URLs, assets, or act as dropdown parents with no destination. Custom fields on items use the same field type system as models; schema is defined on the navigation (`itemSchema`). Storage: one file per project, `navigations.json`.
+
+### `Moteur.navigations.list(projectId: string): Promise<Navigation[]>`
+Returns all navigations for the project.
+
+### `Moteur.navigations.get(projectId: string, id: string): Promise<Navigation>`
+Returns a single navigation by id. Throws if not found.
+
+### `Moteur.navigations.getByHandle(projectId: string, handle: string): Promise<Navigation | null>`
+Returns a navigation by handle (e.g. `header`, `footer`), or `null` if not found.
+
+### `Moteur.navigations.create(projectId: string, user: User, data: { name: string; handle: string; maxDepth?: number; itemSchema?: Field[]; items?: NavItem[] }): Promise<Navigation>`
+Creates a navigation. Validates: handle unique and URL-safe (lowercase, alphanumeric, hyphens); maxDepth 1–5; item nesting ≤ maxDepth; all `pageId` and `assetId` references exist. Item IDs are generated for items that don’t have one.
+
+### `Moteur.navigations.update(projectId: string, user: User, id: string, patch: Partial<{ name; handle; maxDepth; itemSchema; items }>): Promise<Navigation>`
+Updates a navigation. Same validations as create. If `maxDepth` is reduced and existing items exceed the new depth, throws (422); never truncates.
+
+### `Moteur.navigations.delete(projectId: string, user: User, id: string): Promise<void>`
+Deletes a navigation.
+
+### `Moteur.navigations.resolve(projectId: string, navigation: Navigation): Promise<ResolvedNavigation>`
+Resolves a navigation: hydrates every item’s `url` from page (via urlResolver), custom URL, or asset. Missing page/asset references yield `url: undefined`; never throws.
+
+---
+
 ## 📄 Templates API
 
 Templates define the schema for pages (fields) in a project. Storage: `projects/{projectId}/templates/{templateId}.json`.
@@ -90,31 +117,46 @@ Validates a template by id.
 
 ## 📃 Pages API
 
-Pages are template-based content instances with optional slug, parent, and status. Storage: `projects/{projectId}/pages/{pageId}.json`. They follow the same workflow as entries (draft → in_review → published) and can be submitted for review.
+Pages are organized as a **typed page tree**: **static** pages (authored content, one URL each), **collection** pages (bound to a model, one index URL plus one URL per entry), and **folder** nodes (structural grouping, no content). Storage: `projects/{projectId}/pages/{pageId}.json`. List returns a flat array of `PageNode`; the client (or Studio) builds the tree from `parentId` and `order`.
 
-### `Moteur.pages.listPages(projectId: string, options?): Promise<Page[]>`
-Returns pages, optionally filtered by `templateId`, `parentId`, or `status`.
+### `Moteur.pages.listPages(projectId: string, options?): Promise<PageNode[]>`
+Returns all page nodes (flat). Options: `templateId`, `parentId`, `status` (`'draft' | 'published'`), `type` (`'static' | 'collection' | 'folder'`).
 
-### `Moteur.pages.getPage(projectId: string, id: string): Promise<Page>`
-Returns a single page by id.
+### `Moteur.pages.getPage(projectId: string, id: string): Promise<PageNode>`
+Returns a single page node by id.
 
-### `Moteur.pages.getPageWithAuth(user: User, projectId: string, id: string): Promise<Page>`
+### `Moteur.pages.getPageWithAuth(user: User, projectId: string, id: string): Promise<PageNode>`
 Returns a page with project access check.
 
-### `Moteur.pages.getPageBySlug(projectId: string, slug: string): Promise<Page | null>`
+### `Moteur.pages.getPageBySlug(projectId: string, slug: string): Promise<PageNode | null>`
 Returns a page by slug, or `null` if not found.
 
-### `Moteur.pages.createPage(projectId: string, user: User, data): Promise<Page>`
-Creates a new page. `data` must include `templateId`, `label`, `fields`; optional `slug`, `parentId`, `status`. Id is generated. Validates fields against the template and enforces slug uniqueness and parent cycle checks.
+### `Moteur.pages.createPage(projectId: string, user: User, data): Promise<PageNode>`
+Creates a new page node. `data` must include `type` (`'static' | 'collection' | 'folder'`), `label`, `slug`. For `static`/`collection`: `templateId` required; for `collection`: `modelId` required. Optional: `parentId`, `order`, `navInclude`, `sitemapInclude`, `urlPattern` (collection), etc. Validates slug unique among siblings, no cycles, template/model exist.
 
-### `Moteur.pages.updatePage(projectId: string, user: User, id: string, patch): Promise<Page>`
+### `Moteur.pages.updatePage(projectId: string, user: User, id: string, patch): Promise<PageNode>`
 Updates a page. Respects publish guard (approved review required when `project.workflow.requireReview` is enabled).
 
 ### `Moteur.pages.deletePage(projectId: string, user: User, id: string): Promise<void>`
-Soft-deletes a page. Children are moved to root (`parentId` cleared).
+Soft-deletes a page. **Throws (409)** if the node has children; move or delete children first.
+
+### `Moteur.pages.reorder(projectId: string, user: User, updates: Array<{ id, parentId, order }>): Promise<PageNode[]>`
+Batch update `parentId` and `order` for drag-and-drop. Validates no cycles; applies atomically.
+
+### `Moteur.pages.resolveAllUrls(projectId: string): Promise<ResolvedUrl[]>`
+Resolves all URLs for the project (static pages, collection index pages, and one URL per published entry for each collection page with a pattern).
+
+### `Moteur.pages.resolveBreadcrumb(projectId: string, nodeId: string, entryId?: string): Promise<{ url, breadcrumb }>`
+Returns the resolved URL and breadcrumb trail (root to current) for a page node, optionally for a specific entry inside a collection page.
+
+### `Moteur.pages.resolveEntryUrl(projectId: string, entryId: string, modelId: string): Promise<string | null>`
+Returns the resolved URL for an entry if a collection page is bound to that model and has a `urlPattern`; otherwise `null`. Model schemas may define an optional **`urlPattern`** (e.g. `[post.slug]` or `[category.slug]/[post.slug]`); collection pages use the model's pattern unless overridden by the node's `urlPattern`. Set via `Moteur.projects` / model PATCH; validated on save (warnings only if a referenced field is missing).
+
+### `Moteur.pages.getNavigation(projectId: string, options?): Promise<NavigationNode[]>`
+Returns the navigation tree. Options: `depth`, `rootId`. Only nodes with `navInclude`; folders only if they have nav-included descendants.
 
 ### `Moteur.pages.validatePageById(projectId: string, id: string): Promise<ValidationResult>`
-Validates a page against its template.
+Validates a page against its template (no-op for folders).
 
 ### `Moteur.pages.validateAllPages(projectId: string): Promise<ValidationResult[]>`
 Validates all pages in the project.

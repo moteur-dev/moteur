@@ -9,6 +9,7 @@ import * as Comments from './comments.js';
 import * as Reviews from './reviews.js';
 import * as Notifications from './notifications.js';
 import * as ApiCollections from './apiCollections.js';
+import * as Navigations from './navigations.js';
 import * as ProjectApiKey from './projectApiKey.js';
 import * as Assets from './assets/assetService.js';
 
@@ -65,6 +66,15 @@ export const Moteur: MoteurAPI = {
         create: ApiCollections.createCollection,
         update: ApiCollections.updateCollection,
         delete: ApiCollections.deleteCollection
+    },
+    navigations: {
+        list: Navigations.listNavigations,
+        get: Navigations.getNavigation,
+        getByHandle: Navigations.getNavigationByHandle,
+        create: Navigations.createNavigation,
+        update: Navigations.updateNavigation,
+        delete: Navigations.deleteNavigation,
+        resolve: Navigations.resolveNavigation
     },
     projectApiKey: {
         generate: ProjectApiKey.generateKey,

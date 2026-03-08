@@ -14,7 +14,7 @@ import { storageRegistry } from './registry/StorageRegistry.js';
 import { getJson, putJson } from './utils/storageAdapterUtils.js';
 import { PROJECT_KEY } from './utils/storageKeys.js';
 import type { LocalStorageOptions } from '@moteur/types/Storage.js';
-import { removeProjectFromAllUsers, addProjectToUser } from './users.js';
+import { removeProjectFromAllUsers, addProjectToUser, removeProjectFromUser } from './users.js';
 import { getBlueprint } from './blueprints.js';
 import type { BlueprintTemplate } from '@moteur/types/Blueprint.js';
 import { createModelSchema } from './models.js';
@@ -44,6 +44,17 @@ export function loadProjects(): ProjectSchema[] {
             }
         })
         .filter((p): p is ProjectSchema => p !== null);
+}
+
+/**
+ * Project IDs the user is allowed to access (from each project.json's users array).
+ * Use this for JWT and /auth/me so project.json is the single source of truth.
+ */
+export function getProjectIdsForUser(userId: string): string[] {
+    const projects = loadProjects();
+    return projects
+        .filter(p => Array.isArray(p.users) && (p.users as string[]).includes(userId))
+        .map(p => p.id);
 }
 
 export async function getProject(user: User, projectId: string): Promise<ProjectSchema> {
@@ -219,6 +230,19 @@ export async function updateProject(
 ): Promise<ProjectSchema> {
     const current = await getProject(user, projectId);
     const updated = { ...current, ...patch };
+
+    // Keep user.projects in sync when project.users changes (so JWT and presence get correct list after re-login)
+    if (patch.users !== undefined) {
+        const prev = new Set((current.users ?? []) as string[]);
+        const next = new Set((updated.users ?? []) as string[]);
+        for (const uid of next) {
+            if (!prev.has(uid)) addProjectToUser(uid, projectId);
+        }
+        for (const uid of prev) {
+            if (!next.has(uid)) removeProjectFromUser(uid, projectId);
+        }
+    }
+
     triggerEvent('project.beforeUpdate', { project: updated, user });
 
     const storage = getProjectStorage(projectId);

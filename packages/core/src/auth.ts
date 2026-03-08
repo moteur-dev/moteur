@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 
-import { getUserByEmail, getDisplayProjectIds } from './users.js';
-import { loadProjects } from './projects.js';
+import { getUserByEmail } from './users.js';
+import { loadProjects, getProjectIdsForUser } from './projects.js';
 import { User } from '@moteur/types/User.js';
 
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRY ?? '1h';
@@ -38,10 +38,9 @@ export async function loginUser(
         throw new Error('User is not active');
     }
 
-    const existingProjectIds = loadProjects().map(p => p.id);
     const displayUser: User = {
         ...user,
-        projects: getDisplayProjectIds(user, existingProjectIds)
+        projects: getProjectIdsForUser(user.id)
     };
     return {
         token: generateJWT(displayUser),
@@ -51,8 +50,7 @@ export async function loginUser(
 
 export function generateJWT(user: User): string {
     const secret = getJwtSecret();
-    const existingProjectIds = loadProjects().map(p => p.id);
-    const projects = getDisplayProjectIds(user, existingProjectIds);
+    const projects = getProjectIdsForUser(user.id);
     const payload: JwtPayload = {
         sub: user.id,
         id: user.id,

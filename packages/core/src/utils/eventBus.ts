@@ -10,7 +10,7 @@ import { Layout } from '@moteur/types/Layout.js';
 import { Block } from '@moteur/types/Block.js';
 import { StructureSchema } from '@moteur/types/Structure.js';
 import type { TemplateSchema } from '@moteur/types/Template.js';
-import type { Page } from '@moteur/types/Page.js';
+import type { PageNode } from '@moteur/types/Page.js';
 import { User } from '@moteur/types/User.js';
 import type { Asset } from '@moteur/types/Asset.js';
 
@@ -57,12 +57,12 @@ export interface EventMap {
     'template.afterDelete': { template: TemplateSchema; user: User; projectId: string };
 
     // Pages (projectId for activity log)
-    'page.beforeCreate': { page: Page; user: User; projectId: string };
-    'page.afterCreate': { page: Page; user: User; projectId: string };
-    'page.beforeUpdate': { page: Page; user: User; projectId: string };
-    'page.afterUpdate': { page: Page; user: User; projectId: string };
-    'page.beforeDelete': { page: Page; user: User; projectId: string };
-    'page.afterDelete': { page: Page; user: User; projectId: string };
+    'page.beforeCreate': { page: PageNode; user: User; projectId: string };
+    'page.afterCreate': { page: PageNode; user: User; projectId: string };
+    'page.beforeUpdate': { page: PageNode; user: User; projectId: string };
+    'page.afterUpdate': { page: PageNode; user: User; projectId: string };
+    'page.beforeDelete': { page: PageNode; user: User; projectId: string };
+    'page.afterDelete': { page: PageNode; user: User; projectId: string };
 
     // Blocks
     'block.created': { block: Block; user: User };

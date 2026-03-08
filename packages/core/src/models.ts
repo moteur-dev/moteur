@@ -82,6 +82,29 @@ export async function createModelSchema(
     return schema;
 }
 
+/**
+ * Validate urlPattern: references [field.path] should exist on the model.
+ * Returns list of warning messages (does not reject).
+ */
+export function validateModelUrlPattern(
+    pattern: string | undefined,
+    schema: ModelSchema
+): string[] {
+    if (!pattern || typeof pattern !== 'string') return [];
+    const re = /\[([^\]]+)\]/g;
+    const warnings: string[] = [];
+    let m: RegExpExecArray | null;
+    const fieldNames = new Set(Object.keys(schema.fields ?? {}));
+    while ((m = re.exec(pattern)) !== null) {
+        const path = m[1].trim();
+        const top = path.split('.')[0];
+        if (top && !fieldNames.has(top)) {
+            warnings.push(`urlPattern references field "${path}" which is not defined on the model.`);
+        }
+    }
+    return warnings;
+}
+
 export async function updateModelSchema(
     user: User,
     projectId: string,

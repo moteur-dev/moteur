@@ -12,6 +12,7 @@ export * from './Field';
 export * from './FieldValidator';
 export * from './Layout';
 export * from './Model';
+export * from './Navigation';
 export * from './Page';
 export * from './Plugin';
 export * from './Project';

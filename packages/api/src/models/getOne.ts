@@ -16,7 +16,11 @@ router.get('/:modelId', requireProjectAccess, async (req: any, res: any) => {
         }
 
         res.json({ model });
-    } catch (err) {
+    } catch (err: any) {
+        const msg = err?.message ?? '';
+        if (msg.includes('not found')) {
+            return res.status(404).json({ error: 'Model not found' });
+        }
         console.error(`Failed to get model ${modelId} for project ${projectId}`, err);
         res.status(500).json({ error: 'Failed to get model' });
     }
