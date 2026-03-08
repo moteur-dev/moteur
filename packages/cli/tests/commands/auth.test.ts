@@ -7,7 +7,9 @@ vi.mock('@moteur/core/users.js', () => ({
 
 vi.mock('@moteur/core/projects.js', () => ({
     loadProjects: vi.fn(),
-    getProjectIdsForUser: vi.fn((userId: string) => (userId === 'u1' ? ['p1'] : userId === 'u2' ? ['site1'] : []))
+    getProjectIdsForUser: vi.fn((userId: string) =>
+        userId === 'u1' ? ['p1'] : userId === 'u2' ? ['site1'] : []
+    )
 }));
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

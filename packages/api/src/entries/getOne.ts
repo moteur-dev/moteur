@@ -29,7 +29,10 @@ router.get('/:entryId', requireProjectAccess, async (req: any, res: any) => {
         if (req.query.resolveUrl === '1') {
             resolvedUrl = await resolveEntryUrl(projectId, entryId, modelId);
         }
-        const payload = { ...entry, ...(resolvedUrl != null && { resolvedUrl: resolvedUrl ?? undefined }) };
+        const payload = {
+            ...entry,
+            ...(resolvedUrl != null && { resolvedUrl: resolvedUrl ?? undefined })
+        };
         return res.json({ entry: payload });
     } catch (err: any) {
         return res.status(500).json({ error: err.message });

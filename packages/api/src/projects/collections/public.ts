@@ -173,10 +173,10 @@ router.get('/:collectionId/:resourceId/entries', async (req: any, res: any) => {
         let projected = selectFieldsFromList(resolved, fields);
         if (req.query.resolveUrl === '1') {
             projected = await Promise.all(
-            projected.map(async (item: any) => {
-                const url = await resolveEntryUrl(projectId, item.id, resourceId);
-                return { ...item, ...(url != null && { resolvedUrl: url }) };
-            })
+                projected.map(async (item: any) => {
+                    const url = await resolveEntryUrl(projectId, item.id, resourceId);
+                    return { ...item, ...(url != null && { resolvedUrl: url }) };
+                })
             );
         }
         return res.json(projected);

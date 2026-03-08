@@ -43,8 +43,7 @@ export interface Navigation {
 }
 
 /** Resolved navigation — URLs hydrated, assets resolved. Returned by public API; never stored. */
-export interface ResolvedNavItem
-    extends Omit<NavItemBase, 'pageId' | 'assetId' | 'children'> {
+export interface ResolvedNavItem extends Omit<NavItemBase, 'pageId' | 'assetId' | 'children'> {
     /** resolved from pageId, customUrl, or asset.url */
     url?: string;
     children?: ResolvedNavItem[];

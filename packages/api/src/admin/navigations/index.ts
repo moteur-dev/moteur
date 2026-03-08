@@ -34,8 +34,8 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
             : err?.message?.includes('exceed max depth') ||
                 err?.message?.includes('not found') ||
                 err?.message?.includes('Handle must')
-                ? 422
-                : 400;
+              ? 422
+              : 400;
         return res.status(code).json({ error: err?.message ?? 'Failed to create navigation' });
     }
 });
@@ -58,14 +58,15 @@ router.patch('/:id', requireProjectAccess, async (req: any, res: any) => {
         const nav = await updateNavigation(projectId, req.user!, id, req.body);
         return res.json(nav);
     } catch (err: any) {
-        const code = err?.message?.includes('maxDepth') ||
+        const code =
+            err?.message?.includes('maxDepth') ||
             err?.message?.includes('existing items have depth')
-            ? 422
-            : err?.message?.includes('already exists')
-              ? 409
-              : err?.message?.includes('not found')
-                ? 404
-                : 400;
+                ? 422
+                : err?.message?.includes('already exists')
+                  ? 409
+                  : err?.message?.includes('not found')
+                    ? 404
+                    : 400;
         return res.status(code).json({ error: err?.message ?? 'Failed to update navigation' });
     }
 });
@@ -86,13 +87,17 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         get: {
             summary: 'List navigations',
             tags: ['Admin Navigations'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '200': { description: 'Navigation[]' } }
         },
         post: {
             summary: 'Create navigation',
             tags: ['Admin Navigations'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             requestBody: {
                 content: {
                     'application/json': {
@@ -110,7 +115,11 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                     }
                 }
             },
-            responses: { '201': { description: 'Navigation' }, '409': { description: 'Handle conflict' }, '422': { description: 'Validation failed' } }
+            responses: {
+                '201': { description: 'Navigation' },
+                '409': { description: 'Handle conflict' },
+                '422': { description: 'Validation failed' }
+            }
         }
     },
     '/admin/projects/{projectId}/navigations/{id}': {
@@ -130,7 +139,11 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
                 { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
             ],
-            responses: { '200': { description: 'Navigation' }, '404': { description: 'Not found' }, '422': { description: 'maxDepth conflict' } }
+            responses: {
+                '200': { description: 'Navigation' },
+                '404': { description: 'Not found' },
+                '422': { description: 'maxDepth conflict' }
+            }
         },
         delete: {
             summary: 'Delete navigation',

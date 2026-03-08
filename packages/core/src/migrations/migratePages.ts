@@ -28,7 +28,9 @@ function toStaticPage(legacy: Page & { type?: string }, order: number): StaticPa
         sitemapInclude: true,
         sitemapPriority: 0.5,
         templateId: legacy.templateId,
-        status: (legacy.status === 'published' || legacy.status === 'draft' ? legacy.status : 'draft') as 'published' | 'draft',
+        status: (legacy.status === 'published' || legacy.status === 'draft'
+            ? legacy.status
+            : 'draft') as 'published' | 'draft',
         fields: legacy.fields ?? {},
         createdAt: legacy.createdAt ?? now,
         updatedAt: legacy.updatedAt ?? now

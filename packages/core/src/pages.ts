@@ -87,9 +87,7 @@ export async function listPages(
         pages = pages.filter(p => (p.parentId ?? null) === pid);
     }
     if (options?.status) {
-        pages = pages.filter(
-            p => (p as StaticPage | CollectionPage).status === options.status
-        );
+        pages = pages.filter(p => (p as StaticPage | CollectionPage).status === options.status);
     }
     return pages;
 }
@@ -118,10 +116,7 @@ export async function getPageWithAuth(
     return getPage(projectId, id);
 }
 
-export async function getPageBySlug(
-    projectId: string,
-    slug: string
-): Promise<PageNode | null> {
+export async function getPageBySlug(projectId: string, slug: string): Promise<PageNode | null> {
     const pages = await loadAllPages(projectId);
     const found = pages.find(p => p.slug === slug);
     return found ?? null;
@@ -142,13 +137,9 @@ async function assertSlugUniqueAmongSiblings(
     if (slug === '' && parentId === null) return;
     const pages = await loadAllPages(projectId);
     const siblings = pages.filter(p => (p.parentId ?? null) === parentId);
-    const existing = siblings.find(
-        p => p.slug === slug && p.id !== excludePageId
-    );
+    const existing = siblings.find(p => p.slug === slug && p.id !== excludePageId);
     if (existing) {
-        throw new Error(
-            `Another page already uses the slug "${slug}" under the same parent.`
-        );
+        throw new Error(`Another page already uses the slug "${slug}" under the same parent.`);
     }
 }
 
@@ -333,12 +324,7 @@ export async function updatePage(
         if (!isUrlSafeSlug(updated.slug, isRoot)) {
             throw new Error('Slug must be URL-safe (no spaces or slashes).');
         }
-        await assertSlugUniqueAmongSiblings(
-            projectId,
-            updated.parentId ?? null,
-            updated.slug,
-            id
-        );
+        await assertSlugUniqueAmongSiblings(projectId, updated.parentId ?? null, updated.slug, id);
     }
     const newParentId = patch.parentId !== undefined ? patch.parentId : updated.parentId;
     if (newParentId && newParentId !== current.parentId) {
@@ -347,7 +333,10 @@ export async function updatePage(
     }
 
     if ((patch as Partial<CollectionPage>).modelId !== undefined && updated.type === 'collection') {
-        const model = await getModelSchemaForProject(projectId, (updated as CollectionPage).modelId);
+        const model = await getModelSchemaForProject(
+            projectId,
+            (updated as CollectionPage).modelId
+        );
         if (!model) throw new Error(`Model "${(updated as CollectionPage).modelId}" not found.`);
     }
 
@@ -358,11 +347,7 @@ export async function updatePage(
     return updated;
 }
 
-export async function deletePage(
-    projectId: string,
-    user: User,
-    id: string
-): Promise<void> {
+export async function deletePage(projectId: string, user: User, id: string): Promise<void> {
     const current = await getPageWithAuth(user, projectId, id);
     const allPages = await loadAllPages(projectId);
     const children = allPages.filter(p => (p.parentId ?? null) === id);
@@ -452,11 +437,7 @@ async function getEntriesForResolver(
 
 export async function resolveAllUrls(projectId: string): Promise<ResolvedUrl[]> {
     const nodes = await loadAllPages(projectId);
-    return resolveAllUrlsFromTree(
-        nodes,
-        getEntriesForResolver,
-        projectId
-    );
+    return resolveAllUrlsFromTree(nodes, getEntriesForResolver, projectId);
 }
 
 export async function getNavigation(
@@ -473,7 +454,10 @@ export async function resolveBreadcrumb(
     projectId: string,
     nodeId: string,
     entryId?: string
-): Promise<{ url: string; breadcrumb: Array<{ label: string; url: string; nodeId: string; entryId?: string }> }> {
+): Promise<{
+    url: string;
+    breadcrumb: Array<{ label: string; url: string; nodeId: string; entryId?: string }>;
+}> {
     const nodes = await loadAllPages(projectId);
     const nodeMap = buildNodeMap(nodes);
     let entry: Entry | undefined;
@@ -481,9 +465,10 @@ export async function resolveBreadcrumb(
         const node = nodeMap.get(nodeId);
         if (node?.type === 'collection') {
             const modelId = (node as CollectionPage).modelId;
-            entry = (await listEntriesForProject(projectId, modelId, { status: 'published' })).find(
-                e => e.id === entryId
-            ) ?? undefined;
+            entry =
+                (await listEntriesForProject(projectId, modelId, { status: 'published' })).find(
+                    e => e.id === entryId
+                ) ?? undefined;
         }
     }
     return resolveBreadcrumbFromTree(nodeId, nodeMap, entry);
@@ -497,8 +482,7 @@ export async function resolveEntryUrl(
     const nodes = await loadAllPages(projectId);
     const nodeMap = buildNodeMap(nodes);
     const collectionPage = nodes.find(
-        (n): n is CollectionPage =>
-            n.type === 'collection' && n.modelId === modelId
+        (n): n is CollectionPage => n.type === 'collection' && n.modelId === modelId
     );
     if (!collectionPage) return null;
 
@@ -517,27 +501,23 @@ export async function resolveEntryUrl(
     return prefix ? `${prefix}/${segment}` : `/${segment}`;
 }
 
-export async function validatePageById(
-    projectId: string,
-    id: string
-): Promise<ValidationResult> {
+export async function validatePageById(projectId: string, id: string): Promise<ValidationResult> {
     const page = await getPage(projectId, id);
     if (page.type === 'folder') {
         return { valid: true, issues: [] };
     }
-    const template = await getTemplate(
-        projectId,
-        (page as StaticPage | CollectionPage).templateId
-    );
+    const template = await getTemplate(projectId, (page as StaticPage | CollectionPage).templateId);
     return validatePageAgainstTemplate(
-        { ...page, templateId: (page as StaticPage).templateId, fields: (page as StaticPage).fields } as any,
+        {
+            ...page,
+            templateId: (page as StaticPage).templateId,
+            fields: (page as StaticPage).fields
+        } as any,
         template
     );
 }
 
-export async function validateAllPages(
-    projectId: string
-): Promise<ValidationResult[]> {
+export async function validateAllPages(projectId: string): Promise<ValidationResult[]> {
     const pages = await loadAllPages(projectId);
     const results: ValidationResult[] = [];
     for (const page of pages) {
@@ -552,7 +532,11 @@ export async function validateAllPages(
             );
             results.push(
                 validatePageAgainstTemplate(
-                    { ...page, templateId: (page as StaticPage).templateId, fields: (page as StaticPage).fields } as any,
+                    {
+                        ...page,
+                        templateId: (page as StaticPage).templateId,
+                        fields: (page as StaticPage).fields
+                    } as any,
                     template
                 )
             );

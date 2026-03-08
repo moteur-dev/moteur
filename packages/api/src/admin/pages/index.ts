@@ -93,12 +93,17 @@ router.post('/reorder', requireProjectAccess, async (req: any, res: any) => {
     const { projectId } = req.params;
     if (!projectId) return res.status(400).json({ error: 'Missing projectId' });
     const updates = req.body;
-    if (!Array.isArray(updates)) return res.status(400).json({ error: 'Body must be an array of { id, parentId, order }' });
+    if (!Array.isArray(updates))
+        return res.status(400).json({ error: 'Body must be an array of { id, parentId, order }' });
     try {
         const pages = await reorderPages(projectId, req.user!, updates);
         return res.json(pages);
     } catch (err: any) {
-        const code = err?.message?.includes('cycle') ? 422 : err?.message?.includes('not found') ? 404 : 400;
+        const code = err?.message?.includes('cycle')
+            ? 422
+            : err?.message?.includes('not found')
+              ? 404
+              : 400;
         return res.status(code).json({ error: err?.message ?? 'Failed to reorder' });
     }
 });
@@ -142,7 +147,8 @@ router.delete('/:id', requireProjectAccess, async (req: any, res: any) => {
         await deletePage(projectId, req.user!, id);
         return res.status(204).send();
     } catch (err: any) {
-        if (err?.statusCode === 409) return res.status(409).json({ error: err?.message ?? 'Page has children' });
+        if (err?.statusCode === 409)
+            return res.status(409).json({ error: err?.message ?? 'Page has children' });
         return res.status(404).json({ error: err?.message ?? 'Page not found' });
     }
 });
@@ -157,7 +163,9 @@ router.patch('/:id/status', requireProjectAccess, async (req: any, res: any) => 
             .json({ error: `status must be one of: ${VALID_PAGE_STATUSES.join(', ')}` });
     }
     try {
-        const page = await updatePage(projectId, req.user!, id, { status: status as 'draft' | 'published' });
+        const page = await updatePage(projectId, req.user!, id, {
+            status: status as 'draft' | 'published'
+        });
         return res.json(page);
     } catch (err: any) {
         const code = err?.message?.includes('requires an approved review')
@@ -218,8 +226,16 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
                 { name: 'templateId', in: 'query', schema: { type: 'string' } },
                 { name: 'parentId', in: 'query', schema: { type: 'string' } },
-                { name: 'status', in: 'query', schema: { type: 'string', enum: [...VALID_PAGE_STATUSES] } },
-                { name: 'type', in: 'query', schema: { type: 'string', enum: ['static', 'collection', 'folder'] } }
+                {
+                    name: 'status',
+                    in: 'query',
+                    schema: { type: 'string', enum: [...VALID_PAGE_STATUSES] }
+                },
+                {
+                    name: 'type',
+                    in: 'query',
+                    schema: { type: 'string', enum: ['static', 'collection', 'folder'] }
+                }
             ],
             responses: { '200': { description: 'List of pages' } }
         },

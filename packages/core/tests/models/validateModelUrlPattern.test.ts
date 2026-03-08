@@ -9,7 +9,11 @@ describe('validateModelUrlPattern', () => {
         fields: {
             slug: { type: 'core/text', label: 'Slug', options: {} },
             title: { type: 'core/text', label: 'Title', options: {} },
-            category: { type: 'core/reference', label: 'Category', options: { modelId: 'category' } }
+            category: {
+                type: 'core/reference',
+                label: 'Category',
+                options: { modelId: 'category' }
+            }
         }
     };
 

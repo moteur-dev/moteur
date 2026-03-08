@@ -185,7 +185,12 @@ describe('urlResolver', () => {
         it('includes only navInclude nodes and omits folders with no nav descendants', () => {
             const r = folderNode({ id: 'r', parentId: null, slug: '', navInclude: true });
             const blog = staticNode({ id: 'blog', parentId: 'r', slug: 'blog', navInclude: true });
-            const hidden = staticNode({ id: 'hidden', parentId: 'r', slug: 'h', navInclude: false });
+            const hidden = staticNode({
+                id: 'hidden',
+                parentId: 'r',
+                slug: 'h',
+                navInclude: false
+            });
             const nodes = [r, blog, hidden];
             const nodeMap = buildNodeMap(nodes);
             const childMap = buildChildMap(nodes);
@@ -200,8 +205,18 @@ describe('urlResolver', () => {
     describe('resolveAllUrls', () => {
         it('emits one URL per published static page', async () => {
             const home = staticNode({ id: 'home', parentId: null, slug: '', status: 'published' });
-            const about = staticNode({ id: 'about', parentId: null, slug: 'about', status: 'published' });
-            const draft = staticNode({ id: 'draft', parentId: null, slug: 'draft', status: 'draft' });
+            const about = staticNode({
+                id: 'about',
+                parentId: null,
+                slug: 'about',
+                status: 'published'
+            });
+            const draft = staticNode({
+                id: 'draft',
+                parentId: null,
+                slug: 'draft',
+                status: 'draft'
+            });
             const getEntries = async () => [];
             const urls = await resolveAllUrls([home, about, draft], getEntries, 'p1');
             expect(urls.map(u => u.url).sort()).toEqual(['/', '/about']);
@@ -222,10 +237,11 @@ describe('urlResolver', () => {
                 urlPattern: '[slug]',
                 sitemapIncludeEntries: true
             });
-            const getEntries = async (_pid: string, _mid: string) => [
-                { id: 'e1', type: 'post', data: { slug: 'first' }, status: 'published' },
-                { id: 'e2', type: 'post', data: { slug: 'second' }, status: 'published' }
-            ] as Entry[];
+            const getEntries = async (_pid: string, _mid: string) =>
+                [
+                    { id: 'e1', type: 'post', data: { slug: 'first' }, status: 'published' },
+                    { id: 'e2', type: 'post', data: { slug: 'second' }, status: 'published' }
+                ] as Entry[];
             const urls = await resolveAllUrls([coll], getEntries, 'p1');
             expect(urls).toHaveLength(3); // index + 2 entries
             const paths = urls.map(u => u.url).sort();
@@ -243,7 +259,9 @@ describe('urlResolver', () => {
                 sitemapIncludeEntries: false
             });
             const getEntries = async () =>
-                [{ id: 'e1', type: 'post', data: { slug: 'only' }, status: 'published' }] as Entry[];
+                [
+                    { id: 'e1', type: 'post', data: { slug: 'only' }, status: 'published' }
+                ] as Entry[];
             const urls = await resolveAllUrls([coll], getEntries, 'p1');
             expect(urls).toHaveLength(1);
             expect(urls[0].url).toBe('/blog');

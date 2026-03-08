@@ -14,9 +14,7 @@ router.get('/', async (req: any, res: any) => {
     if (!projectId) return res.status(400).json({ error: 'Missing projectId' });
     try {
         const list = await listNavigations(projectId);
-        const resolved = await Promise.all(
-            list.map(nav => resolveNavigation(projectId, nav))
-        );
+        const resolved = await Promise.all(list.map(nav => resolveNavigation(projectId, nav)));
         return res.json(resolved);
     } catch (err: any) {
         return res.status(500).json({ error: err?.message ?? 'Failed to get navigations' });
@@ -26,7 +24,8 @@ router.get('/', async (req: any, res: any) => {
 /** GET /projects/:projectId/navigations/:handle — one navigation by handle, resolved */
 router.get('/:handle', async (req: any, res: any) => {
     const { projectId, handle } = req.params;
-    if (!projectId || !handle) return res.status(400).json({ error: 'Missing projectId or handle' });
+    if (!projectId || !handle)
+        return res.status(400).json({ error: 'Missing projectId or handle' });
     try {
         const nav = await getNavigationByHandle(projectId, handle);
         if (!nav) return res.status(404).json({ error: 'Navigation not found' });
@@ -42,7 +41,9 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         get: {
             summary: 'Get all navigations (resolved)',
             tags: ['Navigations'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '200': { description: 'ResolvedNavigation[]' } }
         }
     },
@@ -54,7 +55,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
                 { name: 'handle', in: 'path', required: true, schema: { type: 'string' } }
             ],
-            responses: { '200': { description: 'ResolvedNavigation' }, '404': { description: 'Handle not found' } }
+            responses: {
+                '200': { description: 'ResolvedNavigation' },
+                '404': { description: 'Handle not found' }
+            }
         }
     }
 };
