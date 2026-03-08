@@ -1,10 +1,12 @@
-import { Page } from '@moteur/types/Page.js';
-import { TemplateSchema } from '@moteur/types/Template.js';
+import type { TemplateSchema } from '@moteur/types/Template.js';
 import { validateFieldValue } from './validateFieldValue.js';
 import { ValidationResult, ValidationIssue } from '@moteur/types/ValidationResult.js';
 import type { Field } from '@moteur/types/Field.js';
 
-export function validatePage(page: Page, schema: TemplateSchema): ValidationResult {
+export function validatePage(
+    page: { id: string; fields?: Record<string, unknown> },
+    schema: TemplateSchema
+): ValidationResult {
     const issues: ValidationIssue[] = [];
 
     for (const [fieldKey, fieldSchema] of Object.entries(schema.fields)) {
