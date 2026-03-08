@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 
 import { getUserByEmail } from './users.js';
-import { loadProjects, getProjectIdsForUser } from './projects.js';
+import { getProjectIdsForUser } from './projects.js';
 import { User } from '@moteur/types/User.js';
 
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRY ?? '1h';

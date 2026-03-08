@@ -99,7 +99,9 @@ export function validateModelUrlPattern(
         const path = m[1].trim();
         const top = path.split('.')[0];
         if (top && !fieldNames.has(top)) {
-            warnings.push(`urlPattern references field "${path}" which is not defined on the model.`);
+            warnings.push(
+                `urlPattern references field "${path}" which is not defined on the model.`
+            );
         }
     }
     return warnings;

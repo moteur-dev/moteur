@@ -42,10 +42,7 @@ export function buildChildMap(nodes: PageNode[]): Map<string | null, PageNode[]>
 }
 
 /** Walk up from a node to root, returning the ancestor chain (closest ancestor first, root last) */
-export function getAncestors(
-    nodeId: string,
-    nodeMap: Map<string, PageNode>
-): PageNode[] {
+export function getAncestors(nodeId: string, nodeMap: Map<string, PageNode>): PageNode[] {
     const out: PageNode[] = [];
     let node = nodeMap.get(nodeId);
     while (node?.parentId) {
@@ -58,10 +55,7 @@ export function getAncestors(
 }
 
 /** Resolve the full URL prefix for a node by walking up the tree. Root-level nodes with slug '' contribute nothing. Returns a string beginning with '/' e.g. '/blog', '/shop/products' */
-export function resolveNodePrefix(
-    nodeId: string,
-    nodeMap: Map<string, PageNode>
-): string {
+export function resolveNodePrefix(nodeId: string, nodeMap: Map<string, PageNode>): string {
     const ancestors = getAncestors(nodeId, nodeMap);
     const node = nodeMap.get(nodeId);
     const segments: string[] = [];
@@ -95,19 +89,14 @@ export function interpolatePattern(pattern: string, entry: Entry): string {
 /** Resolve all URLs for a project. For static/collection index: one URL per node. For collection: one URL per (filtered) entry plus index. For folder: no URL. */
 export async function resolveAllUrls(
     nodes: PageNode[],
-    getEntries: (
-        projectId: string,
-        modelId: string,
-        status?: PageStatus
-    ) => Promise<Entry[]>,
+    getEntries: (projectId: string, modelId: string, status?: PageStatus) => Promise<Entry[]>,
     projectId: string
 ): Promise<ResolvedUrl[]> {
     const nodeMap = buildNodeMap(nodes);
     const results: ResolvedUrl[] = [];
 
     const emit = (node: PageNode, url: string, entryId?: string, modelId?: string) => {
-        const priority =
-            node.sitemapPriority ?? 0.5;
+        const priority = node.sitemapPriority ?? 0.5;
         results.push({
             url,
             nodeId: node.id,
@@ -207,7 +196,7 @@ export function resolveBreadcrumb(
             nodeId: node.id
         });
         breadcrumb.push({
-            label: (entry.data as Record<string, unknown>)?.title as string ?? entry.id,
+            label: ((entry.data as Record<string, unknown>)?.title as string) ?? entry.id,
             url: currentUrl,
             nodeId: node.id,
             entryId: entry.id
@@ -267,7 +256,10 @@ export function buildNavigationTree(
                 url,
                 type: node.type
             };
-            if (d > 1 && (node.type === 'folder' || node.type === 'static' || node.type === 'collection')) {
+            if (
+                d > 1 &&
+                (node.type === 'folder' || node.type === 'static' || node.type === 'collection')
+            ) {
                 const sub = build(node.id, d - 1);
                 if (sub.length) navNode.children = sub;
             }

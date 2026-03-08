@@ -12,6 +12,7 @@ import { getProjectStorage } from './utils/getProjectStorage.js';
 import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
 import { entryKey, entryListPrefix } from './utils/storageKeys.js';
 import type { EntryStatus } from '@moteur/types/Model.js';
+import { dispatch as webhookDispatch } from './webhooks/webhookService.js';
 
 /** Options for listing entries without user (e.g. API key / collection pipeline). */
 export interface ListEntriesForProjectOptions {
@@ -95,11 +96,16 @@ export async function getEntry(
     return entry;
 }
 
+export interface EntryServiceOptions {
+    source?: 'studio' | 'api' | 'scheduler';
+}
+
 export async function createEntry(
     user: User,
     projectId: string,
     modelId: string,
-    entry: Entry
+    entry: Entry,
+    options?: EntryServiceOptions
 ): Promise<Entry> {
     if (!entry || !entry.id || !isValidId(entry.id)) {
         throw new Error('Entry ID is required to create an entry.');
@@ -117,6 +123,22 @@ export async function createEntry(
     await putJson(storage, entryKey(modelId, entry.id), entry);
     triggerEvent('entry.afterCreate', { entry, user, modelId, projectId });
 
+    try {
+        webhookDispatch(
+            'entry.created',
+            {
+                entryId: entry.id,
+                modelId,
+                status: (entry.status ?? 'draft') as string,
+                locale: entry.data?.locale,
+                slug: entry.data?.slug,
+                updatedBy: user.id
+            },
+            { projectId, source: options?.source ?? 'api' }
+        );
+    } catch {
+        // never fail the operation
+    }
     return entry;
 }
 
@@ -125,7 +147,8 @@ export async function updateEntry(
     projectId: string,
     modelId: string,
     entryId: string,
-    patch: Partial<Entry>
+    patch: Partial<Entry>,
+    options?: EntryServiceOptions
 ): Promise<Entry> {
     if (!entryId || !isValidId(entryId)) {
         throw new Error(`Invalid entry ID: ${entryId}`);
@@ -153,6 +176,28 @@ export async function updateEntry(
     const storage = getProjectStorage(projectId);
     await putJson(storage, entryKey(modelId, entryId), updated);
     triggerEvent('entry.afterUpdate', { entry: updated, user, modelId, projectId });
+
+    const source = options?.source ?? 'api';
+    const payloadEntry = {
+        entryId,
+        modelId,
+        status: (updated.status ?? 'draft') as string,
+        locale: updated.data?.locale,
+        slug: updated.data?.slug,
+        updatedBy: user.id
+    };
+    try {
+        webhookDispatch('entry.updated', payloadEntry, { projectId, source });
+        const prevStatus = (current.status ?? 'draft') as string;
+        const newStatus = (updated.status ?? 'draft') as string;
+        if (prevStatus !== 'published' && newStatus === 'published') {
+            webhookDispatch('entry.published', payloadEntry, { projectId, source });
+        } else if (prevStatus === 'published' && newStatus === 'unpublished') {
+            webhookDispatch('entry.unpublished', payloadEntry, { projectId, source });
+        }
+    } catch {
+        // never fail the operation
+    }
     return updated;
 }
 
@@ -160,7 +205,8 @@ export async function deleteEntry(
     user: User,
     projectId: string,
     modelId: string,
-    entryId: string
+    entryId: string,
+    options?: EntryServiceOptions
 ): Promise<void> {
     const entry = await getEntry(user, projectId, modelId, entryId);
 
@@ -173,4 +219,21 @@ export async function deleteEntry(
     fs.renameSync(entryFilePath(projectId, modelId, entryId), dest);
 
     triggerEvent('entry.afterDelete', { entry, user, modelId, projectId });
+
+    try {
+        webhookDispatch(
+            'entry.deleted',
+            {
+                entryId,
+                modelId,
+                status: (entry.status ?? 'draft') as string,
+                locale: entry.data?.locale,
+                slug: entry.data?.slug,
+                updatedBy: user.id
+            },
+            { projectId, source: options?.source ?? 'api' }
+        );
+    } catch {
+        // never fail the operation
+    }
 }

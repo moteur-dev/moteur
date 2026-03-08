@@ -22,3 +22,4 @@ export * from './Structure';
 export * from './Template';
 export * from './User';
 export * from './ValidationResult';
+export * from './Webhook';

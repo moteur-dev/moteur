@@ -22,6 +22,7 @@ It uses flat JSON files for storage, supports modular data definitions, and has 
 - REST API with JWT auth and role-based access; admin endpoints for full CRUD  
 - **API Collections**: named, configured views of project data for headless/SSG consumers; one project API key per project, read-only key auth  
 - **Request logging & rate limiting**: admin and public requests counted separately for audit and billing; optional audit log file; configurable rate limits (see [REST API](docs/REST%20API.md) and [Configuration](docs/Configuration.md))  
+- **Webhooks**: outbound HTTPS notifications when content events occur (entry published, asset deleted, review approved, form submitted, etc.); signed payloads (HMAC-SHA256), configurable events and filters, retry with exponential backoff, delivery log in Studio  
 - Project-based scoping to isolate content and configurations  
 - No database dependencies ? works anywhere Node.js runs  
 - Extensible by design: add your own fields, blocks, validators, and renderers without modifying the core  
@@ -96,6 +97,9 @@ Create and edit blueprints via the **Blueprints** section in the Studio or the R
 - **None**: the item acts as a dropdown parent with no destination.
 
 Items support **custom fields** via the navigation’s **itemSchema** (same field type system as models). Resolution never throws: missing page or asset references yield `url: undefined`. Public: `GET /projects/:projectId/navigations` (all resolved) and `GET /projects/:projectId/navigations/:handle`. See [REST API](docs/REST%20API.md) and [Developer API](docs/Developer%20API.md).
+
+### Webhooks
+**Webhooks** notify external HTTPS endpoints when content events occur. Register a URL per project; Moteur POSTs a signed JSON payload (HMAC-SHA256 in `X-Moteur-Signature`) for each matching event. You can subscribe to all events or a subset (e.g. `entry.published`, `asset.deleted`), and add **filters** (e.g. only when `modelId === 'article'`). Secrets are stored encrypted when `MOTEUR_ENCRYPTION_KEY` is set. Delivery is asynchronous with retries (30s, 5min, 30min, 2hr); failed deliveries can be retried from the API or Studio. Event types include entry create/update/publish/unpublish/delete, asset create/update/delete, page publish/unpublish/delete, review submit/approve/reject, comment created, form submitted. See [REST API](docs/REST%20API.md) (Admin — Webhooks) and [Developer API](docs/Developer%20API.md) (Webhooks API).
 
 ### Layouts & Blocks
 - **Layouts** are ordered lists of **blocks** (with optional metadata). They define how content is composed (e.g. hero, sections, footer).

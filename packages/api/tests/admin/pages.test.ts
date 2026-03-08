@@ -190,12 +190,18 @@ describe('Admin pages', () => {
     });
 
     it('POST /reorder should return updated pages', async () => {
-        const updated = [{ ...mockPage, order: 1 }, { ...mockPage, id: 'page2', order: 0 }];
+        const updated = [
+            { ...mockPage, order: 1 },
+            { ...mockPage, id: 'page2', order: 0 }
+        ];
         (reorderPages as any).mockResolvedValue(updated);
 
         const res = await request(app)
             .post(`${base}/reorder`)
-            .send([{ id: 'page1', parentId: null, order: 1 }, { id: 'page2', parentId: null, order: 0 }]);
+            .send([
+                { id: 'page1', parentId: null, order: 1 },
+                { id: 'page2', parentId: null, order: 0 }
+            ]);
 
         expect(res.status).toBe(200);
         expect(res.body).toHaveLength(2);
@@ -206,7 +212,9 @@ describe('Admin pages', () => {
     });
 
     it('DELETE /:id should return 409 when page has children', async () => {
-        const err = new Error('Cannot delete a page that has children. Move or delete the children first.');
+        const err = new Error(
+            'Cannot delete a page that has children. Move or delete the children first.'
+        );
         (err as any).statusCode = 409;
         (deletePage as any).mockRejectedValue(err);
 

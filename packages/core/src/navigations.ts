@@ -31,19 +31,13 @@ function ensureNavItemIds(items: NavItem[]): NavItem[] {
     return items.map(item => {
         const id = item.id && item.id.trim() ? item.id : generateNavItemId();
         const children =
-            item.children && item.children.length > 0
-                ? ensureNavItemIds(item.children)
-                : undefined;
+            item.children && item.children.length > 0 ? ensureNavItemIds(item.children) : undefined;
         return { ...item, id, ...(children && { children }) };
     });
 }
 
 /** Returns false if any branch exceeds maxDepth. */
-export function validateDepth(
-    items: NavItem[],
-    maxDepth: number,
-    current: number = 1
-): boolean {
+export function validateDepth(items: NavItem[], maxDepth: number, current: number = 1): boolean {
     if (current > maxDepth) return false;
     for (const item of items) {
         if (item.children && item.children.length > 0) {
@@ -75,10 +69,7 @@ async function loadNavigations(projectId: string): Promise<Navigation[]> {
     return list;
 }
 
-async function saveNavigations(
-    projectId: string,
-    list: Navigation[]
-): Promise<void> {
+async function saveNavigations(projectId: string, list: Navigation[]): Promise<void> {
     const storage = getProjectStorage(projectId);
     await putJson(storage, NAVIGATIONS_KEY, list);
 }
@@ -90,10 +81,7 @@ export async function listNavigations(projectId: string): Promise<Navigation[]> 
     return loadNavigations(projectId);
 }
 
-export async function getNavigation(
-    projectId: string,
-    id: string
-): Promise<Navigation> {
+export async function getNavigation(projectId: string, id: string): Promise<Navigation> {
     if (!isValidId(projectId)) throw new Error(`Invalid projectId: "${projectId}"`);
     if (!id?.trim()) throw new Error('Invalid navigation id');
     const list = await loadNavigations(projectId);
@@ -118,9 +106,7 @@ async function assertHandleUnique(
     excludeId?: string
 ): Promise<void> {
     const list = await loadNavigations(projectId);
-    const exists = list.some(
-        n => n.handle === handle && (excludeId == null || n.id !== excludeId)
-    );
+    const exists = list.some(n => n.handle === handle && (excludeId == null || n.id !== excludeId));
     if (exists) throw new Error(`A navigation with handle "${handle}" already exists.`);
 }
 
@@ -239,9 +225,7 @@ export async function updateNavigation(
     if (patch.handle !== undefined) {
         const next = patch.handle.trim().toLowerCase();
         if (!isHandleUrlSafe(next)) {
-            throw new Error(
-                'Handle must be URL-safe: lowercase, alphanumeric and hyphens only.'
-            );
+            throw new Error('Handle must be URL-safe: lowercase, alphanumeric and hyphens only.');
         }
         await assertHandleUnique(projectId, next, id);
         handle = next;
@@ -249,10 +233,7 @@ export async function updateNavigation(
 
     let maxDepth = current.maxDepth;
     if (patch.maxDepth !== undefined) {
-        maxDepth = Math.min(
-            MAX_MAX_DEPTH,
-            Math.max(MIN_MAX_DEPTH, patch.maxDepth)
-        );
+        maxDepth = Math.min(MAX_MAX_DEPTH, Math.max(MIN_MAX_DEPTH, patch.maxDepth));
     }
 
     let items = current.items;
@@ -289,11 +270,7 @@ export async function updateNavigation(
     return updated;
 }
 
-export async function deleteNavigation(
-    projectId: string,
-    user: User,
-    id: string
-): Promise<void> {
+export async function deleteNavigation(projectId: string, user: User, id: string): Promise<void> {
     const project = await getProject(user, projectId);
     assertUserCanAccessProject(user, project);
     const list = await loadNavigations(projectId);

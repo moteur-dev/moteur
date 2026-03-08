@@ -16,7 +16,10 @@ import { cliLoadUser } from '../utils/auth.js';
 import { User } from '@moteur/types/User.js';
 import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
 
-function projectIdFromArgs(args: { project?: string; projectId?: string }, user: User): Promise<string> {
+function projectIdFromArgs(
+    args: { project?: string; projectId?: string },
+    user: User
+): Promise<string> {
     const id = args.project ?? args.projectId;
     if (id) return Promise.resolve(id);
     return projectSelectPrompt(user);
@@ -107,7 +110,15 @@ export async function createPageCommand(args: {
         const patch = await resolveInputData({
             file: args.file,
             data: args.data,
-            interactiveFields: ['templateId', 'label', 'slug', 'parentId', 'status', 'modelId', 'urlPattern']
+            interactiveFields: [
+                'templateId',
+                'label',
+                'slug',
+                'parentId',
+                'status',
+                'modelId',
+                'urlPattern'
+            ]
         });
         Object.assign(data, patch);
         if (patch.templateId) data.templateId = patch.templateId;
@@ -116,7 +127,8 @@ export async function createPageCommand(args: {
     }
     const created = await createPage(projectId, user, data as any);
     if (args.json) return console.log(JSON.stringify(created, null, 2));
-    if (!args.quiet) console.log(`✅ Created page "${created.id}" (${type}) in project "${projectId}".`);
+    if (!args.quiet)
+        console.log(`✅ Created page "${created.id}" (${type}) in project "${projectId}".`);
     return created;
 }
 
@@ -135,7 +147,15 @@ export async function patchPageCommand(args: {
     const patch: Record<string, unknown> = await resolveInputData({
         file: args.file,
         data: args.data,
-        interactiveFields: ['label', 'slug', 'parentId', 'status', 'navInclude', 'navLabel', 'sitemapInclude']
+        interactiveFields: [
+            'label',
+            'slug',
+            'parentId',
+            'status',
+            'navInclude',
+            'navLabel',
+            'sitemapInclude'
+        ]
     });
     if (args['nav-include'] !== undefined) patch.navInclude = args['nav-include'] === 'true';
     const updated = await updatePage(projectId, user, args.id as string, patch as any);
@@ -153,8 +173,7 @@ export async function deletePageCommand(args: {
     const user: User = cliLoadUser();
     const projectId = await projectIdFromArgs(args, user);
     await deletePage(projectId, user, args.id as string);
-    if (!args.quiet)
-        console.log(`🗑️ Moved page "${args.id}" to trash in project "${projectId}".`);
+    if (!args.quiet) console.log(`🗑️ Moved page "${args.id}" to trash in project "${projectId}".`);
 }
 
 export async function urlsPageCommand(args: {
@@ -172,7 +191,12 @@ export async function urlsPageCommand(args: {
         const siteUrl = project?.siteUrl?.replace(/\/$/, '') ?? '';
         const filtered = urls.filter(r => r.sitemapInclude);
         const escapeXml = (s: string) =>
-            s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+            s
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
         const loc = (path: string) => (siteUrl ? `${siteUrl}${path}` : path);
         const xml = [
             '<?xml version="1.0" encoding="UTF-8"?>',
@@ -180,7 +204,9 @@ export async function urlsPageCommand(args: {
             ...filtered.map(
                 u =>
                     `<url><loc>${escapeXml(loc(u.url))}</loc>` +
-                    (u.sitemapPriority !== undefined ? `<priority>${u.sitemapPriority}</priority>` : '') +
+                    (u.sitemapPriority !== undefined
+                        ? `<priority>${u.sitemapPriority}</priority>`
+                        : '') +
                     (u.sitemapChangefreq ? `<changefreq>${u.sitemapChangefreq}</changefreq>` : '') +
                     '</url>'
             ),

@@ -10,7 +10,10 @@ import { cliLoadUser } from '../utils/auth.js';
 import { User } from '@moteur/types/User.js';
 import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
 
-function projectIdFromArgs(args: { project?: string; projectId?: string }, user: User): Promise<string> {
+function projectIdFromArgs(
+    args: { project?: string; projectId?: string },
+    user: User
+): Promise<string> {
     const id = args.project ?? args.projectId;
     if (id) return Promise.resolve(id as string);
     return projectSelectPrompt(user);
@@ -69,7 +72,13 @@ export async function createNavigationCommand(args: {
     const user: User = cliLoadUser();
     const projectId = await projectIdFromArgs(args, user);
     const name = (args.name ?? 'Untitled').toString().trim();
-    const handle = (args.handle ?? name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')).trim();
+    const handle = (
+        args.handle ??
+        name
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '')
+    ).trim();
     if (!handle) throw new Error('handle is required (or derived from name).');
     const nav = await createNavigation(projectId, user, {
         name,
@@ -78,7 +87,10 @@ export async function createNavigationCommand(args: {
         items: []
     });
     if (args.json) return console.log(JSON.stringify(nav, null, 2));
-    if (!args.quiet) console.log(`✅ Created navigation "${nav.name}" (${nav.handle}) in project "${projectId}".`);
+    if (!args.quiet)
+        console.log(
+            `✅ Created navigation "${nav.name}" (${nav.handle}) in project "${projectId}".`
+        );
 }
 
 export async function deleteNavigationCommand(args: {

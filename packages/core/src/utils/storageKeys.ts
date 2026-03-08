@@ -65,3 +65,6 @@ export function pageListPrefix(): string {
 }
 
 export const NAVIGATIONS_KEY = 'navigations.json';
+
+export const WEBHOOKS_KEY = 'webhooks.json';
+export const WEBHOOK_LOG_KEY = 'webhook-log.json';

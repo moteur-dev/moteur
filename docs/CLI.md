@@ -196,6 +196,26 @@ Use `--json` on list/add/resolve/edit for raw JSON output. `--project` can be om
 
 ---
 
+## 🔗 Webhooks
+
+Outbound webhooks notify external systems when content events occur (entry published, asset deleted, review approved, etc.). Use `--project=...` or `--projectId=...`.
+
+| Command | Description |
+|---------|-------------|
+| `webhooks list --project=site1` | List all webhooks (secrets redacted). |
+| `webhooks get --project=site1 --id=abc123` | Get one webhook by id. |
+| `webhooks create --project=site1 --name="Vercel deploy" --url=https://api.example.com/hook` | Create a webhook. Optional: `--secret=...`, `--events=entry.published,entry.deleted` (comma-separated), `--enabled=false`. Secret is generated if omitted; shown once. |
+| `webhooks update --project=site1 --id=abc123 --enabled=false` | Update a webhook. Optional: `--name`, `--url`, `--enabled`. |
+| `webhooks delete --project=site1 --id=abc123` | Delete a webhook. |
+| `webhooks rotate-secret --project=site1 --id=abc123` | Rotate the webhook secret. New secret is shown once. |
+| `webhooks test --project=site1 --id=abc123` | Send a test ping (fake payload). Returns delivery result. |
+| `webhooks log --project=site1 --id=abc123 --limit=20` | Show delivery log for a webhook. Optional: `--limit` (default 20). |
+| `webhooks retry --project=site1 --id=abc123 --deliveryId=delivery-uuid` | Retry a failed delivery. |
+
+Use `--json` on list/get/create/update/test/log for raw JSON output.
+
+---
+
 ## 🧩 Fields & 📦 Blocks
 
 Field and block type listings are available from the **interactive CLI menu** (run the CLI without a command). Top-level `fields list` and `blocks list` commands are not currently registered; use the menu or the Developer API for programmatic access.

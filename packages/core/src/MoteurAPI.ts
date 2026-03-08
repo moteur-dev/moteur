@@ -13,6 +13,7 @@ import type * as ApiCollections from './apiCollections';
 import type * as Navigations from './navigations';
 import type * as ProjectApiKey from './projectApiKey';
 import type * as Assets from './assets/assetService';
+import type * as Webhooks from './webhooks/webhookService';
 
 export interface MoteurAPI {
     projects: typeof Projects;
@@ -74,5 +75,17 @@ export interface MoteurAPI {
         migrateProvider: typeof Assets.migrateProvider;
         getConfig: typeof Assets.getAssetConfig;
         updateConfig: typeof Assets.updateAssetConfig;
+    };
+    webhooks: {
+        list: typeof Webhooks.listWebhooks;
+        get: typeof Webhooks.getWebhook;
+        create: typeof Webhooks.createWebhook;
+        update: typeof Webhooks.updateWebhook;
+        delete: typeof Webhooks.deleteWebhook;
+        rotateSecret: typeof Webhooks.rotateSecret;
+        test: typeof Webhooks.sendTestPing;
+        getLog: typeof Webhooks.getDeliveryLog;
+        retryDelivery: typeof Webhooks.retryDelivery;
+        dispatch: typeof Webhooks.dispatch;
     };
 }

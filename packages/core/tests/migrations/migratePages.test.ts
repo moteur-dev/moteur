@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { migratePagesIfNeeded } from '../../src/migrations/migratePages.js';
 import type { StorageAdapter } from '@moteur/types/Storage.js';
 import { pageKey, pageListPrefix } from '../../src/utils/storageKeys.js';
@@ -53,10 +53,7 @@ describe('migratePagesIfNeeded', () => {
             createdAt: '2024-01-01T00:00:00Z',
             updatedAt: '2024-01-01T00:00:00Z'
         };
-        storage.store.set(
-            pageKey('page1'),
-            Buffer.from(JSON.stringify(alreadyMigrated), 'utf-8')
-        );
+        storage.store.set(pageKey('page1'), Buffer.from(JSON.stringify(alreadyMigrated), 'utf-8'));
         (storage.list as any) = async (prefix?: string) => {
             if (prefix === pageListPrefix()) return ['page1.json'];
             return [];

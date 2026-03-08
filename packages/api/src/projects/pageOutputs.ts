@@ -1,10 +1,6 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
-import {
-    resolveAllUrls,
-    resolveBreadcrumb,
-    getNavigation
-} from '@moteur/core/pages.js';
+import { resolveAllUrls, resolveBreadcrumb, getNavigation } from '@moteur/core/pages.js';
 import { getProjectById } from '@moteur/core/projects.js';
 
 const router: Router = Router({ mergeParams: true });
@@ -26,7 +22,9 @@ router.get('/sitemap.xml', async (req: any, res: any) => {
             ...urls.map(
                 u =>
                     `<url><loc>${escapeXml(loc(u.url))}</loc>` +
-                    (u.sitemapPriority !== undefined ? `<priority>${u.sitemapPriority}</priority>` : '') +
+                    (u.sitemapPriority !== undefined
+                        ? `<priority>${u.sitemapPriority}</priority>`
+                        : '') +
                     (u.sitemapChangefreq ? `<changefreq>${u.sitemapChangefreq}</changefreq>` : '') +
                     '</url>'
             ),
@@ -81,7 +79,8 @@ router.get('/breadcrumb', async (req: any, res: any) => {
     const { projectId } = req.params;
     const pageId = req.query.pageId as string | undefined;
     const entryId = req.query.entryId as string | undefined;
-    if (!projectId || !pageId) return res.status(400).json({ error: 'Missing projectId or pageId' });
+    if (!projectId || !pageId)
+        return res.status(400).json({ error: 'Missing projectId or pageId' });
     try {
         const result = await resolveBreadcrumb(projectId, pageId, entryId);
         return res.json(result);
@@ -104,7 +103,9 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         get: {
             summary: 'Get sitemap as XML',
             tags: ['Page outputs'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '200': { description: 'XML sitemap' } }
         }
     },
@@ -112,7 +113,9 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         get: {
             summary: 'Get sitemap as JSON (ResolvedUrl[] where sitemapInclude)',
             tags: ['Page outputs'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '200': { description: 'JSON array of resolved URLs' } }
         }
     },
@@ -132,7 +135,9 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         get: {
             summary: 'Get all resolved URLs',
             tags: ['Page outputs'],
-            parameters: [{ name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
             responses: { '200': { description: 'ResolvedUrl[]' } }
         }
     },

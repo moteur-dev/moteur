@@ -14,14 +14,7 @@ export interface PageNodeBase {
     navLabel?: string;
     sitemapInclude: boolean;
     sitemapPriority?: number;
-    sitemapChangefreq?:
-        | 'always'
-        | 'hourly'
-        | 'daily'
-        | 'weekly'
-        | 'monthly'
-        | 'yearly'
-        | 'never';
+    sitemapChangefreq?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
     createdAt: string;
     updatedAt: string;
 }

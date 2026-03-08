@@ -9,6 +9,7 @@ import adminApiKeyRouter, { openapi as adminApiKeySpec } from './apiKey/index.js
 import adminAssetsRouter from './assets/index.js';
 import adminAssetConfigRouter from './assetConfig.js';
 import adminNavigationsRouter from './navigations/index.js';
+import adminWebhooksRouter from './webhooks/index.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -21,6 +22,7 @@ router.use('/:projectId/api-key', adminApiKeyRouter);
 router.use('/:projectId/assets', adminAssetsRouter);
 router.use('/:projectId/asset-config', adminAssetConfigRouter);
 router.use('/:projectId/navigations', adminNavigationsRouter);
+router.use('/:projectId/webhooks', adminWebhooksRouter);
 
 export const adminSpecs = {
     paths: mergePathSpecs(adminTemplatesSpec, adminPagesSpec, adminCollectionsSpec, adminApiKeySpec)

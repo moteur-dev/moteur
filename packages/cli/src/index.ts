@@ -32,6 +32,7 @@ import './commands/navigations.js';
 import './commands/comments.js';
 import './commands/seed.js';
 import './commands/assets.js';
+import './commands/webhooks.js';
 import { showHelp, showCommandHelp } from './commands/help.js';
 
 const [command, subcommand, ...rest] = process.argv.slice(2);

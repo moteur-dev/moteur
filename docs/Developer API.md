@@ -331,6 +331,42 @@ Loads all block schemas from namespace folders (`blocks/{namespace}`) and option
 
 ---
 
+## 🔗 Webhooks API
+
+Outbound webhooks notify external HTTPS endpoints when content events occur (entry created/published, asset deleted, review approved, form submitted, etc.). Storage: `projects/{projectId}/webhooks.json` and `webhook-log.json` (delivery log, capped at 500 entries). Secrets are encrypted at rest when `MOTEUR_ENCRYPTION_KEY` is set.
+
+### `Moteur.webhooks.list(projectId: string): Promise<Webhook[]>`
+Returns all webhooks for the project. Secrets are redacted (`***`).
+
+### `Moteur.webhooks.get(projectId: string, id: string): Promise<Webhook>`
+Returns one webhook by id. Secret is redacted.
+
+### `Moteur.webhooks.create(projectId: string, user: string, data: { name, url, secret?, events?, filters?, headers?, enabled? }): Promise<Webhook>`
+Creates a webhook. If `secret` is omitted, a random 32-byte hex secret is generated. **The plaintext secret is returned only in this response;** all subsequent reads redact it. URL must be HTTPS (or HTTP localhost in development). `events`: array of `WebhookEvent`; empty = all events. `filters`: optional array of `{ field, operator, value }` (AND logic).
+
+### `Moteur.webhooks.update(projectId: string, user: string, id: string, patch: Partial<Webhook>): Promise<Webhook>`
+Updates a webhook. Secret is redacted in response. If `patch.secret` is provided, it is encrypted and stored.
+
+### `Moteur.webhooks.delete(projectId: string, user: string, id: string): Promise<void>`
+Deletes a webhook.
+
+### `Moteur.webhooks.rotateSecret(projectId: string, user: string, id: string): Promise<{ secret: string }>`
+Rotates the webhook secret. **The new plaintext secret is returned once.**
+
+### `Moteur.webhooks.test(projectId: string, id: string): Promise<WebhookDelivery>`
+Sends a test ping (fake `entry.published` payload with `test: true`). Returns the delivery record after the first attempt.
+
+### `Moteur.webhooks.getLog(projectId: string, webhookId: string, options?: { limit?, offset? }): Promise<WebhookDelivery[]>`
+Returns the delivery log for a webhook (newest first). Default limit 50.
+
+### `Moteur.webhooks.retryDelivery(projectId: string, webhookId: string, deliveryId: string): Promise<void>`
+Requeues a failed delivery. **422** if delivery status is not `failed`.
+
+### `Moteur.webhooks.dispatch(event: WebhookEvent, data: WebhookPayloadData, context: { projectId, environment?, source: 'studio' | 'api' | 'scheduler' }): Promise<void>`
+Dispatches an event to all matching webhooks (fire-and-forget). Used internally by entry, asset, review, comment, and page services. Never throws; delivery is asynchronous.
+
+---
+
 ## 🔄 Shared Utilities
 
 ### `readJson(path: string): any`
