@@ -60,9 +60,9 @@ router.get('/:id', requireProjectAccess, async (req: any, res: any) => {
     if (!projectId || !id) return res.status(400).json({ error: 'Missing projectId or id' });
     try {
         let page = await getPage(req.user!, projectId, id);
-        if (req.query.resolveAssets === '1' && page.type !== 'folder' && 'templateId' in page) {
+        if (req.query.resolveAssets === '1') {
             const template = await getTemplate(projectId, page.templateId);
-            page = (await resolvePageAssets(projectId, page as any, template)) as PageNode;
+            page = await resolvePageAssets(projectId, page, template);
         }
         return res.json(page);
     } catch (err: any) {
