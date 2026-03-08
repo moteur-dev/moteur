@@ -38,6 +38,7 @@ This page lists environment variables used by the Moteur API. Details (rate limi
 |----------|-------------|
 | `API_RATE_LIMIT_ADMIN_MAX` | Max admin requests per 15 min (per IP). Default: 10000 (effectively off). |
 | `API_RATE_LIMIT_PUBLIC_MAX` | Max public requests per 15 min per project. Default: 1000. |
+| `API_RATE_LIMIT_FORMS_MAX` | Max form submissions per 15 min per form (keyed by projectId+formId). Default: 60. |
 
 ---
 

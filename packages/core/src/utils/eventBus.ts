@@ -13,6 +13,7 @@ import type { TemplateSchema } from '@moteur/types/Template.js';
 import type { PageNode } from '@moteur/types/Page.js';
 import { User } from '@moteur/types/User.js';
 import type { Asset } from '@moteur/types/Asset.js';
+import type { FormSchema, FormSubmission } from '@moteur/types/Form.js';
 
 // Event context uses explicit resource keys (like { project, user }) for clarity.
 export interface EventMap {
@@ -112,6 +113,32 @@ export interface EventMap {
         pageId: string;
         templateId: string;
         status: EntryStatus;
+    };
+
+    // Forms (projectId for activity log)
+    'form.beforeCreate': { form: FormSchema; user: User; projectId: string };
+    'form.afterCreate': { form: FormSchema; user: User; projectId: string };
+    'form.beforeUpdate': { form: FormSchema; user: User; projectId: string };
+    'form.afterUpdate': { form: FormSchema; user: User; projectId: string };
+    'form.beforeDelete': { form: FormSchema; user: User; projectId: string };
+    'form.afterDelete': { form: FormSchema; user: User; projectId: string };
+    'form.submitted': {
+        form: FormSchema;
+        submission: FormSubmission;
+        projectId: string;
+        formId: string;
+    };
+    'form.submission.beforeDelete': {
+        submission: FormSubmission;
+        user: User;
+        projectId: string;
+        formId: string;
+    };
+    'form.submission.afterDelete': {
+        submission: FormSubmission;
+        user: User;
+        projectId: string;
+        formId: string;
     };
 
     // Assets

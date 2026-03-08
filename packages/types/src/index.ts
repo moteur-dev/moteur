@@ -10,6 +10,7 @@ export * from './Block';
 export * from './Blueprint';
 export * from './Field';
 export * from './FieldValidator';
+export * from './Form';
 export * from './Layout';
 export * from './Model';
 export * from './Navigation';

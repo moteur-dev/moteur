@@ -14,6 +14,8 @@ import type * as Navigations from './navigations';
 import type * as ProjectApiKey from './projectApiKey';
 import type * as Assets from './assets/assetService';
 import type * as Webhooks from './webhooks/webhookService';
+import type * as Forms from './forms';
+import type * as FormSubmissions from './formSubmissions';
 
 export interface MoteurAPI {
     projects: typeof Projects;
@@ -87,5 +89,19 @@ export interface MoteurAPI {
         getLog: typeof Webhooks.getDeliveryLog;
         retryDelivery: typeof Webhooks.retryDelivery;
         dispatch: typeof Webhooks.dispatch;
+    };
+    forms: {
+        list: typeof Forms.listForms;
+        get: typeof Forms.getForm;
+        getForProject: typeof Forms.getFormForProject;
+        create: typeof Forms.createForm;
+        update: typeof Forms.updateForm;
+        delete: typeof Forms.deleteForm;
+    };
+    formSubmissions: {
+        list: typeof FormSubmissions.listSubmissions;
+        get: typeof FormSubmissions.getSubmission;
+        delete: typeof FormSubmissions.deleteSubmission;
+        create: typeof FormSubmissions.createSubmission;
     };
 }

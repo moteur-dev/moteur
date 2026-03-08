@@ -41,6 +41,9 @@ importers:
       openai:
         specifier: ^5.9.0
         version: 5.9.0
+      sharp:
+        specifier: ^0.33.0
+        version: 0.33.5
     devDependencies:
       '@eslint/js':
         specifier: ^9.30.1

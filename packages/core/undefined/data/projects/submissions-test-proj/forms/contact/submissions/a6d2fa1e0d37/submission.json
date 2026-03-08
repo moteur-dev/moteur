@@ -1,0 +1,16 @@
+{
+  "id": "a6d2fa1e0d37",
+  "formId": "contact",
+  "projectId": "submissions-test-proj",
+  "data": {
+    "email": "a@test.com",
+    "name": "Alice"
+  },
+  "metadata": {
+    "submittedAt": "2026-03-08T15:41:34.976Z",
+    "ip": "127.0.0.1",
+    "userAgent": "Test"
+  },
+  "actionResults": [],
+  "status": "processed"
+}

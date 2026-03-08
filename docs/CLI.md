@@ -107,6 +107,41 @@ The Moteur CLI allows you to manage projects, layouts, structures, blocks, and f
 
 ---
 
+## 🗒 Forms
+
+| Command | Description |
+|---------|-------------|
+| `forms list --project=site1` | List all forms in a project |
+| `forms list --project=site1 --json` | Output as raw JSON |
+| `forms get --project=site1 --id=contact` | Get one form (full schema) |
+| `forms create --project=site1` | Create a form (interactive, basic info only) |
+| `forms create --project=site1 --file=form.json` | Create from JSON file (supports full schema incl. actions, notifications) |
+| `forms create --project=site1 --data={...}` | Create from inline JSON |
+| `forms patch --project=site1 --id=contact` | Patch a form (interactive) |
+| `forms patch --project=site1 --id=contact --file=patch.json` | Patch from file |
+| `forms patch --project=site1 --id=contact --data={...}` | Patch from inline JSON |
+| `forms delete --project=site1 --id=contact` | Soft-delete a form |
+
+---
+
+## 📥 Submissions
+
+| Command | Description |
+|---------|-------------|
+| `submissions list --project=site1 --form=contact` | List submissions for a form |
+| `submissions list --project=site1 --form=contact --status=spam` | Filter by status (received \| processed \| spam) |
+| `submissions list --project=site1 --form=contact --limit=20` | Limit results |
+| `submissions list --project=site1 --form=contact --json` | Output as raw JSON |
+| `submissions get --project=site1 --form=contact --id=sub123` | Get one submission (full detail) |
+| `submissions delete --project=site1 --form=contact --id=sub123` | Soft-delete a submission |
+| `submissions export --project=site1 --form=contact --format=csv` | Export all submissions to CSV |
+| `submissions export --project=site1 --form=contact --format=json` | Export all submissions to JSON |
+| `submissions export --project=site1 --form=contact --format=csv --output=subs.csv` | Export to a specific file path |
+| `submissions export --project=site1 --form=contact --format=csv --status=processed` | Export filtered by status |
+| `submissions export --project=site1 --form=contact --format=json --limit=100` | Export with limit |
+
+---
+
 ## 📄 Templates
 
 | Command                                                          | Description                                  |

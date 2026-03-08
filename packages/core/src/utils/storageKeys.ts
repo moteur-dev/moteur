@@ -68,3 +68,19 @@ export const NAVIGATIONS_KEY = 'navigations.json';
 
 export const WEBHOOKS_KEY = 'webhooks.json';
 export const WEBHOOK_LOG_KEY = 'webhook-log.json';
+
+export function formKey(formId: string): string {
+    return `forms/${formId}/form.json`;
+}
+
+export function formListPrefix(): string {
+    return 'forms/';
+}
+
+export function submissionKey(formId: string, submissionId: string): string {
+    return `forms/${formId}/submissions/${submissionId}/submission.json`;
+}
+
+export function submissionListPrefix(formId: string): string {
+    return `forms/${formId}/submissions/`;
+}
