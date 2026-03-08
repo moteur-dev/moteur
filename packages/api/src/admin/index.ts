@@ -6,6 +6,8 @@ import adminStructuresRouter from './structures/index.js';
 import adminLayoutsRouter from './layouts/index.js';
 import adminCollectionsRouter, { openapi as adminCollectionsSpec } from './collections/index.js';
 import adminApiKeyRouter, { openapi as adminApiKeySpec } from './apiKey/index.js';
+import adminAssetsRouter from './assets/index.js';
+import adminAssetConfigRouter from './assetConfig.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -15,6 +17,8 @@ router.use('/:projectId/structures', adminStructuresRouter);
 router.use('/:projectId/layouts', adminLayoutsRouter);
 router.use('/:projectId/collections', adminCollectionsRouter);
 router.use('/:projectId/api-key', adminApiKeyRouter);
+router.use('/:projectId/assets', adminAssetsRouter);
+router.use('/:projectId/asset-config', adminAssetConfigRouter);
 
 export const adminSpecs = {
     paths: mergePathSpecs(adminTemplatesSpec, adminPagesSpec, adminCollectionsSpec, adminApiKeySpec)

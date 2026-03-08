@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { listEntries } from '@moteur/core/entries.js';
+import { getModelSchema } from '@moteur/core/models.js';
+import { resolveEntryAssets } from '@moteur/core/assets/assetResolver.js';
 import type { OpenAPIV3 } from 'openapi-types';
 import { requireProjectAccess } from '../middlewares/auth.js';
 
@@ -13,7 +15,11 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
     }
 
     try {
-        const entries = await listEntries(req.user!, projectId, modelId);
+        let entries = await listEntries(req.user!, projectId, modelId);
+        if (req.query.resolveAssets === '1') {
+            const schema = await getModelSchema(req.user!, projectId, modelId);
+            entries = await Promise.all(entries.map(e => resolveEntryAssets(projectId, e, schema)));
+        }
         return res.json({ entries });
     } catch (err: any) {
         return res.status(500).json({ error: err.message });

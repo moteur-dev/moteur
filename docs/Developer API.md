@@ -244,6 +244,42 @@ Marks all notifications for the user in the project as read.
 ### `Moteur.fields.loadFields(): Record<string, Field>`
 Loads all available field types from namespace directories (`fields/{namespace}`).
 
+Field types include **core/asset** (single asset reference with optional usage-level alt/caption) and **core/asset-list** (list of asset references). Use `?resolveAssets=1` on entry and page read endpoints to resolve asset references to full `Asset` objects in `_resolved`.
+
+---
+
+## 📁 Assets API
+
+### `Moteur.assets.upload(projectId, user, file, options?)`
+Upload a file (image, video, or document). `file`: `{ buffer, originalName, mimeType }`. `options`: `{ folder?, alt?, title?, credit?, keepLocalCopy? }`.
+
+### `Moteur.assets.list(projectId, options?)`
+List assets. `options`: `{ type?, folder?, search? }`.
+
+### `Moteur.assets.get(projectId, id)`
+Get a single asset (returns null if not found).
+
+### `Moteur.assets.update(projectId, user, id, patch)`
+Update asset metadata (title, alt, caption, description, credit, folder, focalPoint).
+
+### `Moteur.assets.delete(projectId, user, id)`
+Delete an asset (does not cascade to entries).
+
+### `Moteur.assets.move(projectId, user, id, folder)`
+Move asset to a folder.
+
+### `Moteur.assets.regenerate(projectId, user, assetIds?)`
+Regenerate image variants (images only).
+
+### `Moteur.assets.migrateProvider(user, options)`
+Migrate video provider (instance-wide). `options`: `{ fromProvider?, toProvider, projectIds?, keepLocalCopy? }`.
+
+### `Moteur.assets.getConfig(projectId, user)`
+Get project asset config (variants, adapter, etc.; secrets redacted).
+
+### `Moteur.assets.updateConfig(projectId, user, patch)`
+Update project asset config.
+
 ---
 
 ## 📦 Blocks API

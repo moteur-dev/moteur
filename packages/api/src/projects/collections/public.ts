@@ -5,6 +5,9 @@ import { listEntriesForProject, getEntryForProject } from '@moteur/core/entries.
 import { listPages, getPage, getPageBySlug } from '@moteur/core/pages.js';
 import { selectFields, selectFieldsFromList } from '@moteur/core/fieldSelection.js';
 import { resolveEntryReferences } from '@moteur/core/referenceResolution.js';
+import { resolveEntryAssets, resolvePageAssets } from '@moteur/core/assets/assetResolver.js';
+import { getModelSchemaForProject } from '@moteur/core/models.js';
+import { getTemplate } from '@moteur/core/templates.js';
 import type { ApiCollectionResource } from '@moteur/types/ApiCollection.js';
 import type { EntryStatus } from '@moteur/types/Model.js';
 
@@ -67,6 +70,14 @@ router.get('/:collectionId/pages', async (req: any, res: any) => {
             templateId: pageResource.resourceId === 'pages' ? undefined : pageResource.resourceId
         });
         pages = pages.filter(p => statuses.includes(p.status));
+        if (req.query.resolveAssets === '1') {
+            pages = await Promise.all(
+                pages.map(async p => {
+                    const template = await getTemplate(projectId, p.templateId);
+                    return resolvePageAssets(projectId, p, template);
+                })
+            );
+        }
         return res.json(pages);
     } catch (err: any) {
         return res.status(500).json({ error: err?.message ?? 'Failed to list pages' });
@@ -90,6 +101,11 @@ router.get('/:collectionId/pages/by-slug/:slug', async (req: any, res: any) => {
         const statuses = getStatusFilter(pageResource, apiKeyOnly);
         if (!statuses.includes(page.status))
             return res.status(404).json({ error: 'Page not found' });
+        if (req.query.resolveAssets === '1') {
+            const template = await getTemplate(projectId, page.templateId);
+            const resolved = await resolvePageAssets(projectId, page, template);
+            return res.json(resolved);
+        }
         return res.json(page);
     } catch (err: any) {
         return res.status(500).json({ error: err?.message ?? 'Failed to get page' });
@@ -112,6 +128,11 @@ router.get('/:collectionId/pages/:id', async (req: any, res: any) => {
         const statuses = getStatusFilter(pageResource, apiKeyOnly);
         if (!statuses.includes(page.status))
             return res.status(404).json({ error: 'Page not found' });
+        if (req.query.resolveAssets === '1') {
+            const template = await getTemplate(projectId, page.templateId);
+            const resolved = await resolvePageAssets(projectId, page, template);
+            return res.json(resolved);
+        }
         return res.json(page);
     } catch (err: any) {
         return res.status(404).json({ error: err?.message ?? 'Page not found' });
@@ -134,11 +155,19 @@ router.get('/:collectionId/:resourceId/entries', async (req: any, res: any) => {
         let entries = await listEntriesForProject(projectId, resourceId, { status: statuses });
         const depth = (resource.resolve ?? 0) as 0 | 1 | 2;
         const fields = resource.fields && resource.fields.length > 0 ? resource.fields : undefined;
-        const resolved = await Promise.all(
+        let resolved = await Promise.all(
             entries.map(e =>
                 resolveEntryReferences(e, projectId, resourceId, depth, new Set(), statuses)
             )
         );
+        if (req.query.resolveAssets === '1') {
+            const schema = await getModelSchemaForProject(projectId, resourceId);
+            if (schema) {
+                resolved = await Promise.all(
+                    resolved.map(e => resolveEntryAssets(projectId, e, schema))
+                );
+            }
+        }
         const projected = selectFieldsFromList(resolved, fields);
         return res.json(projected);
     } catch (err: any) {
@@ -164,7 +193,7 @@ router.get('/:collectionId/:resourceId/entries/:id', async (req: any, res: any) 
         if (!statuses.includes((entry.status ?? 'draft') as EntryStatus))
             return res.status(404).json({ error: 'Entry not found' });
         const depth = (resource.resolve ?? 0) as 0 | 1 | 2;
-        const resolved = await resolveEntryReferences(
+        let resolved = await resolveEntryReferences(
             entry,
             projectId,
             resourceId,
@@ -172,6 +201,10 @@ router.get('/:collectionId/:resourceId/entries/:id', async (req: any, res: any) 
             new Set(),
             statuses
         );
+        if (req.query.resolveAssets === '1') {
+            const schema = await getModelSchemaForProject(projectId, resourceId);
+            if (schema) resolved = await resolveEntryAssets(projectId, resolved, schema);
+        }
         const fields = resource.fields && resource.fields.length > 0 ? resource.fields : undefined;
         const projected = selectFields(resolved, fields);
         return res.json(projected);
