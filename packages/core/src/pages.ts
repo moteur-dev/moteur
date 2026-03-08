@@ -1,14 +1,20 @@
 import { randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { Page } from '@moteur/types/Page.js';
-import type { EntryStatus } from '@moteur/types/Model.js';
+import type {
+    PageNode,
+    StaticPage,
+    CollectionPage,
+    FolderPage,
+    PageStatus
+} from '@moteur/types/Page.js';
 import { ValidationResult } from '@moteur/types/ValidationResult.js';
 import { isValidId } from './utils/idUtils.js';
 import { User } from '@moteur/types/User.js';
 import { getProject } from './projects.js';
 import { assertUserCanAccessProject } from './utils/access.js';
 import { getTemplate } from './templates.js';
+import { getModelSchemaForProject } from './models.js';
 import { hasApprovedReviewForPage } from './reviews.js';
 import { triggerEvent } from './utils/eventBus.js';
 import { getProjectStorage } from './utils/getProjectStorage.js';
@@ -16,11 +22,28 @@ import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
 import { pageKey, pageListPrefix } from './utils/storageKeys.js';
 import { pageFilePath, trashPagesDir } from './utils/pathUtils.js';
 import { validatePage as validatePageAgainstTemplate } from './validators/validatePage.js';
+import { migratePagesIfNeeded } from './migrations/migratePages.js';
+import {
+    buildNodeMap,
+    buildChildMap,
+    buildNavigationTree,
+    resolveAllUrls as resolveAllUrlsFromTree,
+    resolveBreadcrumb as resolveBreadcrumbFromTree,
+    resolveNodePrefix,
+    interpolatePattern,
+    type ResolvedUrl,
+    type NavigationNode
+} from './pages/urlResolver.js';
+import { listEntriesForProject } from './entries.js';
+import type { Entry } from '@moteur/types/Model.js';
+
+export type { ResolvedUrl, NavigationNode } from './pages/urlResolver.js';
 
 export interface ListPagesOptions {
     templateId?: string;
     parentId?: string | null;
-    status?: EntryStatus;
+    status?: PageStatus;
+    type?: PageNode['type'];
 }
 
 function parsePageIds(listResult: string[]): string[] {
@@ -29,75 +52,103 @@ function parsePageIds(listResult: string[]): string[] {
         .filter(Boolean);
 }
 
-async function loadAllPages(projectId: string): Promise<Page[]> {
+async function loadAllPages(projectId: string): Promise<PageNode[]> {
     const storage = getProjectStorage(projectId);
+    await migratePagesIfNeeded(storage, projectId);
     const raw = await storage.list(pageListPrefix());
     const ids = parsePageIds(raw);
-    const pages: Page[] = [];
+    const pages: PageNode[] = [];
     for (const id of ids) {
-        const page = await getJson<Page>(storage, pageKey(id));
+        const page = await getJson<PageNode>(storage, pageKey(id));
         if (page) pages.push(page);
     }
     return pages;
 }
 
-export async function listPages(projectId: string, options?: ListPagesOptions): Promise<Page[]> {
+export async function listPages(
+    projectId: string,
+    options?: ListPagesOptions
+): Promise<PageNode[]> {
     if (!isValidId(projectId)) {
         throw new Error(`Invalid projectId: "${projectId}"`);
     }
 
     let pages = await loadAllPages(projectId);
+    if (options?.type) {
+        pages = pages.filter(p => p.type === options.type);
+    }
     if (options?.templateId) {
-        pages = pages.filter(p => p.templateId === options.templateId);
+        pages = pages.filter(
+            p => (p as StaticPage | CollectionPage).templateId === options.templateId
+        );
     }
     if (options?.parentId !== undefined) {
-        if (options.parentId === null || options.parentId === '') {
-            pages = pages.filter(p => p.parentId == null || p.parentId === '');
-        } else {
-            pages = pages.filter(p => p.parentId === options.parentId);
-        }
+        const pid = options.parentId === '' ? null : options.parentId;
+        pages = pages.filter(p => (p.parentId ?? null) === pid);
     }
     if (options?.status) {
-        pages = pages.filter(p => p.status === options.status);
+        pages = pages.filter(
+            p => (p as StaticPage | CollectionPage).status === options.status
+        );
     }
     return pages;
 }
 
-export async function getPage(projectId: string, id: string): Promise<Page> {
+export async function getPage(projectId: string, id: string): Promise<PageNode> {
     if (!id || !isValidId(id)) {
         throw new Error(`Invalid page ID: ${id}`);
     }
 
     const storage = getProjectStorage(projectId);
-    const page = await getJson<Page>(storage, pageKey(id));
+    await migratePagesIfNeeded(storage, projectId);
+    const page = await getJson<PageNode>(storage, pageKey(id));
     if (!page) {
         throw new Error(`Page "${id}" not found in project "${projectId}".`);
     }
     return page;
 }
 
-export async function getPageWithAuth(user: User, projectId: string, id: string): Promise<Page> {
+export async function getPageWithAuth(
+    user: User,
+    projectId: string,
+    id: string
+): Promise<PageNode> {
     const project = await getProject(user, projectId);
     assertUserCanAccessProject(user, project);
     return getPage(projectId, id);
 }
 
-export async function getPageBySlug(projectId: string, slug: string): Promise<Page | null> {
+export async function getPageBySlug(
+    projectId: string,
+    slug: string
+): Promise<PageNode | null> {
     const pages = await loadAllPages(projectId);
     const found = pages.find(p => p.slug === slug);
     return found ?? null;
 }
 
-async function assertSlugUnique(
+function isUrlSafeSlug(slug: string, isRoot: boolean): boolean {
+    if (isRoot && slug === '') return true;
+    if (!/^[a-zA-Z0-9_-]+$/.test(slug)) return false;
+    return true;
+}
+
+async function assertSlugUniqueAmongSiblings(
     projectId: string,
+    parentId: string | null,
     slug: string,
     excludePageId?: string
 ): Promise<void> {
-    if (!slug) return;
+    if (slug === '' && parentId === null) return;
     const pages = await loadAllPages(projectId);
-    const existing = pages.find(p => p.slug === slug && p.id !== excludePageId);
+    const siblings = pages.filter(p => (p.parentId ?? null) === parentId);
+    const existing = siblings.find(
+        p => p.slug === slug && p.id !== excludePageId
+    );
     if (existing) {
-        throw new Error(`Another page already uses the slug "${slug}" in this project.`);
+        throw new Error(
+            `Another page already uses the slug "${slug}" under the same parent.`
+        );
     }
 }
 
@@ -117,57 +168,120 @@ async function assertNoParentCycle(
             throw new Error('Parent would create a circular reference.');
         }
         seen.add(currentId);
-        const parentPage: Page | null = await getJson<Page>(storage, pageKey(currentId));
-        currentId = parentPage?.parentId;
+        const parentPage: PageNode | null = await getJson<PageNode>(storage, pageKey(currentId));
+        currentId = parentPage?.parentId ?? undefined;
     }
+}
+
+function getNextOrder(pages: PageNode[], parentId: string | null): number {
+    const siblings = pages.filter(p => (p.parentId ?? null) === parentId);
+    if (siblings.length === 0) return 0;
+    return Math.max(...siblings.map(p => p.order), -1) + 1;
+}
+
+function ensurePageNodeDefaults(
+    data: Partial<PageNode> & { type: PageNode['type']; label: string; slug: string },
+    projectId: string,
+    id: string,
+    order: number,
+    now: string
+): PageNode {
+    const base = {
+        id,
+        projectId,
+        label: data.label,
+        slug: data.slug,
+        parentId: data.parentId ?? null,
+        order,
+        navInclude: data.navInclude ?? true,
+        navLabel: data.navLabel,
+        sitemapInclude: data.sitemapInclude ?? true,
+        sitemapPriority: data.sitemapPriority ?? 0.5,
+        sitemapChangefreq: data.sitemapChangefreq,
+        createdAt: now,
+        updatedAt: now
+    };
+    if (data.type === 'folder') {
+        return { ...base, type: 'folder' } as FolderPage;
+    }
+    if (data.type === 'static') {
+        return {
+            ...base,
+            type: 'static',
+            templateId: (data as Partial<StaticPage>).templateId!,
+            status: ((data as Partial<StaticPage>).status ?? 'draft') as PageStatus,
+            fields: (data as Partial<StaticPage>).fields ?? {}
+        } as StaticPage;
+    }
+    if (data.type === 'collection') {
+        const c = data as Partial<CollectionPage>;
+        return {
+            ...base,
+            type: 'collection',
+            templateId: c.templateId!,
+            status: (c.status ?? 'draft') as PageStatus,
+            fields: c.fields ?? {},
+            modelId: c.modelId!,
+            urlPattern: c.urlPattern,
+            entryStatus: c.entryStatus ?? 'published',
+            sitemapIncludeEntries: c.sitemapIncludeEntries ?? true
+        } as CollectionPage;
+    }
+    throw new Error(`Unknown page type: ${(data as any).type}`);
 }
 
 export async function createPage(
     projectId: string,
     user: User,
-    data: Omit<Page, 'id' | 'createdAt' | 'updatedAt'>
-): Promise<Page> {
+    data: Partial<PageNode> & { type: PageNode['type']; label: string; slug: string }
+): Promise<PageNode> {
     const project = await getProject(user, projectId);
     assertUserCanAccessProject(user, project);
 
     const id = randomUUID();
+    const parentId = data.parentId ?? null;
+    const isRoot = parentId === null;
 
-    const template = await getTemplate(projectId, data.templateId);
-    const draftPage: Page = {
-        ...data,
-        id,
-        projectId,
-        status: data.status ?? 'draft',
-        fields: data.fields ?? {},
-        createdAt: '',
-        updatedAt: ''
-    };
-    const validation = validatePageAgainstTemplate(draftPage, template);
-    if (!validation.valid) {
-        const msg = validation.issues.map(i => `${i.path}: ${i.message}`).join('; ');
-        throw new Error(`Page validation failed: ${msg}`);
+    if (!isUrlSafeSlug(data.slug, isRoot)) {
+        throw new Error(
+            'Slug must be URL-safe (no spaces or slashes). Empty slug allowed only for root.'
+        );
     }
 
-    if (data.slug) {
-        await assertSlugUnique(projectId, data.slug);
+    const allPages = await loadAllPages(projectId);
+    await assertSlugUniqueAmongSiblings(projectId, parentId, data.slug);
+
+    if (parentId) {
+        await getPage(projectId, parentId);
+        await assertNoParentCycle(projectId, id, parentId);
     }
-    if (data.parentId) {
-        await getPage(projectId, data.parentId);
-        await assertNoParentCycle(projectId, id, data.parentId);
+
+    const order = getNextOrder(allPages, parentId);
+    const now = new Date().toISOString();
+    const page = ensurePageNodeDefaults(data, projectId, id, order, now);
+
+    if (page.type === 'static' || page.type === 'collection') {
+        const templateId = (page as StaticPage | CollectionPage).templateId;
+        const validation = validatePageAgainstTemplate(
+            { id: page.id, fields: (page as StaticPage).fields },
+            await getTemplate(projectId, templateId)
+        );
+        if (!validation.valid) {
+            const msg = validation.issues.map(i => `${i.path}: ${i.message}`).join('; ');
+            throw new Error(`Page validation failed: ${msg}`);
+        }
+    }
+    if (data.type === 'collection') {
+        const modelId = (data as CollectionPage).modelId;
+        if (!modelId) throw new Error('modelId is required for collection pages.');
+        const model = await getModelSchemaForProject(projectId, modelId);
+        if (!model) throw new Error(`Model "${modelId}" not found.`);
     }
 
     const storage = getProjectStorage(projectId);
-    const exists = await hasKey(storage, pageKey(id));
-    if (exists) {
+    if (await hasKey(storage, pageKey(id))) {
         throw new Error(`Page "${id}" already exists in project "${projectId}".`);
     }
-
-    const now = new Date().toISOString();
-    const page: Page = {
-        ...draftPage,
-        createdAt: now,
-        updatedAt: now
-    };
 
     triggerEvent('page.beforeCreate', { page, user, projectId });
     await putJson(storage, pageKey(id), page);
@@ -179,9 +293,9 @@ export async function updatePage(
     projectId: string,
     user: User,
     id: string,
-    patch: Partial<Page>
-): Promise<Page> {
-    if (patch.status === 'published') {
+    patch: Partial<PageNode>
+): Promise<PageNode> {
+    if ((patch as any).status === 'published') {
         const project = await getProject(user, projectId);
         if (project.workflow?.enabled && project.workflow?.requireReview) {
             const isAdmin = Array.isArray(user.roles) && user.roles.includes('admin');
@@ -197,24 +311,44 @@ export async function updatePage(
     }
 
     const current = await getPageWithAuth(user, projectId, id);
-    const updated = { ...current, ...patch };
+    const updated = { ...current, ...patch } as PageNode;
 
-    if (updated.templateId) {
-        const template = await getTemplate(projectId, updated.templateId);
-        const validation = validatePageAgainstTemplate(updated, template);
-        if (!validation.valid) {
-            const msg = validation.issues.map(i => `${i.path}: ${i.message}`).join('; ');
-            throw new Error(`Page validation failed: ${msg}`);
+    if (updated.type === 'static' || updated.type === 'collection') {
+        const templateId = (updated as StaticPage | CollectionPage).templateId;
+        if (templateId) {
+            const template = await getTemplate(projectId, templateId);
+            const validation = validatePageAgainstTemplate(
+                { ...updated, templateId, fields: (updated as StaticPage).fields } as any,
+                template
+            );
+            if (!validation.valid) {
+                const msg = validation.issues.map(i => `${i.path}: ${i.message}`).join('; ');
+                throw new Error(`Page validation failed: ${msg}`);
+            }
         }
     }
 
     if (patch.slug !== undefined && patch.slug !== current.slug) {
-        await assertSlugUnique(projectId, patch.slug, id);
+        const isRoot = (updated.parentId ?? null) === null;
+        if (!isUrlSafeSlug(updated.slug, isRoot)) {
+            throw new Error('Slug must be URL-safe (no spaces or slashes).');
+        }
+        await assertSlugUniqueAmongSiblings(
+            projectId,
+            updated.parentId ?? null,
+            updated.slug,
+            id
+        );
     }
     const newParentId = patch.parentId !== undefined ? patch.parentId : updated.parentId;
     if (newParentId && newParentId !== current.parentId) {
         await getPage(projectId, newParentId);
         await assertNoParentCycle(projectId, id, newParentId);
+    }
+
+    if ((patch as Partial<CollectionPage>).modelId !== undefined && updated.type === 'collection') {
+        const model = await getModelSchemaForProject(projectId, (updated as CollectionPage).modelId);
+        if (!model) throw new Error(`Model "${(updated as CollectionPage).modelId}" not found.`);
     }
 
     triggerEvent('page.beforeUpdate', { page: updated, user, projectId });
@@ -224,15 +358,20 @@ export async function updatePage(
     return updated;
 }
 
-export async function deletePage(projectId: string, user: User, id: string): Promise<void> {
+export async function deletePage(
+    projectId: string,
+    user: User,
+    id: string
+): Promise<void> {
     const current = await getPageWithAuth(user, projectId, id);
-
     const allPages = await loadAllPages(projectId);
-    const children = allPages.filter(p => p.parentId === id);
-    const storage = getProjectStorage(projectId);
-    for (const child of children) {
-        const updated = { ...child, parentId: undefined };
-        await putJson(storage, pageKey(child.id), updated);
+    const children = allPages.filter(p => (p.parentId ?? null) === id);
+    if (children.length > 0) {
+        const err = new Error(
+            'Cannot delete a page that has children. Move or delete the children first.'
+        ) as Error & { statusCode?: number };
+        err.statusCode = 409;
+        throw err;
     }
 
     triggerEvent('page.beforeDelete', { page: current, user, projectId });
@@ -251,19 +390,172 @@ export async function deletePage(projectId: string, user: User, id: string): Pro
     triggerEvent('page.afterDelete', { page: current, user, projectId });
 }
 
-export async function validatePageById(projectId: string, id: string): Promise<ValidationResult> {
-    const page = await getPage(projectId, id);
-    const template = await getTemplate(projectId, page.templateId);
-    return validatePageAgainstTemplate(page, template);
+export interface ReorderUpdate {
+    id: string;
+    parentId: string | null;
+    order: number;
 }
 
-export async function validateAllPages(projectId: string): Promise<ValidationResult[]> {
+export async function reorderPages(
+    projectId: string,
+    user: User,
+    updates: ReorderUpdate[]
+): Promise<PageNode[]> {
+    const project = await getProject(user, projectId);
+    assertUserCanAccessProject(user, project);
+
+    const storage = getProjectStorage(projectId);
+    const allPages = await loadAllPages(projectId);
+    const nodeMap = new Map(allPages.map(p => [p.id, p]));
+
+    for (const u of updates) {
+        const node = nodeMap.get(u.id);
+        if (!node) throw new Error(`Page "${u.id}" not found.`);
+        if (u.parentId) {
+            const parent = nodeMap.get(u.parentId);
+            if (!parent) throw new Error(`Parent "${u.parentId}" not found.`);
+            let cur: string | undefined = u.parentId;
+            const seen = new Set<string>([u.id]);
+            while (cur) {
+                if (seen.has(cur)) {
+                    throw new Error('Reorder would create a cycle.');
+                }
+                seen.add(cur);
+                const p = nodeMap.get(cur);
+                cur = p?.parentId ?? undefined;
+            }
+        }
+    }
+
+    const updatedNodes = allPages.map(p => {
+        const u = updates.find(x => x.id === p.id);
+        if (!u) return p;
+        return { ...p, parentId: u.parentId, order: u.order };
+    });
+
+    for (const node of updatedNodes) {
+        await putJson(storage, pageKey(node.id), node);
+    }
+    return updatedNodes;
+}
+
+async function getEntriesForResolver(
+    projectId: string,
+    modelId: string,
+    status?: PageStatus
+): Promise<Entry[]> {
+    const statusFilter = status ?? 'published';
+    return listEntriesForProject(projectId, modelId, {
+        status: statusFilter
+    });
+}
+
+export async function resolveAllUrls(projectId: string): Promise<ResolvedUrl[]> {
+    const nodes = await loadAllPages(projectId);
+    return resolveAllUrlsFromTree(
+        nodes,
+        getEntriesForResolver,
+        projectId
+    );
+}
+
+export async function getNavigation(
+    projectId: string,
+    options?: { depth?: number; rootId?: string | null }
+): Promise<NavigationNode[]> {
+    const nodes = await loadAllPages(projectId);
+    const nodeMap = buildNodeMap(nodes);
+    const childMap = buildChildMap(nodes);
+    return buildNavigationTree(nodes, nodeMap, childMap, options);
+}
+
+export async function resolveBreadcrumb(
+    projectId: string,
+    nodeId: string,
+    entryId?: string
+): Promise<{ url: string; breadcrumb: Array<{ label: string; url: string; nodeId: string; entryId?: string }> }> {
+    const nodes = await loadAllPages(projectId);
+    const nodeMap = buildNodeMap(nodes);
+    let entry: Entry | undefined;
+    if (entryId) {
+        const node = nodeMap.get(nodeId);
+        if (node?.type === 'collection') {
+            const modelId = (node as CollectionPage).modelId;
+            entry = (await listEntriesForProject(projectId, modelId, { status: 'published' })).find(
+                e => e.id === entryId
+            ) ?? undefined;
+        }
+    }
+    return resolveBreadcrumbFromTree(nodeId, nodeMap, entry);
+}
+
+export async function resolveEntryUrl(
+    projectId: string,
+    entryId: string,
+    modelId: string
+): Promise<string | null> {
+    const nodes = await loadAllPages(projectId);
+    const nodeMap = buildNodeMap(nodes);
+    const collectionPage = nodes.find(
+        (n): n is CollectionPage =>
+            n.type === 'collection' && n.modelId === modelId
+    );
+    if (!collectionPage) return null;
+
+    const entries = await listEntriesForProject(projectId, modelId, {
+        status: collectionPage.entryStatus ?? 'published'
+    });
+    const entry = entries.find(e => e.id === entryId);
+    if (!entry) return null;
+
+    const pattern = collectionPage.urlPattern ?? undefined;
+    if (!pattern) return null;
+
+    const prefix = resolveNodePrefix(collectionPage.id, nodeMap);
+    const segment = interpolatePattern(pattern, entry);
+    if (!segment) return null;
+    return prefix ? `${prefix}/${segment}` : `/${segment}`;
+}
+
+export async function validatePageById(
+    projectId: string,
+    id: string
+): Promise<ValidationResult> {
+    const page = await getPage(projectId, id);
+    if (page.type === 'folder') {
+        return { valid: true, issues: [] };
+    }
+    const template = await getTemplate(
+        projectId,
+        (page as StaticPage | CollectionPage).templateId
+    );
+    return validatePageAgainstTemplate(
+        { ...page, templateId: (page as StaticPage).templateId, fields: (page as StaticPage).fields } as any,
+        template
+    );
+}
+
+export async function validateAllPages(
+    projectId: string
+): Promise<ValidationResult[]> {
     const pages = await loadAllPages(projectId);
     const results: ValidationResult[] = [];
     for (const page of pages) {
         try {
-            const template = await getTemplate(projectId, page.templateId);
-            results.push(validatePageAgainstTemplate(page, template));
+            if (page.type === 'folder') {
+                results.push({ valid: true, issues: [] });
+                continue;
+            }
+            const template = await getTemplate(
+                projectId,
+                (page as StaticPage | CollectionPage).templateId
+            );
+            results.push(
+                validatePageAgainstTemplate(
+                    { ...page, templateId: (page as StaticPage).templateId, fields: (page as StaticPage).fields } as any,
+                    template
+                )
+            );
         } catch {
             results.push({
                 valid: false,
@@ -271,7 +563,7 @@ export async function validateAllPages(projectId: string): Promise<ValidationRes
                     {
                         type: 'error',
                         code: 'PAGE_INVALID_TEMPLATE',
-                        message: `Template "${page.templateId}" not found.`,
+                        message: `Template "${(page as StaticPage).templateId}" not found.`,
                         path: 'templateId'
                     }
                 ]

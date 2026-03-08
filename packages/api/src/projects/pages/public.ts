@@ -1,8 +1,14 @@
 import { Router } from 'express';
 import { listPages, getPage, getPageBySlug } from '@moteur/core/pages.js';
+import type { PageNode } from '@moteur/types/Page.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });
+
+function isPublishedContent(page: PageNode): boolean {
+    if (page.type === 'folder') return false;
+    return (page as { status?: string }).status === 'published';
+}
 
 router.get('/', async (req: any, res: any) => {
     const { projectId } = req.params;
@@ -27,7 +33,7 @@ router.get('/by-slug/:slug', async (req: any, res: any) => {
     if (!projectId || !slug) return res.status(400).json({ error: 'Missing projectId or slug' });
     try {
         const page = await getPageBySlug(projectId, slug);
-        if (!page || page.status !== 'published')
+        if (!page || !isPublishedContent(page))
             return res.status(404).json({ error: 'Page not found' });
         return res.json(page);
     } catch (err: any) {
@@ -40,7 +46,7 @@ router.get('/:id', async (req: any, res: any) => {
     if (!projectId || !id) return res.status(400).json({ error: 'Missing projectId or id' });
     try {
         const page = await getPage(projectId, id);
-        if (page.status !== 'published') return res.status(404).json({ error: 'Page not found' });
+        if (!isPublishedContent(page)) return res.status(404).json({ error: 'Page not found' });
         return res.json(page);
     } catch (err: any) {
         return res.status(404).json({ error: err?.message ?? 'Page not found' });
