@@ -18,6 +18,13 @@ function getPublicMax(): number {
     return Number.isFinite(n) && n > 0 ? n : 1000;
 }
 
+function getFormsSubmitMax(): number {
+    const v = (process.env.API_RATE_LIMIT_FORMS_MAX ?? '').trim();
+    if (v === '' || v === '0') return 60;
+    const n = parseInt(v, 10);
+    return Number.isFinite(n) && n > 0 ? n : 60;
+}
+
 /**
  * Rate limiter for admin API (e.g. /admin/*).
  * Key: IP. Default: high limit (no practical limit); set API_RATE_LIMIT_ADMIN_MAX to enforce.
@@ -58,3 +65,24 @@ export function publicRateLimitGate(req: Request, res: Response, next: NextFunct
     }
     publicRateLimiter(req, res, next);
 }
+
+const FORMS_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+/**
+ * Rate limiter for form submissions. Key: projectId + formId (per form, not per IP).
+ * Default: 60 submissions per 15 min per form. Env: API_RATE_LIMIT_FORMS_MAX.
+ * Apply only to POST /projects/:projectId/forms/:formId/submit.
+ */
+export const formsSubmitRateLimiter = rateLimit({
+    windowMs: FORMS_WINDOW_MS,
+    max: getFormsSubmitMax(),
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: Request) => {
+        const p = (req as any).params;
+        const projectId = p?.projectId ?? '';
+        const formId = p?.formId ?? '';
+        return `forms:${projectId}:${formId}`;
+    },
+    message: { error: 'Too many submissions. Please try again later.' }
+});

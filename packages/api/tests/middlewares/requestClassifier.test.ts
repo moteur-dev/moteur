@@ -46,6 +46,21 @@ describe('requestClassifier', () => {
         expect(res.body.projectId).toBe('bar');
     });
 
+    it('sets public and projectId for /projects/:id/forms', async () => {
+        const res = await request(app).get('/projects/site1/forms');
+        expect(res.body.type).toBe('public');
+        expect(res.body.projectId).toBe('site1');
+    });
+
+    it('sets public and projectId for /projects/:id/forms/:formId and submit', async () => {
+        const resGet = await request(app).get('/projects/site1/forms/contact');
+        expect(resGet.body.type).toBe('public');
+        expect(resGet.body.projectId).toBe('site1');
+        const resSubmit = await request(app).post('/projects/site1/forms/contact/submit');
+        expect(resSubmit.body.type).toBe('public');
+        expect(resSubmit.body.projectId).toBe('site1');
+    });
+
     it('sets null type for non-admin non-public path', async () => {
         const res = await request(app).get('/api/auth/login');
         expect(res.body.type).toBeNull();

@@ -113,6 +113,17 @@ Unauthenticated. Navigations are **independent of the page tree**: named, ordere
 
 ---
 
+## 🗒 Public — Forms
+
+Unauthenticated, project-scoped. Used by frontend form components.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects/:projectId/forms/:formId` | Get public form metadata (fields, labels, successMessage). Omits actions, notifications, recaptcha. 403 if inactive. |
+| POST | `/projects/:projectId/forms/:formId/submit` | Submit a form. Accepts JSON or urlencoded body. Honeypot: include a `_honeypot` field (must be empty for real users). Locale: pass as `_locale` in body or `?locale=` query param. Returns `{ success, submissionId, message, redirectUrl? }`. Rate limited: 60/15min per form (env: `API_RATE_LIMIT_FORMS_MAX`). |
+
+---
+
 ## 💬 Comments
 
 Stored per project. All require JWT + project access.
@@ -253,6 +264,23 @@ def verify_signature(secret: bytes, raw_body: bytes, signature_header: str) -> b
 ```
 
 **Retry schedule:** On non-2xx or network error, Moteur retries with exponential backoff: attempt 2 after 30s, 3 after 5min, 4 after 30min, 5 after 2hr. After 5 attempts the delivery is marked `failed` and can be retried manually via the API or Studio. Retries are in-process (`setTimeout`); they are lost on server restart.
+
+---
+
+## 🗒 Admin — Forms
+
+JWT + project access.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/projects/:projectId/forms` | List forms. Returns `{ forms }`. |
+| GET | `/admin/projects/:projectId/forms/:formId` | Get one form (full schema incl. actions, notifications). Returns `{ form }`. |
+| POST | `/admin/projects/:projectId/forms` | Create a form. Returns `{ form }`. 422 if validation fails. |
+| PATCH | `/admin/projects/:projectId/forms/:formId` | Update a form. Returns `{ form }`. |
+| DELETE | `/admin/projects/:projectId/forms/:formId` | Soft-delete. 204. |
+| GET | `/admin/projects/:projectId/forms/:formId/submissions` | List submissions. Query: `status?`, `limit?` (default 50). Returns `{ submissions }`. |
+| GET | `/admin/projects/:projectId/forms/:formId/submissions/:submissionId` | Get one submission. Returns `{ submission }`. |
+| DELETE | `/admin/projects/:projectId/forms/:formId/submissions/:submissionId` | Soft-delete. 204. |
 
 ---
 

@@ -10,6 +10,7 @@ import adminAssetsRouter from './assets/index.js';
 import adminAssetConfigRouter from './assetConfig.js';
 import adminNavigationsRouter from './navigations/index.js';
 import adminWebhooksRouter from './webhooks/index.js';
+import adminFormsRouter, { openapi as adminFormsSpec } from './forms/index.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -23,9 +24,16 @@ router.use('/:projectId/assets', adminAssetsRouter);
 router.use('/:projectId/asset-config', adminAssetConfigRouter);
 router.use('/:projectId/navigations', adminNavigationsRouter);
 router.use('/:projectId/webhooks', adminWebhooksRouter);
+router.use('/:projectId/forms', adminFormsRouter);
 
 export const adminSpecs = {
-    paths: mergePathSpecs(adminTemplatesSpec, adminPagesSpec, adminCollectionsSpec, adminApiKeySpec)
+    paths: mergePathSpecs(
+        adminTemplatesSpec,
+        adminPagesSpec,
+        adminCollectionsSpec,
+        adminApiKeySpec,
+        adminFormsSpec
+    )
 };
 
 export default router;

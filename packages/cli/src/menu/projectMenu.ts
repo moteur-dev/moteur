@@ -2,6 +2,9 @@ import inquirer from 'inquirer';
 import { listLayouts } from '@moteur/core/layouts.js';
 import { showLayoutMenu } from './layoutMenu.js';
 import { showModelSchemasMenu } from './modelsMenu.js';
+import { showFormsMenu } from './formsMenu.js';
+import { showSubmissionsMenu } from './submissionsMenu.js';
+import { formSelectPrompt } from '../utils/formSelectPrompt.js';
 import { patchProjectCommand, patchProjectJSONCommand } from '../commands/projects.js';
 import { showWelcomeBanner } from '../utils/showWelcomeBanner.js';
 import { User } from '@moteur/types/User.js';
@@ -22,6 +25,8 @@ export async function showProjectMenu(projectId: string) {
                     { name: '📄 View layouts', value: 'layouts' },
                     { name: '📁 View structures', value: 'structures' },
                     { name: '📦 View models', value: 'models' },
+                    { name: '🗒 View forms', value: 'forms' },
+                    { name: '📥 View submissions', value: 'submissions' },
                     new inquirer.Separator(),
                     { name: '🛠️ Edit project settings (Interactive)', value: 'settings' },
                     { name: '📝 Edit project settings (JSON)', value: 'settings-json' },
@@ -62,8 +67,16 @@ export async function showProjectMenu(projectId: string) {
                 break;
             }
             case 'models':
-                await showModelSchemasMenu(projectId); // <== Go to the model menu
+                await showModelSchemasMenu(projectId);
                 break;
+            case 'forms':
+                await showFormsMenu(projectId);
+                break;
+            case 'submissions': {
+                const formId = await formSelectPrompt(user, projectId);
+                if (formId) await showSubmissionsMenu(projectId, formId);
+                break;
+            }
             case 'settings': {
                 await patchProjectCommand({ id: projectId });
                 break;

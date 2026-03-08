@@ -13,6 +13,8 @@ import * as Navigations from './navigations.js';
 import * as ProjectApiKey from './projectApiKey.js';
 import * as Assets from './assets/assetService.js';
 import * as Webhooks from './webhooks/webhookService.js';
+import * as Forms from './forms.js';
+import * as FormSubmissions from './formSubmissions.js';
 
 import type { MoteurAPI } from './MoteurAPI.js';
 
@@ -28,6 +30,15 @@ import './plugins/S3StorageAdapter.js';
 
 import './fields/index.js';
 import './assets/index.js';
+
+export * from './forms.js';
+export {
+    listSubmissions,
+    getSubmission,
+    deleteSubmission,
+    createSubmission,
+    type ListSubmissionsOptions
+} from './formSubmissions.js';
 
 export const Moteur: MoteurAPI = {
     projects: Projects,
@@ -105,6 +116,20 @@ export const Moteur: MoteurAPI = {
         getLog: Webhooks.getDeliveryLog,
         retryDelivery: Webhooks.retryDelivery,
         dispatch: Webhooks.dispatch
+    },
+    forms: {
+        list: Forms.listForms,
+        get: Forms.getForm,
+        getForProject: Forms.getFormForProject,
+        create: Forms.createForm,
+        update: Forms.updateForm,
+        delete: Forms.deleteForm
+    },
+    formSubmissions: {
+        list: FormSubmissions.listSubmissions,
+        get: FormSubmissions.getSubmission,
+        delete: FormSubmissions.deleteSubmission,
+        create: FormSubmissions.createSubmission
     }
 };
 

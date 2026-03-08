@@ -10,17 +10,23 @@ import { normalizeType } from './utils/normalizeType.js';
     html: htmlRenderer
 };*/
 
+const isTestEnv = (): boolean => process.env.NODE_ENV === 'test' || process.env.VITEST === 'true';
+
 export function listBlocks(projectId?: string): Record<string, BlockSchema> {
     const registry: Record<string, BlockSchema> = {};
     const namespaces = ['core'];
 
-    console.log(`Loading blocks for project: ${projectId || 'all'}`);
+    if (!isTestEnv()) {
+        console.log(`Loading blocks for project: ${projectId || 'all'}`);
+    }
 
     for (const namespace of namespaces) {
         const root = path.join(storageConfig.dataRoot, 'data', namespace, 'blocks');
 
         if (!fs.existsSync(root)) {
-            console.warn(`Blocks directory not found for namespace: ${namespace}`);
+            if (!isTestEnv()) {
+                console.warn(`Blocks directory not found for namespace: ${namespace}`);
+            }
             continue;
         }
 
@@ -33,7 +39,9 @@ export function listBlocks(projectId?: string): Record<string, BlockSchema> {
                     const schema = JSON.parse(content) as BlockSchema;
 
                     if (!schema || !schema.type) {
-                        console.warn(`Invalid schema in file: ${file} - ${schema?.type}`);
+                        if (!isTestEnv()) {
+                            console.warn(`Invalid schema in file: ${file} - ${schema?.type}`);
+                        }
                         continue;
                     }
 
@@ -41,11 +49,15 @@ export function listBlocks(projectId?: string): Record<string, BlockSchema> {
                     const key = `${namespace}/${normalizeType(schema.type)}`;
                     registry[key] = schema;
                 } catch (err) {
-                    console.error(`Failed to process file: ${file}`, err);
+                    if (!isTestEnv()) {
+                        console.error(`Failed to process file: ${file}`, err);
+                    }
                 }
             }
         } catch (err) {
-            console.error(`Failed to load blocks from namespace: ${namespace}`, err);
+            if (!isTestEnv()) {
+                console.error(`Failed to load blocks from namespace: ${namespace}`, err);
+            }
         }
     }
 

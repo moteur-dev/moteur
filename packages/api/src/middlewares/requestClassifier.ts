@@ -21,10 +21,10 @@ export function requestClassifier(req: Request, res: Response, next: NextFunctio
         return;
     }
 
-    // Public API: project-scoped read endpoints (collections, pages, templates)
-    // Pattern: .../projects/:projectId/collections/... or .../projects/:projectId/pages or .../projects/:projectId/templates
+    // Public API: project-scoped read endpoints (collections, pages, templates, forms)
+    // Pattern: .../projects/:projectId/collections/... or .../projects/:projectId/pages or .../projects/:projectId/templates or .../projects/:projectId/forms
     const projectsMatch = path.match(
-        /\/projects\/([^/]+)(?:\/(collections|pages|templates))(?:\/|$)/
+        /\/projects\/([^/]+)(?:\/(collections|pages|templates|forms))(?:\/|$)/
     );
     if (projectsMatch) {
         const projectId = projectsMatch[1];

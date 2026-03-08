@@ -26,6 +26,7 @@ import publicPagesRouter, { openapi as publicPagesSpec } from './pages/public.js
 import pageOutputsRouter, { openapi as pageOutputsSpec } from './pageOutputs.js';
 import navigationsPublicRouter, { openapi as navigationsPublicSpec } from './navigations/public.js';
 import collectionsPublicRouter, { openapi as collectionsPublicSpec } from './collections/public.js';
+import formsPublicRouter, { openapi as formsPublicSpec } from './forms/public.js';
 import { optionalAuth, apiKeyAuth, requireCollectionAuth } from '../middlewares/auth.js';
 
 const router: Router = Router();
@@ -42,6 +43,7 @@ router.use('/:projectId/templates', publicTemplatesRouter);
 router.use('/:projectId/pages', publicPagesRouter);
 router.use('/:projectId', pageOutputsRouter);
 router.use('/:projectId/navigations', navigationsPublicRouter);
+router.use('/:projectId/forms', formsPublicRouter);
 router.use(
     '/:projectId/collections',
     optionalAuth,
@@ -72,7 +74,8 @@ export const projectsSpecs = {
         publicPagesSpec,
         pageOutputsSpec,
         navigationsPublicSpec,
-        collectionsPublicSpec
+        collectionsPublicSpec,
+        formsPublicSpec
     ),
     schemas: {
         ...createSchemas,

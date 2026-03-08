@@ -26,6 +26,8 @@ import './commands/structures.js';
 import './commands/fields.js';
 import './commands/blocks.js';
 import './commands/entries.js';
+import './commands/forms.js';
+import './commands/submissions.js';
 import './commands/templates.js';
 import './commands/pages.js';
 import './commands/navigations.js';
