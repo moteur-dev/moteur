@@ -7,6 +7,7 @@ vi.mock('@moteur/core/pages.js', () => ({
     createPage: vi.fn(),
     updatePage: vi.fn(),
     deletePage: vi.fn(),
+    resolveAllUrls: vi.fn(),
     validatePageById: vi.fn(),
     validateAllPages: vi.fn()
 }));
@@ -34,6 +35,7 @@ import {
     createPageCommand,
     patchPageCommand,
     deletePageCommand,
+    urlsPageCommand,
     validatePageCommand
 } from '../../src/commands/pages.js';
 import {
@@ -43,6 +45,7 @@ import {
     createPage,
     updatePage,
     deletePage,
+    resolveAllUrls,
     validatePageById,
     validateAllPages
 } from '@moteur/core/pages.js';
@@ -199,5 +202,26 @@ describe('pages commands', () => {
         await validatePageCommand({ projectId: 'testProject', quiet: false });
 
         expect(validateAllPages).toHaveBeenCalledWith('testProject');
+    });
+
+    it('urlsPageCommand calls resolveAllUrls and outputs URLs', async () => {
+        (resolveAllUrls as vi.Mock).mockResolvedValue([
+            { url: '/', nodeId: 'home', nodeType: 'static' },
+            { url: '/about', nodeId: 'about', nodeType: 'static' }
+        ]);
+
+        await urlsPageCommand({ projectId: 'testProject', quiet: false });
+
+        expect(resolveAllUrls).toHaveBeenCalledWith('testProject');
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Resolved URLs'));
+    });
+
+    it('urlsPageCommand with --sitemap outputs XML', async () => {
+        (resolveAllUrls as vi.Mock).mockResolvedValue([{ url: '/', sitemapInclude: true }]);
+
+        await urlsPageCommand({ projectId: 'testProject', sitemap: true });
+
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('<?xml'));
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('<urlset'));
     });
 });
