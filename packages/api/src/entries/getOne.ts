@@ -4,6 +4,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import { getEntry } from '@moteur/core/entries.js';
 import { getModelSchema } from '@moteur/core/models.js';
 import { resolveEntryAssets } from '@moteur/core/assets/assetResolver.js';
+import { resolveEntryUrl } from '@moteur/core/pages.js';
 import { requireProjectAccess } from '../middlewares/auth.js';
 
 const router: Router = Router({ mergeParams: true });
@@ -24,7 +25,12 @@ router.get('/:entryId', requireProjectAccess, async (req: any, res: any) => {
             const schema = await getModelSchema(req.user!, projectId, modelId);
             entry = await resolveEntryAssets(projectId, entry, schema);
         }
-        return res.json({ entry });
+        let resolvedUrl: string | null | undefined;
+        if (req.query.resolveUrl === '1') {
+            resolvedUrl = await resolveEntryUrl(projectId, entryId, modelId);
+        }
+        const payload = { ...entry, ...(resolvedUrl != null && { resolvedUrl: resolvedUrl ?? undefined }) };
+        return res.json({ entry: payload });
     } catch (err: any) {
         return res.status(500).json({ error: err.message });
     }

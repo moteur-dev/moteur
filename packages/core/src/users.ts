@@ -108,6 +108,34 @@ export function addProjectToUser(userId: string, projectId: string): void {
 }
 
 /**
+ * Remove a project ID from a single user's projects array (e.g. when user is removed from project.users).
+ */
+export function removeProjectFromUser(userId: string, projectId: string): void {
+    if (!userId || !projectId) return;
+    const filePath = getUsersFilePath();
+    let users: User[];
+    try {
+        const data = fs.readFileSync(filePath, 'utf-8');
+        users = JSON.parse(data);
+    } catch {
+        return;
+    }
+    const index = users.findIndex(u => u.id === userId);
+    if (index === -1) return;
+    const u = users[index];
+    const projects = (u.projects ?? []).filter(id => id !== projectId);
+    if (projects.length === (u.projects?.length ?? 0)) return;
+    users = users.slice();
+    users[index] = { ...u, projects };
+    try {
+        writeJsonAtomic(filePath, users);
+    } catch {
+        // ignore
+    }
+    cachedUsers = null;
+}
+
+/**
  * Remove a project ID from every user's projects array (e.g. after project delete).
  * Keeps user.projects in sync so orphan links are not left in users.json.
  */

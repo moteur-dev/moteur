@@ -82,7 +82,20 @@ Create and edit blueprints via the **Blueprints** section in the Studio or the R
 
 ### Templates & Pages
 - **Templates** (page templates) define the schema for a page: id, label, description, and **fields**. They are project-scoped.
-- **Pages** are content instances created from a template: templateId, label, slug, optional parent, status, and field values. Use **template blueprints** to create templates from presets (e.g. Landing, Article).
+- **Pages** are organized as a **typed page tree**:
+  - **Static pages**: authored content, one URL each; created from a template (templateId, label, slug, parent, status, fields).
+  - **Collection pages**: bound to a **model**; they have an index URL and generate one URL per published entry using a **URL pattern** (e.g. `[post.slug]`). Use **template blueprints** for the index template and set the model’s **urlPattern** (or override on the node).
+  - **Folder nodes**: structural grouping only (label, slug, parent); no content, no URL.
+- The tree drives **sitemap** generation, **navigation** output, **breadcrumbs**, and URL resolution. Public endpoints: `GET /projects/:projectId/sitemap.xml`, `sitemap.json`, `navigation`, `urls`, `breadcrumb`. See [REST API](docs/REST%20API.md) and [Developer API](docs/Developer%20API.md).
+
+### Navigations
+**Navigations** are independent of the page tree: named, ordered, nested menus (e.g. Header, Footer, Mobile). Each navigation has a **handle** (URL-safe, unique per project) used to fetch it in the public API. **Items** can link to:
+- **Pages** (by `pageId`): URL is resolved at read time from the page tree.
+- **Custom URLs**: any valid URL (`/path`, `https://...`, `mailto:`, `tel:`, `#anchor`).
+- **Assets** (by `assetId`): URL is resolved from the asset’s stored URL.
+- **None**: the item acts as a dropdown parent with no destination.
+
+Items support **custom fields** via the navigation’s **itemSchema** (same field type system as models). Resolution never throws: missing page or asset references yield `url: undefined`. Public: `GET /projects/:projectId/navigations` (all resolved) and `GET /projects/:projectId/navigations/:handle`. See [REST API](docs/REST%20API.md) and [Developer API](docs/Developer%20API.md).
 
 ### Layouts & Blocks
 - **Layouts** are ordered lists of **blocks** (with optional metadata). They define how content is composed (e.g. hero, sections, footer).

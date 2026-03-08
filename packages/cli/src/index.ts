@@ -28,6 +28,7 @@ import './commands/blocks.js';
 import './commands/entries.js';
 import './commands/templates.js';
 import './commands/pages.js';
+import './commands/navigations.js';
 import './commands/comments.js';
 import './commands/seed.js';
 import './commands/assets.js';

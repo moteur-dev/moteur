@@ -63,3 +63,5 @@ export function pageKey(pageId: string): string {
 export function pageListPrefix(): string {
     return 'pages/';
 }
+
+export const NAVIGATIONS_KEY = 'navigations.json';

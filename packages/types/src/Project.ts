@@ -34,6 +34,9 @@ export interface ProjectSchema {
         requireReview: boolean; // if true, authors cannot publish without approval; admins can always bypass
     };
 
+    /** Base URL for the site (e.g. https://example.com). Used for sitemap <loc>; if absent, sitemap uses path-only URLs. */
+    siteUrl?: string;
+
     /** Project API key (one per project). Raw key is never stored; only hash and prefix. */
     apiKey?: {
         hash: string;

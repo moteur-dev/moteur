@@ -84,6 +84,33 @@ Named views of project data for external consumers. Authenticate with **project 
 
 **Reference resolution:** Per resource, `resolve: 0 | 1 | 2` controls how deep reference-like values (`{ id, type }`) in entry data are expanded.
 
+**Entry URL resolution:** Add `?resolveUrl=1` to entry list or get-one endpoints (collections or project models) to include a computed **`resolvedUrl`** on each entry when a collection page is bound to that model and has a URL pattern. Never stored.
+
+---
+
+## 🌐 Public — Page outputs (sitemap, navigation, urls, breadcrumb)
+
+Unauthenticated, project-scoped. Used by frontends and static site generators.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects/:projectId/sitemap.xml` | XML sitemap. Includes all resolved URLs with `sitemapInclude`; collection entries expanded when `sitemapIncludeEntries` is true. Uses `project.siteUrl` as base for `<loc>` if set; otherwise path-only. |
+| GET | `/projects/:projectId/sitemap.json` | Same as sitemap.xml but JSON array of `ResolvedUrl[]` (sitemap-included only). |
+| GET | `/projects/:projectId/navigation` | Navigation tree. Query: `depth?`, `rootId?`. Returns `NavigationNode[]` (only `navInclude` nodes; folders only if they have nav-included descendants). |
+| GET | `/projects/:projectId/urls` | Flat list of all resolved URLs (static + collection-expanded). |
+| GET | `/projects/:projectId/breadcrumb` | Query: **`pageId`** (required), `entryId?`. Returns `{ url, breadcrumb: [{ label, url, nodeId, entryId? }] }` from root to current. |
+
+---
+
+## 🧭 Public — Navigations
+
+Unauthenticated. Navigations are **independent of the page tree**: named, ordered, nested menus (e.g. Header, Footer). Items can link to pages, custom URLs, assets, or act as dropdown parents. Resolution happens at read time; page and asset URLs are hydrated. Missing page/asset references do not fail the request — the item’s `url` is `undefined`.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects/:projectId/navigations` | All navigations, fully resolved (`ResolvedNavigation[]`). |
+| GET | `/projects/:projectId/navigations/:handle` | One navigation by **handle** (e.g. `header`, `footer`). Returns `ResolvedNavigation`. 404 if handle not found. |
+
 ---
 
 ## 💬 Comments
@@ -196,6 +223,39 @@ JWT + project access. CRUD for API collections (define which models/pages and fi
 
 ---
 
+## 📄 Admin — Pages
+
+JWT + project access. Pages are a **typed tree**: **static** (authored content), **collection** (bound to a model, N URLs per entries), **folder** (structure only). List returns a flat array of `PageNode`; client builds tree from `parentId` and `order`.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/projects/:projectId/pages` | List all page nodes. Query: `templateId?`, `parentId?`, `status?` (draft \| published), `type?` (static \| collection \| folder). |
+| POST | `/admin/projects/:projectId/pages` | Create. Body: `type`, `label`, `slug`; for static/collection: `templateId`; for collection: `modelId`; optional `parentId`, `urlPattern`, `navInclude`, `sitemapInclude`, etc. Returns `PageNode`. 409 if slug conflict among siblings; 422 if validation fails (cycle, unknown template/model). |
+| GET | `/admin/projects/:projectId/pages/:id` | Get one. |
+| PATCH | `/admin/projects/:projectId/pages/:id` | Update. Same validations as create. |
+| DELETE | `/admin/projects/:projectId/pages/:id` | Soft-delete. **409** if node has children (move or delete children first). 204 on success. |
+| POST | `/admin/projects/:projectId/pages/reorder` | Batch reorder. Body: `[{ id, parentId, order }]`. Returns updated `PageNode[]`. Used by Studio drag-and-drop. |
+| PATCH | `/admin/projects/:projectId/pages/:id/status` | Set status. Body: `{ status: 'draft' | 'published' }`. |
+| POST | `/admin/projects/:projectId/pages/:id/submit-review` | Submit for review. |
+| POST | `/admin/projects/:projectId/pages/validate-all` | Validate all pages. |
+| POST | `/admin/projects/:projectId/pages/:id/validate` | Validate one page. |
+
+---
+
+## 🧭 Admin — Navigations
+
+JWT + project access. Navigations are named menus with nested items; items link to pages, custom URLs, assets, or have no destination (dropdown parent). Handle is URL-safe and unique per project.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/projects/:projectId/navigations` | List all navigations. Returns `Navigation[]`. |
+| POST | `/admin/projects/:projectId/navigations` | Create. Body: `{ name, handle, maxDepth?, itemSchema?, items? }`. **409** if handle exists. **422** if validation fails (depth, pageId/assetId not found, handle not URL-safe). |
+| GET | `/admin/projects/:projectId/navigations/:id` | Get one. |
+| PATCH | `/admin/projects/:projectId/navigations/:id` | Update. **422** if new `maxDepth` is lower than current deepest item depth (never truncate). |
+| DELETE | `/admin/projects/:projectId/navigations/:id` | Delete. 204. |
+
+---
+
 ## 🗃️ Models
 
 Under a project. JWT + project access. Path param: `projectId`, `modelId`.
@@ -205,7 +265,7 @@ Under a project. JWT + project access. Path param: `projectId`, `modelId`.
 | GET | `/projects/:projectId/models` | List model schemas. Returns `{ models }`. |
 | GET | `/projects/:projectId/models/:modelId` | Get one. Returns `{ model }`. |
 | POST | `/projects/:projectId/models` | Create. Body: full model schema, or **blueprintId** (model blueprint id) plus optional overrides (e.g. id, label). Returns created model. |
-| PATCH | `/projects/:projectId/models/:modelId` | Update. Returns `{ model }`. |
+| PATCH | `/projects/:projectId/models/:modelId` | Update. Body may include **`urlPattern`** (e.g. `[post.slug]`) for collection page URL generation. Returns updated model; if `urlPattern` was sent and any `[field.path]` reference does not exist on the model, response includes **`urlPatternWarnings`** (array of strings). Validation is warning-only. |
 | DELETE | `/projects/:projectId/models/:modelId` | Delete. |
 
 ---
@@ -216,8 +276,8 @@ Under a project and model. JWT + project access. Path param: `projectId`, `model
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/projects/:projectId/models/:modelId/entries` | List entries. Returns `{ entries }`. |
-| GET | `/projects/:projectId/models/:modelId/entries/:entryId` | Get one. Returns `{ entry }`. |
+| GET | `/projects/:projectId/models/:modelId/entries` | List entries. Returns `{ entries }`. Query: **`?resolveUrl=1`** to add computed `resolvedUrl` when a collection page is bound to this model. |
+| GET | `/projects/:projectId/models/:modelId/entries/:entryId` | Get one. Returns `{ entry }`. Query: **`?resolveUrl=1`** to add computed `resolvedUrl`. |
 | POST | `/projects/:projectId/models/:modelId/entries` | Create. Returns created entry. |
 | PATCH | `/projects/:projectId/models/:modelId/entries/:entryId` | Update. Returns `{ entry }`. |
 | DELETE | `/projects/:projectId/models/:modelId/entries/:entryId` | Delete. |

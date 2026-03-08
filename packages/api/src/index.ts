@@ -44,6 +44,8 @@ import { onEvent } from '@moteur/core/utils/eventBus.js';
 
 // Load core so activity log plugin registers and writes activity on resource changes
 import '@moteur/core';
+// Ensure asset storage adapters (e.g. local) are registered before any asset routes run
+import '@moteur/core/assets/index.js';
 import { setVideoProvidersConfig } from '@moteur/core/assets/providerRegistry.js';
 
 if (process.env.MUX_TOKEN_ID && process.env.MUX_TOKEN_SECRET && process.env.MUX_WEBHOOK_SECRET) {

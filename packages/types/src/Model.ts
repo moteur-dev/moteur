@@ -21,6 +21,8 @@ export interface ModelSchema {
     fields: Record<string, Field>; // Field definitions
     modelType?: 'content' | 'userData' | 'taxonomy' | 'settings'; // Type of model
     optionsSchema?: Record<string, any>; // Additional config (e.g., versioning)
+    /** Default URL segment pattern for entries of this model. e.g. '[post.slug]', '[category.slug]/[post.slug]'. Used by CollectionPage unless overridden by urlPattern on the node. */
+    urlPattern?: string;
     meta?: {
         audit?: Audit;
     };

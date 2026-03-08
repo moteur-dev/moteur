@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { requireAdmin } from '../middlewares/auth.js';
-import { updateModelSchema } from '@moteur/core/models.js';
+import { updateModelSchema, validateModelUrlPattern } from '@moteur/core/models.js';
 import { validateModel } from '@moteur/core/validators/validateModel.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });
 
-router.patch('/:modelId', requireAdmin, (req: any, res: any) => {
+router.patch('/:modelId', requireAdmin, async (req: any, res: any) => {
     const { projectId, modelId } = req.params;
     if (!projectId || !modelId) {
         return res.status(400).json({ error: 'Missing projectId or modelId in path' });
@@ -18,8 +18,15 @@ router.patch('/:modelId', requireAdmin, (req: any, res: any) => {
     }
 
     try {
-        const model = updateModelSchema(req.user!, projectId, modelId, req.body);
-        return res.json(model);
+        const model = await updateModelSchema(req.user!, projectId, modelId, req.body);
+        const urlPatternWarnings =
+            req.body.urlPattern !== undefined
+                ? validateModelUrlPattern(model.urlPattern, model)
+                : undefined;
+        return res.json({
+            ...model,
+            ...(urlPatternWarnings?.length ? { urlPatternWarnings } : {})
+        });
     } catch (err: any) {
         return res.status(400).json({ error: err.message });
     }

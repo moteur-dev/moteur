@@ -23,6 +23,8 @@ import reviewsRouter, { openapi as reviewsSpec } from './reviews/index.js';
 import notificationsRouter, { openapi as notificationsSpec } from './notifications/index.js';
 import publicTemplatesRouter, { openapi as publicTemplatesSpec } from './templates/public.js';
 import publicPagesRouter, { openapi as publicPagesSpec } from './pages/public.js';
+import pageOutputsRouter, { openapi as pageOutputsSpec } from './pageOutputs.js';
+import navigationsPublicRouter, { openapi as navigationsPublicSpec } from './navigations/public.js';
 import collectionsPublicRouter, { openapi as collectionsPublicSpec } from './collections/public.js';
 import { optionalAuth, apiKeyAuth, requireCollectionAuth } from '../middlewares/auth.js';
 
@@ -38,6 +40,8 @@ router.use(presenceFormState);
 router.use(debug);
 router.use('/:projectId/templates', publicTemplatesRouter);
 router.use('/:projectId/pages', publicPagesRouter);
+router.use('/:projectId', pageOutputsRouter);
+router.use('/:projectId/navigations', navigationsPublicRouter);
 router.use(
     '/:projectId/collections',
     optionalAuth,
@@ -66,6 +70,8 @@ export const projectsSpecs = {
         notificationsSpec,
         publicTemplatesSpec,
         publicPagesSpec,
+        pageOutputsSpec,
+        navigationsPublicSpec,
         collectionsPublicSpec
     ),
     schemas: {

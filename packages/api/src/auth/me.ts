@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { requireAuth } from '../middlewares/auth.js';
-import { getDisplayProjectIds } from '@moteur/core/users.js';
-import { loadProjects } from '@moteur/core/projects.js';
+import { getProjectIdsForUser } from '@moteur/core/projects.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router();
@@ -13,8 +12,7 @@ router.get('/me', requireAuth, (req: any, res: any) => {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const existingProjectIds = loadProjects().map(p => p.id);
-    const projects = getDisplayProjectIds(user, existingProjectIds);
+    const projects = getProjectIdsForUser(user.id);
     const { passwordHash: _passwordHash, ...safeUser } = user;
     res.json({ user: { ...safeUser, projects } });
 });

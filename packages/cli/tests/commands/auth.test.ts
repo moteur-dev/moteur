@@ -2,16 +2,18 @@ import '../helpers/mockCliUser';
 
 vi.mock('@moteur/core/users.js', () => ({
     listUsers: vi.fn(),
-    getProjectUsers: vi.fn(),
-    createUser: vi.fn(),
-    getDisplayProjectIds: vi.fn(
-        (user: { projects?: string[] }, _existingIds: string[]) => user?.projects ?? []
-    )
+    createUser: vi.fn()
+}));
+
+vi.mock('@moteur/core/projects.js', () => ({
+    loadProjects: vi.fn(),
+    getProjectIdsForUser: vi.fn((userId: string) => (userId === 'u1' ? ['p1'] : userId === 'u2' ? ['site1'] : []))
 }));
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { listUsersCommand } from '../../src/commands/auth.js';
-import { listUsers, getProjectUsers } from '@moteur/core/users.js';
+import { listUsers } from '@moteur/core/users.js';
+import { loadProjects } from '@moteur/core/projects.js';
 
 describe('auth list command', () => {
     let logSpy: ReturnType<typeof vi.spyOn>;
@@ -78,7 +80,9 @@ describe('auth list command', () => {
     });
 
     it('listUsersCommand with --project filters by project', async () => {
-        (getProjectUsers as vi.Mock).mockReturnValue([
+        (loadProjects as vi.Mock).mockReturnValue([{ id: 'site1', users: ['u2'] }]);
+        (listUsers as vi.Mock).mockReturnValue([
+            { id: 'u1', email: 'a@test.com', isActive: true, roles: [], projects: [] },
             {
                 id: 'u2',
                 email: 'b@test.com',
@@ -90,8 +94,10 @@ describe('auth list command', () => {
 
         await listUsersCommand({ project: 'site1' });
 
-        expect(getProjectUsers).toHaveBeenCalledWith('site1');
-        expect(listUsers).not.toHaveBeenCalled();
+        expect(loadProjects).toHaveBeenCalled();
+        expect(listUsers).toHaveBeenCalled();
         expect(logSpy).toHaveBeenCalledWith('👤 Users:');
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('u2'));
+        expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('b@test.com'));
     });
 });

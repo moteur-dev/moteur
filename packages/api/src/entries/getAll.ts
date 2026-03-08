@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { listEntries } from '@moteur/core/entries.js';
 import { getModelSchema } from '@moteur/core/models.js';
 import { resolveEntryAssets } from '@moteur/core/assets/assetResolver.js';
+import { resolveEntryUrl } from '@moteur/core/pages.js';
 import type { OpenAPIV3 } from 'openapi-types';
 import { requireProjectAccess } from '../middlewares/auth.js';
 
@@ -19,6 +20,14 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
         if (req.query.resolveAssets === '1') {
             const schema = await getModelSchema(req.user!, projectId, modelId);
             entries = await Promise.all(entries.map(e => resolveEntryAssets(projectId, e, schema)));
+        }
+        if (req.query.resolveUrl === '1') {
+            entries = await Promise.all(
+                entries.map(async e => {
+                    const url = await resolveEntryUrl(projectId, e.id, modelId);
+                    return { ...e, ...(url != null && { resolvedUrl: url }) };
+                })
+            );
         }
         return res.json({ entries });
     } catch (err: any) {

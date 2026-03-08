@@ -123,18 +123,41 @@ The Moteur CLI allows you to manage projects, layouts, structures, blocks, and f
 
 ## 📃 Pages
 
+Pages are a typed tree: **static** (authored content), **collection** (bound to a model), **folder** (structure only). Use `--project=...` or `--projectId=...`.
+
 | Command                                                          | Description                                      |
 |------------------------------------------------------------------|--------------------------------------------------|
-| `pages list --project=site1`                                     | List all pages                                   |
-| `pages list --project=site1 --template=landing-page`              | List pages for a template                        |
-| `pages list --project=site1 --parent=home`                        | List child pages of a parent                     |
-| `pages get --project=site1 --id=page123`                         | Show the full page data                          |
+| `pages list --project=site1`                                     | List all page nodes (flat)                       |
+| `pages list --project=site1 --type=collection`                   | List only collection pages                       |
+| `pages list --project=site1 --template=landing-page`             | List pages for a template                        |
+| `pages list --project=site1 --parent=home`                       | List child pages of a parent                     |
+| `pages get --project=site1 --id=page123`                         | Show the full page node                          |
 | `pages get --project=site1 --slug=about-us`                      | Show page by slug                                |
-| `pages create --project=site1 [--file \| --data]`                | Create a new page                                |
-| `pages patch --project=site1 --id=page123 [--file \| --data]`    | Patch an existing page                            |
-| `pages delete --project=site1 --id=page123`                      | Move a page to the trash                         |
-| `pages validate --project=site1`                                  | Validate all pages in the project                |
-| `pages validate --project=site1 --id=page123`                     | Validate a single page                           |
+| `pages create --project=site1 --type=static --label="About" --slug=about --template=standard-page` | Create a static page                    |
+| `pages create --project=site1 --type=collection --label="Blog" --slug=blog --template=blog-index --model=post` | Create a collection page              |
+| `pages create --project=site1 --type=folder --label="Products" --slug=products` | Create a folder node                  |
+| `pages create --project=site1 [--file \| --data]`                | Create from JSON (include type, label, slug)      |
+| `pages patch --project=site1 --id=page123 [--file \| --data]`     | Patch an existing page                           |
+| `pages patch --project=site1 --id=page123 --nav-include=false`   | e.g. exclude from navigation                     |
+| `pages delete --project=site1 --id=page123`                     | Move a page to the trash (fails with 409 if it has children) |
+| `pages urls --project=site1`                                     | Print all resolved URLs (JSON with --json)       |
+| `pages urls --project=site1 --sitemap`                           | Print sitemap XML to stdout                      |
+| `pages validate --project=site1`                                 | Validate all pages in the project                |
+| `pages validate --project=site1 --id=page123`                    | Validate a single page                           |
+
+---
+
+## 🧭 Navigations
+
+Navigations are named, ordered, nested menus (e.g. Header, Footer). Items can link to pages, custom URLs, assets, or act as dropdown parents. Use `--project=...` or `--projectId=...`.
+
+| Command                                                          | Description                                      |
+|------------------------------------------------------------------|--------------------------------------------------|
+| `navigations list --project=site1`                               | List all navigations                             |
+| `navigations get --project=site1 --id=abc123`                    | Get a navigation by id                           |
+| `navigations get --project=site1 --handle=header`               | Get a navigation by handle                       |
+| `navigations create --project=site1 --name="Header" --handle=header` | Create a navigation (optional `--maxDepth=3`) |
+| `navigations delete --project=site1 --id=abc123`                  | Delete a navigation                              |
 
 ---
 

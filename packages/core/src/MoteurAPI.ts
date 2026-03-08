@@ -10,6 +10,7 @@ import type * as Notifications from './notifications';
 import type * as Templates from './templates';
 import type * as Pages from './pages';
 import type * as ApiCollections from './apiCollections';
+import type * as Navigations from './navigations';
 import type * as ProjectApiKey from './projectApiKey';
 import type * as Assets from './assets/assetService';
 
@@ -47,6 +48,15 @@ export interface MoteurAPI {
         create: typeof ApiCollections.createCollection;
         update: typeof ApiCollections.updateCollection;
         delete: typeof ApiCollections.deleteCollection;
+    };
+    navigations: {
+        list: typeof Navigations.listNavigations;
+        get: typeof Navigations.getNavigation;
+        getByHandle: typeof Navigations.getNavigationByHandle;
+        create: typeof Navigations.createNavigation;
+        update: typeof Navigations.updateNavigation;
+        delete: typeof Navigations.deleteNavigation;
+        resolve: typeof Navigations.resolveNavigation;
     };
     projectApiKey: {
         generate: typeof ProjectApiKey.generateKey;
