@@ -36,6 +36,7 @@ import {
 } from './pages/urlResolver.js';
 import { listEntriesForProject } from './entries.js';
 import type { Entry } from '@moteur/types/Model.js';
+import { dispatch as webhookDispatch } from './webhooks/webhookService.js';
 
 export type { ResolvedUrl, NavigationNode } from './pages/urlResolver.js';
 
@@ -344,6 +345,26 @@ export async function updatePage(
     const storage = getProjectStorage(projectId);
     await putJson(storage, pageKey(id), updated);
     triggerEvent('page.afterUpdate', { page: updated, user, projectId });
+
+    const pagePayload = (): { pageId: string; title: string; url: string; updatedBy: string } => ({
+        pageId: id,
+        title: updated.label,
+        url: updated.slug ? `/${updated.slug}` : '/',
+        updatedBy: user.id
+    });
+    try {
+        const currentStatus = (current as StaticPage | CollectionPage).status ?? 'draft';
+        const newStatus = (updated as StaticPage | CollectionPage).status ?? 'draft';
+        if (current.type === 'static' || current.type === 'collection') {
+            if (currentStatus !== 'published' && newStatus === 'published') {
+                webhookDispatch('page.published', pagePayload(), { projectId, source: 'api' });
+            } else if (currentStatus === 'published' && newStatus === 'draft') {
+                webhookDispatch('page.unpublished', pagePayload(), { projectId, source: 'api' });
+            }
+        }
+    } catch {
+        // never fail the operation
+    }
     return updated;
 }
 
@@ -373,6 +394,22 @@ export async function deletePage(projectId: string, user: User, id: string): Pro
     }
 
     triggerEvent('page.afterDelete', { page: current, user, projectId });
+
+    try {
+        const slug = current.slug ? `/${current.slug}` : '/';
+        webhookDispatch(
+            'page.deleted',
+            {
+                pageId: current.id,
+                title: current.label,
+                url: slug,
+                updatedBy: user.id
+            },
+            { projectId, source: 'api' }
+        );
+    } catch {
+        // never fail the operation
+    }
 }
 
 export interface ReorderUpdate {

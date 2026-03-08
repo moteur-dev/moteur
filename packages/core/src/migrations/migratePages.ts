@@ -48,7 +48,7 @@ function isLegacyPage(record: Page | PageNode): record is Page {
  */
 export async function migratePagesIfNeeded(
     storage: StorageAdapter,
-    projectId: string
+    _projectId: string
 ): Promise<boolean> {
     const raw = await storage.list(pageListPrefix());
     const ids = parsePageIds(raw);

@@ -13,6 +13,7 @@ import { COMMENTS_KEY } from './utils/storageKeys.js';
 import { log, toActivityEvent } from './activityLogger.js';
 import { triggerEvent } from './utils/eventBus.js';
 import { commentsConfig } from './config/commentsConfig.js';
+import { dispatch as webhookDispatch } from './webhooks/webhookService.js';
 
 function normalizeUserName(user: User): string {
     return user?.name ?? user?.id ?? 'Unknown';
@@ -79,6 +80,23 @@ export async function addComment(
             await triggerEvent('comment.added', { projectId, comment });
         } catch {
             // never break on emit failure
+        }
+        try {
+            if (input.resourceType === 'entry' && input.resourceId.includes('__')) {
+                const [modelId, entryId] = input.resourceId.split('__');
+                webhookDispatch(
+                    'comment.created',
+                    {
+                        commentId: comment.id,
+                        entryId,
+                        modelId,
+                        authorId: user.id
+                    },
+                    { projectId, source: 'api' }
+                );
+            }
+        } catch {
+            // never fail the operation
         }
         return comment;
     } catch (err) {

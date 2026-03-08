@@ -186,6 +186,76 @@ These endpoints are called by the video providers. They are **not** under `/admi
 
 ---
 
+## 🔗 Admin — Webhooks (outbound)
+
+JWT + project access. Outbound webhooks POST a signed JSON payload to your HTTPS endpoint when content events occur (entry published, asset deleted, review approved, etc.). Register an endpoint; Moteur delivers events asynchronously with retries.
+
+**Endpoints:**
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/projects/:projectId/webhooks` | List webhooks. Secrets redacted. Returns `Webhook[]`. |
+| POST | `/admin/projects/:projectId/webhooks` | Create. Body: `{ name, url, secret?, events?, filters?, headers?, enabled? }`. **Secret visible in this response only.** 422 if validation fails (e.g. URL not HTTPS). |
+| GET | `/admin/projects/:projectId/webhooks/:webhookId` | Get one. Secret redacted. |
+| PATCH | `/admin/projects/:projectId/webhooks/:webhookId` | Update. Secret redacted. 422 if validation fails. |
+| DELETE | `/admin/projects/:projectId/webhooks/:webhookId` | Delete. 204. |
+| POST | `/admin/projects/:projectId/webhooks/:webhookId/rotate-secret` | Rotate secret. Returns `{ secret: string }` (new plaintext, shown once). |
+| POST | `/admin/projects/:projectId/webhooks/:webhookId/test` | Send test ping. Returns `WebhookDelivery` (result of first attempt). |
+| GET | `/admin/projects/:projectId/webhooks/:webhookId/log` | Delivery log. Query: `limit?` (default 50), `offset?`. Returns `WebhookDelivery[]`. |
+| POST | `/admin/projects/:projectId/webhooks/:webhookId/log/:deliveryId/retry` | Retry a failed delivery. 204. 422 if delivery status is not `failed`. |
+
+**Payload envelope:** Every delivery sends a POST body with `Content-Type: application/json` and this shape:
+
+```json
+{
+  "id": "<delivery-uuid>",
+  "event": "entry.published",
+  "timestamp": "2025-03-08T12:00:00.000Z",
+  "projectId": "site1",
+  "environment": "production",
+  "source": "studio",
+  "data": { "entryId": "...", "modelId": "...", "status": "published", "updatedBy": "..." }
+}
+```
+
+Event types include: `entry.created`, `entry.updated`, `entry.published`, `entry.unpublished`, `entry.deleted`, `asset.created`, `asset.updated`, `asset.deleted`, `page.published`, `page.unpublished`, `page.deleted`, `review.submitted`, `review.approved`, `review.rejected`, `comment.created`, `form.submitted`. The `data` object shape depends on the event (see types in `@moteur/types/Webhook`).
+
+**Headers:** Each request includes:
+
+- `Content-Type: application/json`
+- `X-Moteur-Event`: event name
+- `X-Moteur-Delivery`: delivery id
+- `X-Moteur-Signature`: `sha256=<HMAC-SHA256(secret, rawBody)>`
+- `X-Moteur-Timestamp`: Unix timestamp (seconds)
+- Any custom headers configured on the webhook
+
+**Verifying the signature (consumer):** Use the webhook secret and the raw request body (string). Compute `HMAC-SHA256(secret, rawBody)` and compare with the value after `sha256=` in `X-Moteur-Signature` (timing-safe compare recommended).
+
+Node.js example:
+
+```js
+const crypto = require('crypto');
+function verifySignature(secret, rawBody, signatureHeader) {
+  const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBody).digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(signatureHeader), Buffer.from(expected));
+}
+```
+
+Python example:
+
+```py
+import hmac
+import hashlib
+
+def verify_signature(secret: bytes, raw_body: bytes, signature_header: str) -> bool:
+    expected = "sha256=" + hmac.new(secret, raw_body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(signature_header, expected)
+```
+
+**Retry schedule:** On non-2xx or network error, Moteur retries with exponential backoff: attempt 2 after 30s, 3 after 5min, 4 after 30min, 5 after 2hr. After 5 attempts the delivery is marked `failed` and can be retried manually via the API or Studio. Retries are in-process (`setTimeout`); they are lost on server restart.
+
+---
+
 ## 📊 Admin — Usage (request counts)
 
 JWT + admin only. Returns current request counts in two buckets: **admin** (global) and **public** (per project). Use for audit and future billing/limits.

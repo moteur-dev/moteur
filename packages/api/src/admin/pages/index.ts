@@ -1,3 +1,4 @@
+// Pre-existing type error: getPage returns PageNode (can be FolderPage without templateId). resolvePageAssets expects Page/StaticPage/CollectionPage. Fix as part of Pages v2 work.
 import { Router } from 'express';
 import {
     listPages,

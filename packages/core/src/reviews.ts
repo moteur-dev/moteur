@@ -14,6 +14,7 @@ import { triggerEvent } from './utils/eventBus.js';
 import { createNotification } from './notifications.js';
 import { sendReviewEmail } from './emailNotifier.js';
 import { getProjectUsers, getUserById } from './users.js';
+import { dispatch as webhookDispatch } from './webhooks/webhookService.js';
 
 function normalizeUserName(user: User): string {
     return user?.name ?? user?.id ?? 'Unknown';
@@ -94,6 +95,20 @@ export async function submitForReview(
             await triggerEvent('review.submitted', { projectId, review });
         } catch {
             // never break on emit failure
+        }
+        try {
+            webhookDispatch(
+                'review.submitted',
+                {
+                    reviewId: review.id,
+                    entryId,
+                    modelId,
+                    status: review.status
+                },
+                { projectId, source: 'api' }
+            );
+        } catch {
+            // never fail the operation
         }
         try {
             await triggerEvent('review.entryStatusChanged', {
@@ -193,6 +208,21 @@ export async function approveReview(
                 // never break on emit failure
             }
             try {
+                webhookDispatch(
+                    'review.approved',
+                    {
+                        reviewId: updated.id,
+                        entryId: review.entryId ?? '',
+                        modelId: review.modelId ?? '',
+                        status: updated.status,
+                        reviewedBy: user.id
+                    },
+                    { projectId, source: 'api' }
+                );
+            } catch {
+                // never fail the operation
+            }
+            try {
                 await triggerEvent('review.pageStatusChanged', {
                     projectId,
                     pageId: review.pageId,
@@ -233,6 +263,21 @@ export async function approveReview(
                 await triggerEvent('review.approved', { projectId, review: updated });
             } catch {
                 // never break on emit failure
+            }
+            try {
+                webhookDispatch(
+                    'review.approved',
+                    {
+                        reviewId: updated.id,
+                        entryId: review.entryId,
+                        modelId: review.modelId ?? '',
+                        status: updated.status,
+                        reviewedBy: user.id
+                    },
+                    { projectId, source: 'api' }
+                );
+            } catch {
+                // never fail the operation
             }
             try {
                 await triggerEvent('review.entryStatusChanged', {
@@ -333,6 +378,21 @@ export async function rejectReview(
                 // never break on emit failure
             }
             try {
+                webhookDispatch(
+                    'review.rejected',
+                    {
+                        reviewId: updated.id,
+                        entryId: review.entryId ?? '',
+                        modelId: review.modelId ?? '',
+                        status: updated.status,
+                        reviewedBy: user.id
+                    },
+                    { projectId, source: 'api' }
+                );
+            } catch {
+                // never fail the operation
+            }
+            try {
                 await triggerEvent('review.pageStatusChanged', {
                     projectId,
                     pageId: review.pageId,
@@ -365,6 +425,21 @@ export async function rejectReview(
                 await triggerEvent('review.rejected', { projectId, review: updated });
             } catch {
                 // never break on emit failure
+            }
+            try {
+                webhookDispatch(
+                    'review.rejected',
+                    {
+                        reviewId: updated.id,
+                        entryId: review.entryId,
+                        modelId: review.modelId ?? '',
+                        status: updated.status,
+                        reviewedBy: user.id
+                    },
+                    { projectId, source: 'api' }
+                );
+            } catch {
+                // never fail the operation
             }
             try {
                 await triggerEvent('review.entryStatusChanged', {

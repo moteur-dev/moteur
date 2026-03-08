@@ -13,6 +13,8 @@ import { getVariantDefinitions } from './defaultVariants.js';
 import { generateVariants } from './imageTransformer.js';
 import { detectVideoDuration } from './videoMetadata.js';
 import { isAllowedMime, getAssetTypeFromMime } from './allowedTypes.js';
+import { dispatch as webhookDispatch } from '../webhooks/webhookService.js';
+
 const DEFAULT_MAX_SIZE_MB = 50;
 
 export function resolveAssetUrl(asset: Asset): string {
@@ -159,6 +161,20 @@ export async function uploadAsset(
         if (idx >= 0) assets[idx] = { ...initial };
         await saveAssetsIndex(projectId, assets);
         triggerEvent('asset:uploaded', { asset: initial });
+        try {
+            webhookDispatch(
+                'asset.created',
+                {
+                    assetId: initial.id,
+                    filename: initial.filename,
+                    mimeType: initial.mimeType,
+                    updatedBy: user.id
+                },
+                { projectId, source: 'api' }
+            );
+        } catch {
+            // never fail the operation
+        }
         return initial;
     }
 
@@ -246,6 +262,20 @@ export async function uploadAsset(
     if (idx >= 0) assets[idx] = { ...initial };
     await saveAssetsIndex(projectId, assets);
     triggerEvent('asset:uploaded', { asset: initial });
+    try {
+        webhookDispatch(
+            'asset.created',
+            {
+                assetId: initial.id,
+                filename: initial.filename,
+                mimeType: initial.mimeType,
+                updatedBy: user.id
+            },
+            { projectId, source: 'api' }
+        );
+    } catch {
+        // never fail the operation
+    }
     return initial;
 }
 
@@ -516,6 +546,20 @@ export async function updateAsset(
     assets[idx] = updated;
     await saveAssetsIndex(projectId, assets);
     triggerEvent('asset:updated', { asset: updated });
+    try {
+        webhookDispatch(
+            'asset.updated',
+            {
+                assetId: updated.id,
+                filename: updated.filename,
+                mimeType: updated.mimeType,
+                updatedBy: user.id
+            },
+            { projectId, source: 'api' }
+        );
+    } catch {
+        // never fail the operation
+    }
     return updated;
 }
 
@@ -563,6 +607,20 @@ export async function deleteAsset(projectId: string, user: User, id: string): Pr
     assets.splice(idx, 1);
     await saveAssetsIndex(projectId, assets);
     triggerEvent('asset:deleted', { id: asset.id });
+    try {
+        webhookDispatch(
+            'asset.deleted',
+            {
+                assetId: asset.id,
+                filename: asset.filename,
+                mimeType: asset.mimeType,
+                updatedBy: user.id
+            },
+            { projectId, source: 'api' }
+        );
+    } catch {
+        // never fail the operation
+    }
 }
 
 export async function moveToFolder(

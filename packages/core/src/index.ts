@@ -12,6 +12,7 @@ import * as ApiCollections from './apiCollections.js';
 import * as Navigations from './navigations.js';
 import * as ProjectApiKey from './projectApiKey.js';
 import * as Assets from './assets/assetService.js';
+import * as Webhooks from './webhooks/webhookService.js';
 
 import type { MoteurAPI } from './MoteurAPI.js';
 
@@ -92,6 +93,18 @@ export const Moteur: MoteurAPI = {
         migrateProvider: Assets.migrateProvider,
         getConfig: Assets.getAssetConfig,
         updateConfig: Assets.updateAssetConfig
+    },
+    webhooks: {
+        list: Webhooks.listWebhooks,
+        get: Webhooks.getWebhook,
+        create: Webhooks.createWebhook,
+        update: Webhooks.updateWebhook,
+        delete: Webhooks.deleteWebhook,
+        rotateSecret: Webhooks.rotateSecret,
+        test: Webhooks.sendTestPing,
+        getLog: Webhooks.getDeliveryLog,
+        retryDelivery: Webhooks.retryDelivery,
+        dispatch: Webhooks.dispatch
     }
 };
 

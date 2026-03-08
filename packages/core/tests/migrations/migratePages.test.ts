@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { migratePagesIfNeeded } from '../../src/migrations/migratePages.js';
 import type { StorageAdapter } from '@moteur/types/Storage.js';
 import { pageKey, pageListPrefix } from '../../src/utils/storageKeys.js';
