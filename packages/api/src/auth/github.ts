@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import { generateJWT } from '@moteur/core/auth.js';
 import { User } from '@moteur/types/User.js';
 import type { OpenAPIV3 } from 'openapi-types';
+import { runOnboardingForNewUser } from './onboarding.js';
 
 const githubAuthRoute: Router = Router();
 
@@ -59,25 +60,33 @@ githubAuthRoute.get('/github/callback', async (req: any, res: any) => {
 
         let user = await getUserByEmail(email);
 
+        let isNewUser = false;
         if (!user) {
             user = {
-                id: `user:${randomUUID()}`, // or github: prefix if you want to track origin
+                id: `user:${randomUUID()}`,
                 isActive: true,
                 email,
                 name: profile.name || profile.login,
-                //avatar: profile.avatar_url,
                 roles: ['user'],
-                auth: {
-                    githubId: profile.id
-                },
+                auth: { githubId: profile.id },
                 projects: []
             };
             createUser(user as User);
+            isNewUser = true;
+        }
+
+        if (isNewUser) {
+            await runOnboardingForNewUser(user as User);
         }
 
         const token = generateJWT(user);
-
-        res.redirect(`/auth/success?token=${token}`);
+        const redirectBase =
+            process.env.AUTH_REDIRECT_AFTER_LOGIN?.trim() || '/auth/callback';
+        const next = typeof req.query.next === 'string' ? req.query.next : '';
+        const params = new URLSearchParams({ token });
+        if (next) params.set('next', next);
+        const sep = redirectBase.includes('?') ? '&' : '?';
+        res.redirect(`${redirectBase}${sep}${params.toString()}`);
     } catch (err) {
         console.error('GitHub callback error:', err);
         res.status(500).json({ error: 'GitHub login failed' });

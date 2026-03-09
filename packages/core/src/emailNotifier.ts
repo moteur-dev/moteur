@@ -8,6 +8,44 @@ function isEmailConfigured(): boolean {
     return !!(process.env.SMTP_HOST && process.env.SMTP_FROM);
 }
 
+/**
+ * Sends a welcome/onboarding email to a new user. Non-blocking and fail-safe.
+ * Uses same SMTP config as sendReviewEmail. If not configured, skips without throwing.
+ */
+export async function sendWelcomeEmail(user: User): Promise<void> {
+    if (!user?.email) return;
+    if (!isEmailConfigured()) return;
+
+    const name = user.name || user.email.split('@')[0] || 'there';
+    const subject = 'Welcome to Moteur';
+    const body = `Hi ${name},\n\nWelcome to Moteur! Your account is ready. You can sign in and explore your demo project.\n\nIf you have any questions, reach out to your team.\n\n— The Moteur team`;
+
+    try {
+        const nodemailer = await import('nodemailer').catch(() => null);
+        if (!nodemailer?.default) return;
+
+        const port = parseInt(process.env.SMTP_PORT || '587', 10);
+        const transporter = nodemailer.default.createTransport({
+            host: process.env.SMTP_HOST,
+            port: isNaN(port) ? 587 : port,
+            secure: port === 465,
+            ...(process.env.SMTP_USER && process.env.SMTP_PASS
+                ? { auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } }
+                : {})
+        });
+
+        const from = process.env.SMTP_FROM ?? '';
+        await transporter.sendMail({
+            from,
+            to: user.email,
+            subject,
+            text: body
+        });
+    } catch {
+        // Fail silently for welcome email
+    }
+}
+
 function getSubject(type: ReviewEmailType, projectLabel: string): string {
     const project = projectLabel || 'the project';
     switch (type) {

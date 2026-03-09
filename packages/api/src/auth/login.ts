@@ -1,14 +1,31 @@
 import express, { Router } from 'express';
 import { loginUser } from '@moteur/core/auth.js';
+import { loginRateLimiter } from '../middlewares/rateLimit.js';
 import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = express.Router();
 
-router.post('/login', async (req: any, res: any) => {
+const EMAIL_MAX_LENGTH = 255;
+const PASSWORD_MAX_LENGTH = 4096;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function sanitizeEmail(value: unknown): string {
+    if (typeof value !== 'string') return '';
+    const trimmed = value.trim().toLowerCase();
+    if (trimmed.length > EMAIL_MAX_LENGTH) return '';
+    if (!EMAIL_REGEX.test(trimmed)) return '';
+    return trimmed;
+}
+
+router.post('/login', loginRateLimiter, async (req: any, res: any) => {
     try {
-        const { username, password } = req.body;
+        const username = sanitizeEmail(req.body?.username);
+        const password = typeof req.body?.password === 'string' ? req.body.password : '';
         if (!username || !password) {
             return res.status(400).json({ error: 'Missing username or password' });
+        }
+        if (password.length > PASSWORD_MAX_LENGTH) {
+            return res.status(400).json({ error: 'Invalid request' });
         }
         const { token, user } = await loginUser(username, password);
         return res.json({ token, user });

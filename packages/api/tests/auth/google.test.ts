@@ -11,6 +11,10 @@ vi.mock('@moteur/core/auth', () => ({
     generateJWT: vi.fn().mockReturnValue('mock-jwt-token')
 }));
 
+vi.mock('../../src/auth/onboarding', () => ({
+    runOnboardingForNewUser: vi.fn().mockResolvedValue(undefined)
+}));
+
 vi.mock('axios', async () => {
     const actual = await vi.importActual<typeof import('axios')>('axios');
     const mocked = {
