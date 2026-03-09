@@ -2,13 +2,15 @@
     "type": "core/container",
     "label": "Container",
     "description": "A container block that can hold other blocks.",
+    "category": "layout",
     "fields": {
         "blocks": {
             "type": "core/list",
             "label": "Blocks",
             "description": "A list of blocks contained within this container.",
             "items": {
-                "type": "core/block"
+                "type": "core/object",
+                "description": "TODO: Replace with core/block once nested block references are supported"
             },
             "multilingual": true,
             "required": true

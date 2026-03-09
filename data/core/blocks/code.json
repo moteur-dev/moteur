@@ -1,0 +1,25 @@
+{
+    "type": "core/code",
+    "label": "Code",
+    "description": "A code block with syntax highlighting. Language is a free-text hint to the renderer.",
+    "category": "content",
+    "fields": {
+        "code": {
+            "type": "core/text",
+            "label": "Code",
+            "required": true
+        },
+        "language": {
+            "type": "core/text",
+            "label": "Language",
+            "description": "e.g. javascript, python, bash. Used for syntax highlighting hint.",
+            "required": false
+        },
+        "filename": {
+            "type": "core/text",
+            "label": "Filename",
+            "description": "Optional filename shown above the code block.",
+            "required": false
+        }
+    }
+}

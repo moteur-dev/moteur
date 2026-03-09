@@ -1,0 +1,26 @@
+{
+    "type": "core/form",
+    "label": "Form",
+    "description": "A reference to a form defined in the project.",
+    "category": "interactive",
+    "fields": {
+        "formId": {
+            "type": "core/text",
+            "label": "Form ID",
+            "description": "The ID of the form to embed.",
+            "required": true
+        },
+        "title": {
+            "type": "core/text",
+            "label": "Form Title",
+            "multilingual": true,
+            "description": "Optional heading displayed above the form."
+        },
+        "successMessage": {
+            "type": "core/rich-text",
+            "label": "Success Message",
+            "multilingual": true,
+            "description": "Message shown after successful form submission."
+        }
+    }
+}

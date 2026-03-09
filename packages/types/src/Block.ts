@@ -3,6 +3,8 @@ import { Field } from './Field';
 export interface Block {
     type: string; // Block type (e.g., "core/hero")
     data: Record<string, any>; // Block content data
+    variant?: string; // Free-text presentation hint (e.g. "dark", "compact", "large")
+    locales?: string[]; // Restrict block to specific locales; absent or empty = all locales
     conditions?: Record<string, any>; // Visibility rules for the block
     meta?: BlockMeta; // Metadata for styling and attributes
     options?: Record<string, any>; // Additional options
@@ -15,6 +17,8 @@ export interface BlockSchema {
     category?: string; // Category for grouping
     fields: Record<string, Field>; // Field definitions for the block
     optionsSchema?: Record<string, any>; // Additional options
+    variantHints?: string[]; // Suggested variant values (documentation only — not enforced)
+    editorial?: boolean; // If true, block is stripped from public API responses (Studio-only)
 }
 
 export interface BlockMeta {

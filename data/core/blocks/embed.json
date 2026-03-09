@@ -1,0 +1,38 @@
+{
+    "type": "core/embed",
+    "label": "Embed",
+    "description": "A generic iframe embed for external content.",
+    "category": "media",
+    "fields": {
+        "url": {
+            "type": "core/url",
+            "label": "Embed URL",
+            "required": true
+        },
+        "title": {
+            "type": "core/text",
+            "label": "Title",
+            "multilingual": true,
+            "description": "Accessible title for the iframe."
+        }
+    },
+    "optionsSchema": {
+        "height": {
+            "type": "core/number",
+            "label": "Height (px)",
+            "default": 400
+        },
+        "aspectRatio": {
+            "type": "core/text",
+            "label": "Aspect Ratio",
+            "description": "e.g. 16/9. Overrides height if set.",
+            "default": ""
+        },
+        "sandbox": {
+            "type": "core/boolean",
+            "label": "Sandbox",
+            "description": "Apply iframe sandbox attribute for security.",
+            "default": true
+        }
+    }
+}

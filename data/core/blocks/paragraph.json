@@ -1,0 +1,14 @@
+{
+    "type": "core/paragraph",
+    "label": "Paragraph",
+    "description": "A rich text paragraph block.",
+    "category": "content",
+    "fields": {
+        "content": {
+            "type": "core/rich-text",
+            "label": "Content",
+            "multilingual": true,
+            "required": true
+        }
+    }
+}

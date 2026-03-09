@@ -1,13 +1,21 @@
 import express, { Router } from 'express';
 import { BlockRegistry } from '@moteur/core/registry/BlockRegistry.js';
 import { createBlock } from '@moteur/core/blocks.js';
+import { stripVariantHintsFromBlockSchema } from '../utils/stripBlockSchema.js';
 
 const router: Router = express.Router();
 const registry = new BlockRegistry();
 
-// GET /api/moteur/blocks
+// GET /api/moteur/blocks — variantHints stripped from public response
 router.get('/', (_req, res) => {
-    res.json(registry.all());
+    const all = registry.all();
+    const stripped = Object.fromEntries(
+        Object.entries(all).map(([k, v]) => [
+            k,
+            stripVariantHintsFromBlockSchema(v as unknown as Record<string, unknown>)
+        ])
+    );
+    res.json(stripped);
 });
 
 // POST /api/moteur/blocks

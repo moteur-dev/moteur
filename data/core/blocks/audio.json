@@ -1,0 +1,36 @@
+{
+    "type": "core/audio",
+    "label": "Audio",
+    "description": "An audio player block.",
+    "category": "media",
+    "fields": {
+        "src": {
+            "type": "core/url",
+            "label": "Audio URL",
+            "required": true
+        },
+        "title": {
+            "type": "core/text",
+            "label": "Title",
+            "multilingual": true
+        },
+        "transcript": {
+            "type": "core/rich-text",
+            "label": "Transcript",
+            "multilingual": true,
+            "description": "Accessible text transcript of the audio content."
+        }
+    },
+    "optionsSchema": {
+        "autoplay": {
+            "type": "core/boolean",
+            "default": false,
+            "label": "Autoplay"
+        },
+        "loop": {
+            "type": "core/boolean",
+            "default": false,
+            "label": "Loop"
+        }
+    }
+}

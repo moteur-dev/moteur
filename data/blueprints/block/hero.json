@@ -2,6 +2,7 @@
     "type": "core/hero",
     "label": "Hero",
     "description": "A hero field with a title, subtitle, and optional background image.",
+    "category": "layout",
     "fields": {
         "title": {
             "type": "core/text",
@@ -37,9 +38,8 @@
             "description": "The alignment of the text within the hero block.",
             "options": ["left", "center", "right"],
             "default": "center"
-            
         },
-        "cta":{
+        "cta": {
             "type": "core/link",
             "label": "Call to Action",
             "description": "A URL for the call to action button.",
