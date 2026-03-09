@@ -1,20 +1,13 @@
 import { ValidationIssue } from '@moteur/types/ValidationResult.js';
 import { Field } from '@moteur/types/Field.js';
-import fieldRegistry from '../../../registry/FieldRegistry.js';
 
 export function validateDateTimeField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
 
-    // Determine the actual value to validate
-    const fieldSchema = fieldRegistry.get(field.type);
-
-    const actualValue = fieldSchema.storeDirect ? value : value?.value;
-
-    // Basic presence check
-    if (typeof actualValue !== 'string') {
+    if (typeof value !== 'string') {
         issues.push({
             type: 'error',
-            code: 'INVALID_DATETIME_TYPE',
+            code: 'DATETIME_INVALID_TYPE',
             message: 'Date-time value must be a string in ISO 8601 format.',
             path,
             context: { value }
@@ -22,12 +15,11 @@ export function validateDateTimeField(value: any, field: Field, path: string): V
         return issues;
     }
 
-    // Check if it's a valid ISO8601 date
-    const parsedDate = Date.parse(actualValue);
+    const parsedDate = Date.parse(value);
     if (isNaN(parsedDate)) {
         issues.push({
             type: 'error',
-            code: 'INVALID_DATETIME_FORMAT',
+            code: 'DATETIME_INVALID_FORMAT',
             message: 'Date-time value is not a valid ISO 8601 date.',
             path,
             context: { value }
@@ -37,7 +29,6 @@ export function validateDateTimeField(value: any, field: Field, path: string): V
 
     const date = new Date(parsedDate);
 
-    // Validate against options
     if (field.options?.allowPastDates === false && date < new Date()) {
         issues.push({
             type: 'error',

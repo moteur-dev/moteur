@@ -1,7 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
-import type { Schedule, CreateScheduleInput, ListSchedulesOptions } from '@moteur/types/Schedule.js';
+import type {
+    Schedule,
+    CreateScheduleInput,
+    ListSchedulesOptions
+} from '@moteur/types/Schedule.js';
 import type { User } from '@moteur/types/User.js';
 
 export type { CreateScheduleInput, ListSchedulesOptions };
@@ -14,12 +18,12 @@ import { trashScheduleDir } from './utils/pathUtils.js';
 import { triggerEvent } from './utils/eventBus.js';
 import { dispatch as webhookDispatch } from './webhooks/webhookService.js';
 import { hasApprovedReview, hasApprovedReviewForPage } from './reviews.js';
-import { updateEntry } from './entries.js';
-import { updatePage } from './pages.js';
-import { isValidId } from './utils/idUtils.js';
 import * as schedulerEngine from './schedulerEngine.js';
 
-function canSchedule(user: User, project: { workflow?: { enabled?: boolean; requireReview?: boolean } }): boolean {
+function canSchedule(
+    user: User,
+    project: { workflow?: { enabled?: boolean; requireReview?: boolean } }
+): boolean {
     if (!project.workflow?.enabled || !project.workflow?.requireReview) {
         return true;
     }
@@ -31,7 +35,9 @@ function canSchedule(user: User, project: { workflow?: { enabled?: boolean; requ
 async function loadAllSchedulesForProject(projectId: string): Promise<Schedule[]> {
     const storage = getProjectStorage(projectId);
     const raw = await storage.list(scheduleListPrefix());
-    const ids = raw.map(name => (name.endsWith('.json') ? name.slice(0, -5) : name)).filter(Boolean);
+    const ids = raw
+        .map(name => (name.endsWith('.json') ? name.slice(0, -5) : name))
+        .filter(Boolean);
     const schedules: Schedule[] = [];
     for (const id of ids) {
         const s = await getJson<Schedule>(storage, scheduleKey(id));
@@ -60,7 +66,11 @@ export async function listSchedules(
     return list;
 }
 
-export async function getSchedule(user: User, projectId: string, scheduleId: string): Promise<Schedule> {
+export async function getSchedule(
+    user: User,
+    projectId: string,
+    scheduleId: string
+): Promise<Schedule> {
     const project = await getProject(user, projectId);
     assertUserCanAccessProject(user, project);
 
@@ -112,7 +122,9 @@ export async function createSchedule(
     const scheduledAt = scheduledDate.toISOString();
 
     if (!canSchedule(user, project)) {
-        const err = new Error('Only users with reviewer or admin role can schedule when review workflow is enabled.');
+        const err = new Error(
+            'Only users with reviewer or admin role can schedule when review workflow is enabled.'
+        );
         (err as Error & { statusCode?: number }).statusCode = 403;
         throw err;
     }
@@ -120,22 +132,32 @@ export async function createSchedule(
     if (input.action === 'publish') {
         if (project.workflow?.enabled && project.workflow?.requireReview) {
             if (input.resourceType === 'entry' && input.modelId) {
-                const approved = await hasApprovedReview(projectId, input.modelId, input.resourceId);
+                const approved = await hasApprovedReview(
+                    projectId,
+                    input.modelId,
+                    input.resourceId
+                );
                 if (!approved) {
-                    throw new Error('Entry must have an approved review before it can be scheduled for publish.');
+                    throw new Error(
+                        'Entry must have an approved review before it can be scheduled for publish.'
+                    );
                 }
             }
             if (input.resourceType === 'page') {
                 const approved = await hasApprovedReviewForPage(projectId, input.resourceId);
                 if (!approved) {
-                    throw new Error('Page must have an approved review before it can be scheduled for publish.');
+                    throw new Error(
+                        'Page must have an approved review before it can be scheduled for publish.'
+                    );
                 }
             }
         }
     }
 
     const existing = await getSchedulesForResource(projectId, input.resourceType, input.resourceId);
-    const pendingSameAction = existing.find(s => s.action === input.action && s.status === 'pending');
+    const pendingSameAction = existing.find(
+        s => s.action === input.action && s.status === 'pending'
+    );
     if (pendingSameAction) {
         throw new Error(
             'A pending schedule already exists for this resource and action. Cancel it before creating a new one.'
@@ -211,7 +233,11 @@ export async function createSchedule(
     return schedule;
 }
 
-export async function cancelSchedule(user: User, projectId: string, scheduleId: string): Promise<Schedule> {
+export async function cancelSchedule(
+    user: User,
+    projectId: string,
+    scheduleId: string
+): Promise<Schedule> {
     const project = await getProject(user, projectId);
     assertUserCanAccessProject(user, project);
 
@@ -238,7 +264,12 @@ export async function cancelSchedule(user: User, projectId: string, scheduleId: 
         if (schedule.resourceType === 'entry') {
             webhookDispatch(
                 'entry.unscheduled',
-                { scheduleId, entryId: schedule.resourceId, modelId: schedule.modelId, action: schedule.action },
+                {
+                    scheduleId,
+                    entryId: schedule.resourceId,
+                    modelId: schedule.modelId,
+                    action: schedule.action
+                },
                 { projectId, source: 'api' }
             );
         } else {
@@ -261,7 +292,11 @@ export async function cancelSchedule(user: User, projectId: string, scheduleId: 
     return updated;
 }
 
-export async function deleteSchedule(user: User, projectId: string, scheduleId: string): Promise<void> {
+export async function deleteSchedule(
+    user: User,
+    projectId: string,
+    scheduleId: string
+): Promise<void> {
     const project = await getProject(user, projectId);
     assertUserCanAccessProject(user, project);
 

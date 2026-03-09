@@ -7,11 +7,12 @@ export function validateNumberField(value: any, field: Field, path: string): Val
     if (typeof value !== 'number') {
         issues.push({
             type: 'error',
-            code: 'INVALID_NUMBER_TYPE',
+            code: 'NUMBER_INVALID_TYPE',
             message: 'Expected a number value.',
             path,
             context: { value }
         });
+        return issues;
     }
 
     const opts = field.options || {};

@@ -1,36 +1,31 @@
 import { Field } from '@moteur/types/Field.js';
 import { ValidationIssue } from '@moteur/types/ValidationResult.js';
-import fieldRegistry from '../../../registry/FieldRegistry.js';
 
 export function validateSlugField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
-    const fieldSchema = fieldRegistry.get(field.type);
+    const isMultilingual = field.options?.multilingual === true;
 
-    const actualValue = fieldSchema.storeDirect ? value : value?.value;
-    const isMultilingual = fieldSchema?.options?.multilingual === true;
-
-    if (actualValue === undefined || actualValue === null || actualValue === '') {
-        // Slug is optional if empty
+    if (value === undefined || value === null || value === '') {
         return issues;
     }
 
     if (isMultilingual) {
-        if (typeof actualValue !== 'object' || Array.isArray(actualValue)) {
+        if (typeof value !== 'object' || Array.isArray(value)) {
             issues.push({
                 type: 'error',
-                code: 'INVALID_SLUG_MULTILINGUAL_FORMAT',
+                code: 'SLUG_INVALID_MULTILINGUAL_FORMAT',
                 message: 'Expected an object with locale keys for a multilingual slug.',
                 path,
-                context: { actualValue }
+                context: { value }
             });
             return issues;
         }
 
-        for (const [locale, slug] of Object.entries(actualValue)) {
+        for (const [locale, slug] of Object.entries(value)) {
             if (typeof slug !== 'string' || slug.trim() === '') {
                 issues.push({
                     type: 'error',
-                    code: 'INVALID_SLUG_VALUE',
+                    code: 'SLUG_INVALID_VALUE',
                     message: `Slug for locale "${locale}" must be a non-empty string.`,
                     path: `${path}.${locale}`,
                     context: { slug }
@@ -38,7 +33,7 @@ export function validateSlugField(value: any, field: Field, path: string): Valid
             } else if (!/^[a-zA-Z0-9_-]+$/.test(slug)) {
                 issues.push({
                     type: 'error',
-                    code: 'INVALID_SLUG_FORMAT',
+                    code: 'SLUG_INVALID_FORMAT',
                     message: `Slug for locale "${locale}" contains invalid characters.`,
                     path: `${path}.${locale}`,
                     context: { slug }
@@ -46,22 +41,22 @@ export function validateSlugField(value: any, field: Field, path: string): Valid
             }
         }
     } else {
-        if (typeof actualValue !== 'string' || actualValue.trim() === '') {
+        if (typeof value !== 'string' || value.trim() === '') {
             issues.push({
                 type: 'error',
-                code: 'INVALID_SLUG_VALUE',
+                code: 'SLUG_INVALID_VALUE',
                 message: 'Slug must be a non-empty string.',
                 path,
-                context: { actualValue }
+                context: { value }
             });
-        } else if (!/^[a-zA-Z0-9_-]+$/.test(actualValue)) {
+        } else if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
             issues.push({
                 type: 'error',
-                code: 'INVALID_SLUG_FORMAT',
+                code: 'SLUG_INVALID_FORMAT',
                 message:
                     'Slug contains invalid characters. Only letters, numbers, "-" and "_" are allowed.',
                 path,
-                context: { actualValue }
+                context: { value }
             });
         }
     }

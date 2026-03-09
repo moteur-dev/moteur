@@ -44,7 +44,7 @@ describe('validateNumberField', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     type: 'error',
-                    code: 'INVALID_NUMBER_TYPE'
+                    code: 'NUMBER_INVALID_TYPE'
                 })
             ])
         );

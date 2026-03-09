@@ -74,10 +74,9 @@ googleAuthRoute.get('/google/callback', async (req: any, res: any) => {
         }
 
         const token = generateJWT(user as User);
-        const redirectBase =
-            process.env.AUTH_REDIRECT_AFTER_LOGIN?.trim() || '/auth/callback';
+        const redirectBase = process.env.AUTH_REDIRECT_AFTER_LOGIN?.trim() || '/auth/callback';
         const next = typeof req.query.next === 'string' ? req.query.next : '';
-        const params = new URLSearchParams({ token });
+        const params = new globalThis.URLSearchParams({ token });
         if (next) params.set('next', next);
         const sep = redirectBase.includes('?') ? '&' : '?';
         res.redirect(`${redirectBase}${sep}${params.toString()}`);

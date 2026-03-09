@@ -7,8 +7,7 @@ import fieldRegistry from '../../registry/FieldRegistry.js';
 fieldRegistry.register({
     type: 'core/phone',
     label: 'Phone',
-    description:
-        'A phone number string. No format enforcement — phone formats vary globally.',
+    description: 'A phone number string. No format enforcement — phone formats vary globally.',
     storeDirect: true,
     fields: {
         value: {
@@ -34,8 +33,7 @@ fieldRegistry.register({
         ui: {
             type: 'core/text',
             label: 'UI Hint',
-            description:
-                'Optional hint for Studio input rendering. Does not affect stored data.',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
             required: false
         }
     }

@@ -13,7 +13,7 @@ export function validateTableField(value: any, field: Field, path: string): Vali
     if (!Array.isArray(value)) {
         issues.push({
             type: 'error',
-            code: 'INVALID_TABLE_FORMAT',
+            code: 'TABLE_INVALID_FORMAT',
             message: 'Table rows must be an array of rows.',
             path,
             context: { actualValue: value }
@@ -47,7 +47,7 @@ export function validateTableField(value: any, field: Field, path: string): Vali
         if (!Array.isArray(row)) {
             issues.push({
                 type: 'error',
-                code: 'INVALID_TABLE_ROW',
+                code: 'TABLE_INVALID_ROW',
                 message: `Row ${rowIndex} must be an array.`,
                 path: rowPath
             });

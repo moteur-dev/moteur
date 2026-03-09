@@ -7,8 +7,7 @@ import fieldRegistry from '../../registry/FieldRegistry.js';
 fieldRegistry.register({
     type: 'core/json',
     label: 'JSON',
-    description:
-        'A raw JSON blob. Escape hatch for unstructured or developer-defined data.',
+    description: 'A raw JSON blob. Escape hatch for unstructured or developer-defined data.',
     storeDirect: true,
     fields: {
         value: {

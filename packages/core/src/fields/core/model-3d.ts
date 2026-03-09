@@ -7,8 +7,7 @@ import fieldRegistry from '../../registry/FieldRegistry.js';
 fieldRegistry.register({
     type: 'core/model-3d',
     label: '3D Model',
-    description:
-        'A 3D asset reference. Primary format is glTF/glb for web compatibility.',
+    description: 'A 3D asset reference. Primary format is glTF/glb for web compatibility.',
     fields: {
         src: {
             type: 'core/url',

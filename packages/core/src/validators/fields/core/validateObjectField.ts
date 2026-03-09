@@ -8,7 +8,7 @@ export function validateObjectField(value: any, field: Field, path: string): Val
     if (typeof value !== 'object' || value === null) {
         issues.push({
             type: 'error',
-            code: 'INVALID_OBJECT_TYPE',
+            code: 'OBJECT_INVALID_TYPE',
             message: 'Expected an object.',
             path,
             context: { value }

@@ -16,7 +16,6 @@ import * as Webhooks from './webhooks/webhookService.js';
 import * as Forms from './forms.js';
 import * as FormSubmissions from './formSubmissions.js';
 import * as Schedules from './schedules.js';
-import * as SchedulerEngine from './schedulerEngine.js';
 
 import type { MoteurAPI } from './MoteurAPI.js';
 

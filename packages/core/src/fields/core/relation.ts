@@ -26,8 +26,7 @@ fieldRegistry.register({
         labelField: {
             type: 'core/text',
             label: 'Label Field',
-            description:
-                'Which field to use as label in the UI. Default: first text field.',
+            description: 'Which field to use as label in the UI. Default: first text field.',
             required: false
         },
         allowEmpty: {

@@ -192,7 +192,11 @@ async function executeSchedule(projectId: string, scheduleId: string): Promise<v
         }
 
         try {
-            await triggerEvent('schedule.failed', { schedule: failedSchedule, projectId, error: errorMessage });
+            await triggerEvent('schedule.failed', {
+                schedule: failedSchedule,
+                projectId,
+                error: errorMessage
+            });
         } catch {
             // never break on emit failure
         }
@@ -230,14 +234,14 @@ export function cancel(scheduleId: string): void {
 
 export function startSweep(intervalMs: number = 5 * 60 * 1000): void {
     if (sweepInterval !== null) return;
-    sweepInterval = setInterval(() => {
+    sweepInterval = globalThis.setInterval(() => {
         void sweep();
     }, intervalMs);
 }
 
 export function stopSweep(): void {
     if (sweepInterval !== null) {
-        clearInterval(sweepInterval);
+        globalThis.clearInterval(sweepInterval);
         sweepInterval = null;
     }
     for (const handle of timeouts.values()) {
@@ -256,7 +260,9 @@ export async function sweep(): Promise<void> {
             try {
                 const storage = getProjectStorage(project.id);
                 const raw = await storage.list(scheduleListPrefix());
-                const ids = raw.map(name => (name.endsWith('.json') ? name.slice(0, -5) : name)).filter(Boolean);
+                const ids = raw
+                    .map(name => (name.endsWith('.json') ? name.slice(0, -5) : name))
+                    .filter(Boolean);
 
                 for (const id of ids) {
                     try {

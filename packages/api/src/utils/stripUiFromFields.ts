@@ -3,9 +3,7 @@
  * The ui hint is for Studio/frontend rendering only and must never appear in public API responses.
  */
 
-export function stripUiFromFieldSchema<T extends Record<string, unknown>>(
-    schema: T
-): T {
+export function stripUiFromFieldSchema<T extends Record<string, unknown>>(schema: T): T {
     if (!schema || typeof schema !== 'object') return schema;
     const result = { ...schema } as Record<string, unknown>;
 
@@ -28,8 +26,10 @@ export function stripUiFromFieldSchema<T extends Record<string, unknown>>(
     return result as T;
 }
 
-export function stripUiFromFieldOptions(options: Record<string, unknown> | undefined): Record<string, unknown> {
+export function stripUiFromFieldOptions(
+    options: Record<string, unknown> | undefined
+): Record<string, unknown> {
     if (!options || typeof options !== 'object') return options ?? {};
-    const { ui, ...rest } = options;
+    const { ui: _ui, ...rest } = options;
     return rest;
 }

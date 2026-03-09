@@ -80,7 +80,7 @@ describe('validateStructureField', () => {
         expect(issues).toContainEqual(
             expect.objectContaining({
                 type: 'error',
-                code: 'INVALID_STRUCTURE_CONFIGURATION'
+                code: 'STRUCTURE_INVALID_CONFIGURATION'
             })
         );
     });
@@ -101,7 +101,7 @@ describe('validateStructureField', () => {
         expect(issues).toContainEqual(
             expect.objectContaining({
                 type: 'error',
-                code: 'MISSING_STRUCTURE_OR_SCHEMA'
+                code: 'STRUCTURE_MISSING_SCHEMA'
             })
         );
     });
@@ -149,7 +149,7 @@ describe('validateStructureField', () => {
         expect(issues).toContainEqual(
             expect.objectContaining({
                 type: 'error',
-                code: 'INVALID_STRUCTURE_CONTENT'
+                code: 'STRUCTURE_INVALID_CONTENT'
             })
         );
     });

@@ -44,8 +44,7 @@ fieldRegistry.register({
         ui: {
             type: 'core/text',
             label: 'UI Hint',
-            description:
-                'Optional hint for Studio input rendering. Does not affect stored data.',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
             required: false
         }
     }

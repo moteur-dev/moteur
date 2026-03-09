@@ -18,6 +18,7 @@ import {
     stripCoreIdFromData,
     ensureCoreIdValues
 } from './utils/coreIdFields.js';
+import { validateBlockLocalesInPayload } from './utils/validateBlockLocales.js';
 
 /** Options for listing entries without user (e.g. API key / collection pipeline). */
 export interface ListEntriesForProjectOptions {
@@ -117,6 +118,16 @@ export async function createEntry(
     }
 
     const schema = await getModelSchema(user, projectId, modelId);
+    const project = await getProject(user, projectId);
+    const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(
+        Boolean
+    );
+    if (projectLocales.length > 0 && entry.data) {
+        const localeErrors = validateBlockLocalesInPayload(entry.data, projectLocales, 'data');
+        if (localeErrors.length > 0) {
+            throw new Error(localeErrors.join(' '));
+        }
+    }
     const coreIdFields = getCoreIdFieldIds(schema);
     if (coreIdFields.length > 0 && entry.data) {
         entry = {
@@ -183,6 +194,17 @@ export async function updateEntry(
 
     const current = await getEntry(user, projectId, modelId, entryId);
     const schema = await getModelSchema(user, projectId, modelId);
+    const project = await getProject(user, projectId);
+    const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(
+        Boolean
+    );
+    if (projectLocales.length > 0 && patch.data) {
+        const dataToValidate = { ...current.data, ...patch.data };
+        const localeErrors = validateBlockLocalesInPayload(dataToValidate, projectLocales, 'data');
+        if (localeErrors.length > 0) {
+            throw new Error(localeErrors.join(' '));
+        }
+    }
     const coreIdFields = getCoreIdFieldIds(schema);
     let sanitizedPatch: Partial<Entry> = { ...patch };
     if (patch.data && coreIdFields.length > 0) {

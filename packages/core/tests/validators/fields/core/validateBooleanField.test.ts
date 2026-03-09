@@ -16,7 +16,7 @@ describe('validateBooleanField', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     type: 'error',
-                    code: 'INVALID_BOOLEAN_TYPE'
+                    code: 'BOOLEAN_INVALID_TYPE'
                 })
             ])
         );

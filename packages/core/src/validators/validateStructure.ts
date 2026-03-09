@@ -42,7 +42,7 @@ export function validateStructure(structure: StructureSchema): ValidationResult 
         if (!fieldType || typeof fieldType !== 'string') {
             addIssue(result, {
                 type: 'error',
-                code: ' STRUCTURE_FIELD_MISSING_TYPE',
+                code: 'STRUCTURE_FIELD_MISSING_TYPE',
                 message: `Field "${fieldName}" is missing a valid "type".`,
                 path: fieldPath
             });

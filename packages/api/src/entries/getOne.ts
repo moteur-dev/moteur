@@ -6,6 +6,7 @@ import { getModelSchema } from '@moteur/core/models.js';
 import { resolveEntryAssets } from '@moteur/core/assets/assetResolver.js';
 import { resolveEntryUrl } from '@moteur/core/pages.js';
 import { requireProjectAccess } from '../middlewares/auth.js';
+import { stripEditorialBlocksFromPayload } from '../utils/stripBlockSchema.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -33,7 +34,8 @@ router.get('/:entryId', requireProjectAccess, async (req: any, res: any) => {
             ...entry,
             ...(resolvedUrl != null && { resolvedUrl: resolvedUrl ?? undefined })
         };
-        return res.json({ entry: payload });
+        const filtered = stripEditorialBlocksFromPayload(payload);
+        return res.json({ entry: filtered });
     } catch (err: any) {
         return res.status(500).json({ error: err.message });
     }

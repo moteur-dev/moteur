@@ -10,8 +10,7 @@ import fieldRegistry from '../../registry/FieldRegistry.js';
 fieldRegistry.register({
     type: 'core/id',
     label: 'ID',
-    description:
-        'A unique identifier. Auto-generated UUID. Read-only — never writable via API.',
+    description: 'A unique identifier. Auto-generated UUID. Read-only — never writable via API.',
     storeDirect: true,
     fields: {
         value: {
@@ -25,8 +24,7 @@ fieldRegistry.register({
         ui: {
             type: 'core/text',
             label: 'UI Hint',
-            description:
-                'Optional hint for Studio input rendering. Does not affect stored data.',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
             required: false
         }
     }

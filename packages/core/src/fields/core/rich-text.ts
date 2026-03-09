@@ -6,8 +6,7 @@ import fieldRegistry from '../../registry/FieldRegistry.js';
 fieldRegistry.register({
     type: 'core/rich-text',
     label: 'Rich Text',
-    description:
-        'Formatted HTML content with multilingual support. Canonical name for core/html.',
+    description: 'Formatted HTML content with multilingual support. Canonical name for core/html.',
     fields: {
         html: {
             type: 'core/text',
@@ -50,8 +49,7 @@ fieldRegistry.register({
         ui: {
             type: 'core/text',
             label: 'UI Hint',
-            description:
-                'Optional hint for Studio input rendering. Does not affect stored data.',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
             required: false
         }
     }

@@ -1,59 +1,48 @@
 import { BlockSchema } from '@moteur/types/Block.js';
-import { Field } from '@moteur/types/Field.js';
 import { ValidationResult } from '@moteur/types/ValidationResult.js';
 import { createValidationResult, addIssue } from '../utils/validation.js';
+import { validateFieldValue } from './validateFieldValue.js';
+import fieldRegistry from '../registry/FieldRegistry.js';
+import type { Field } from '@moteur/types/Field.js';
 
-type FieldRegistry = Record<string, Field>;
-
-export function validateBlock(
-    blockInstance: any,
-    blockSchema: BlockSchema,
-    fieldRegistry: FieldRegistry
-): ValidationResult {
+export function validateBlock(blockInstance: any, blockSchema: BlockSchema): ValidationResult {
     const result = createValidationResult();
 
     const fields = blockInstance?.fields || {};
     const schemaFields = blockSchema?.fields || {};
 
     for (const fieldName of Object.keys(schemaFields)) {
-        const fieldDef = schemaFields[fieldName];
+        const fieldDef = schemaFields[fieldName] as Field;
         const fieldValue = fields[fieldName];
+        const fieldPath = `fields.${fieldName}`;
 
         if (fieldValue === undefined || fieldValue === null) {
             addIssue(result, {
                 type: 'warning',
                 code: 'BLOCK_FIELD_MISSING',
                 message: `Missing value for required field "${fieldName}".`,
-                path: `fields.${fieldName}`
+                path: fieldPath
             });
             continue;
         }
 
-        // Check if field type is registered
         const fieldType = fieldDef.type;
-        const fieldTypeDef = fieldRegistry[fieldType];
-        if (!fieldTypeDef) {
+        if (!fieldRegistry.get(fieldType)) {
             addIssue(result, {
                 type: 'error',
                 code: 'BLOCK_FIELD_TYPE_UNKNOWN',
                 message: `Unknown field type "${fieldType}" used in field "${fieldName}".`,
-                path: `fields.${fieldName}`
+                path: fieldPath
             });
             continue;
         }
 
-        if (!isValidFieldValue(fieldType, fieldValue)) {
-            addIssue(result, {
-                type: 'warning',
-                code: 'BLOCK_FIELD_VALUE_INVALID',
-                message: `Field "${fieldName}" has an invalid value for type "${fieldType}".`,
-                path: `fields.${fieldName}`,
-                context: { value: fieldValue }
-            });
+        const issues = validateFieldValue(fieldValue, fieldDef, fieldPath);
+        for (const issue of issues) {
+            addIssue(result, issue);
         }
     }
 
-    // Optional: Check for unexpected fields
     for (const key of Object.keys(fields)) {
         if (!schemaFields[key]) {
             addIssue(result, {
@@ -66,21 +55,4 @@ export function validateBlock(
     }
 
     return result;
-}
-
-function isValidFieldValue(type: string, value: any): boolean {
-    switch (type) {
-        case 'core/text':
-        case 'core/rich-text':
-        case 'core/link':
-            return typeof value === 'string' || typeof value === 'object';
-        case 'core/image':
-            return typeof value === 'object' && value !== null;
-        case 'core/list':
-            return Array.isArray(value);
-        case 'core/structure':
-            return typeof value === 'object' && value !== null;
-        default:
-            return true; // fallback to valid for unknowns
-    }
 }

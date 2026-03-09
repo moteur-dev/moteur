@@ -53,7 +53,10 @@ export async function createLayout(user: User, projectId: string, layout: Layout
         throw new Error(`Invalid layout ID: "${layout.id}"`);
     }
 
-    const result = validateLayout(layout);
+    const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(
+        Boolean
+    );
+    const result = validateLayout(layout, { projectLocales });
     if (result.issues.length > 0) {
         throw new Error(
             `Layout validation failed: ${result.issues.map(issue => issue.message).join(', ')}`
@@ -78,7 +81,7 @@ export async function updateLayout(
     id: string,
     patch: Partial<Layout>
 ): Promise<Layout> {
-    await getProject(user, projectId);
+    const project = await getProject(user, projectId);
 
     if (!id || !isValidId(id)) {
         throw new Error(`Invalid layout ID: ${id}`);
@@ -92,6 +95,15 @@ export async function updateLayout(
     const updated = { ...current, ...patch };
     if (updated.meta?.audit) {
         updated.meta.audit.revision = (current.meta?.audit?.revision ?? 0) + 1;
+    }
+    const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(
+        Boolean
+    );
+    const result = validateLayout(updated, { projectLocales });
+    if (result.issues.length > 0) {
+        throw new Error(
+            `Layout validation failed: ${result.issues.map(issue => issue.message).join(', ')}`
+        );
     }
     triggerEvent('layout.beforeUpdate', { layout: updated, user, projectId });
     await putJson(storage, layoutKey(id), updated);

@@ -24,7 +24,7 @@ describe('validateSlugField', () => {
     expect(issues).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          code: 'INVALID_SLUG_VALUE'
+          code: 'SLUG_INVALID_VALUE'
         })
       ])
     );
@@ -35,14 +35,14 @@ describe('validateSlugField', () => {
         expect(issues).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    code: 'INVALID_SLUG_FORMAT'
+                    code: 'SLUG_INVALID_FORMAT'
                 })
             ])
         );
     });
 
     /*it('validates multilingual slugs', () => {
-    const value = {value: { en: 'valid-en', fr: 'valide-fr' }};
+    const value = { en: 'valid-en', fr: 'valide-fr' };
     const issues = validateSlugField(value, multilingualField, 'data.slug');
     expect(issues).toEqual([]);
   });*/
@@ -52,7 +52,7 @@ describe('validateSlugField', () => {
     expect(issues).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          code: 'INVALID_SLUG_MULTILINGUAL_FORMAT'
+          code: 'SLUG_INVALID_MULTILINGUAL_FORMAT'
         })
       ])
     );
@@ -64,7 +64,7 @@ describe('validateSlugField', () => {
         expect(issues).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    code: 'INVALID_SLUG_VALUE'
+                    code: 'SLUG_INVALID_VALUE'
                 })
             ])
         );
@@ -76,7 +76,7 @@ describe('validateSlugField', () => {
         expect(issues).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    code: 'INVALID_SLUG_VALUE'
+                    code: 'SLUG_INVALID_FORMAT'
                 })
             ])
         );

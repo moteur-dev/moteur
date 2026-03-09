@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { ModelSchema } from '@moteur/types/Model.js';
 
 /**
@@ -35,7 +36,7 @@ export function ensureCoreIdValues(
 ): Record<string, unknown> {
     const result = data ? { ...data } : {};
     for (const key of coreIdFields) {
-        result[key] = crypto.randomUUID();
+        result[key] = randomUUID();
     }
     return result;
 }
