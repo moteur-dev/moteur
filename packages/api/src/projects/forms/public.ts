@@ -6,6 +6,7 @@ import { getFormForProject } from '@moteur/core/forms.js';
 import { createSubmission } from '@moteur/core/formSubmissions.js';
 import type { FormSubmissionMeta } from '@moteur/types/Form.js';
 import { formsSubmitRateLimiter } from '../../middlewares/rateLimit.js';
+import { stripUiFromFieldOptions } from '../../utils/stripUiFromFields.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -17,13 +18,21 @@ function getMessage(msg: MultilingualString | undefined, locale?: string): strin
     return typeof first === 'string' ? first : 'Thank you for your submission.';
 }
 
-/** Public form payload: explicit allowlist; omit actions, notifications, recaptcha, createdAt, updatedAt. */
+/** Public form payload: explicit allowlist; omit actions, notifications, recaptcha, createdAt, updatedAt. ui is stripped from field options. */
 function toPublicForm(form: FormSchema): Record<string, unknown> {
+    const fields = form.fields
+        ? Object.fromEntries(
+              Object.entries(form.fields).map(([k, f]) => [
+                  k,
+                  { ...f, options: stripUiFromFieldOptions(f.options as Record<string, unknown>) }
+              ])
+          )
+        : form.fields;
     const out: Record<string, unknown> = {
         id: form.id,
         label: form.label,
         description: form.description,
-        fields: form.fields,
+        fields,
         submitLabel: form.submitLabel,
         successMessage: form.successMessage,
         honeypot: form.honeypot ?? true

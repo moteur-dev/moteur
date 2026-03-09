@@ -68,6 +68,13 @@ fieldRegistry.register({
             type: 'core/boolean',
             default: true,
             label: 'Allow Empty Cells'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

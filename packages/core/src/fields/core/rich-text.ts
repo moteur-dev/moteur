@@ -1,12 +1,13 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
 
 /**
- * @deprecated Use core/rich-text instead. core/html is kept for backward compatibility with existing schemas.
+ * Canonical name for formatted HTML content. Same implementation and stored shape as core/html.
  */
 fieldRegistry.register({
-    type: 'core/html',
-    label: 'HTML',
-    description: 'A field that stores raw HTML content.',
+    type: 'core/rich-text',
+    label: 'Rich Text',
+    description:
+        'Formatted HTML content with multilingual support. Canonical name for core/html.',
     fields: {
         html: {
             type: 'core/text',

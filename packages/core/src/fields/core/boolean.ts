@@ -25,6 +25,13 @@ fieldRegistry.register({
             default: 'No',
             label: 'False Label',
             description: 'Label for the false state.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering (e.g. "toggle", "checkbox"). Does not affect stored data.',
+            required: false
         }
     }
 });

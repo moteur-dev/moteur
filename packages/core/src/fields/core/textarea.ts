@@ -1,5 +1,8 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
 
+/**
+ * @deprecated Use core/text with ui: "textarea" instead. core/textarea is kept for backward compatibility with existing schemas.
+ */
 fieldRegistry.register({
     type: 'core/textarea',
     label: 'Text Area',
@@ -52,6 +55,13 @@ fieldRegistry.register({
                     description: 'Error message when validation fails.'
                 }
             }
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

@@ -12,5 +12,14 @@ fieldRegistry.register({
             multilingual: true,
             required: true
         }
+    },
+    optionsSchema: {
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
+        }
     }
 });

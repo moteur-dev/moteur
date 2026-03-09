@@ -35,6 +35,13 @@ fieldRegistry.register({
             default: '',
             label: 'Placeholder',
             description: 'Placeholder text for the number field.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering (e.g. "input", "slider", "rating"). Does not affect stored data.',
+            required: false
         }
     }
 });

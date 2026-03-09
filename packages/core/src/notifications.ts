@@ -9,11 +9,16 @@ export async function createNotification(
     userId: string,
     data: {
         type: NotificationType;
-        reviewId: string;
+        reviewId?: string;
         entryId?: string;
         modelId?: string;
         pageId?: string;
         templateId?: string;
+        scheduleId?: string;
+        error?: string;
+        resourceType?: 'entry' | 'page';
+        resourceId?: string;
+        action?: 'publish' | 'unpublish';
     }
 ): Promise<Notification> {
     try {
@@ -30,6 +35,11 @@ export async function createNotification(
             modelId: data.modelId,
             pageId: data.pageId,
             templateId: data.templateId,
+            scheduleId: data.scheduleId,
+            error: data.error,
+            resourceType: data.resourceType,
+            resourceId: data.resourceId,
+            action: data.action,
             read: false,
             createdAt: now
         };

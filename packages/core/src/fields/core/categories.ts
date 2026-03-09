@@ -24,6 +24,13 @@ fieldRegistry.register({
             label: 'Category Model Source',
             description: 'Reference to where categories are defined, like "project/categories".',
             required: true
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

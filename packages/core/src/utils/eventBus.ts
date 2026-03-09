@@ -14,6 +14,7 @@ import type { PageNode } from '@moteur/types/Page.js';
 import { User } from '@moteur/types/User.js';
 import type { Asset } from '@moteur/types/Asset.js';
 import type { FormSchema, FormSubmission } from '@moteur/types/Form.js';
+import type { Schedule } from '@moteur/types/Schedule.js';
 
 // Event context uses explicit resource keys (like { project, user }) for clarity.
 export interface EventMap {
@@ -140,6 +141,14 @@ export interface EventMap {
         projectId: string;
         formId: string;
     };
+
+    // Schedules
+    'schedule.beforeCreate': { schedule: Schedule; user: User; projectId: string };
+    'schedule.afterCreate': { schedule: Schedule; user: User; projectId: string };
+    'schedule.afterCancel': { schedule: Schedule; user: User; projectId: string };
+    'schedule.afterDelete': { schedule: Schedule; user: User; projectId: string };
+    'schedule.executed': { schedule: Schedule; projectId: string };
+    'schedule.failed': { schedule: Schedule; projectId: string; error: string };
 
     // Assets
     'asset:processing': { id: string; projectId: string };

@@ -41,6 +41,7 @@ import { securityHeaders } from './middlewares/security.js';
 import { createPresenceServer } from '@moteur/presence';
 import { validateStorageConfig } from '@moteur/core/config/storageConfig.js';
 import { onEvent } from '@moteur/core/utils/eventBus.js';
+import { schedulerEngine } from '@moteur/core';
 
 // Load core so activity log plugin registers and writes activity on resource changes
 import '@moteur/core';
@@ -303,6 +304,18 @@ onEvent('asset:error', async ctx => {
 validateStorageConfig();
 
 const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, async () => {
     console.log(`Moteur API running at http://localhost:${PORT}`);
+    try {
+        await schedulerEngine.init();
+    } catch (err) {
+        console.error('[Moteur] Scheduler init failed:', err);
+    }
 });
+
+function gracefulShutdown(): void {
+    schedulerEngine.stopSweep();
+    process.exit(0);
+}
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);

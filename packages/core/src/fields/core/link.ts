@@ -73,6 +73,13 @@ fieldRegistry.register({
             default: false,
             label: 'Relative Only',
             description: 'Restrict the link to relative URLs only.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

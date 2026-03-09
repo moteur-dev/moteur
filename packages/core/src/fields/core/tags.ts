@@ -40,6 +40,13 @@ fieldRegistry.register({
             label: 'Tag Model Source',
             description: 'Reference to where tags are defined, like "project/tags".',
             required: true
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

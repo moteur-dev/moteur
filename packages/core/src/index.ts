@@ -15,6 +15,8 @@ import * as Assets from './assets/assetService.js';
 import * as Webhooks from './webhooks/webhookService.js';
 import * as Forms from './forms.js';
 import * as FormSubmissions from './formSubmissions.js';
+import * as Schedules from './schedules.js';
+import * as SchedulerEngine from './schedulerEngine.js';
 
 import type { MoteurAPI } from './MoteurAPI.js';
 
@@ -39,6 +41,19 @@ export {
     createSubmission,
     type ListSubmissionsOptions
 } from './formSubmissions.js';
+
+export {
+    listSchedules,
+    getSchedule,
+    getSchedulesForResource,
+    createSchedule,
+    cancelSchedule,
+    deleteSchedule,
+    type ListSchedulesOptions,
+    type CreateScheduleInput
+} from './schedules.js';
+
+export * as schedulerEngine from './schedulerEngine.js';
 
 export const Moteur: MoteurAPI = {
     projects: Projects,
@@ -130,6 +145,14 @@ export const Moteur: MoteurAPI = {
         get: FormSubmissions.getSubmission,
         delete: FormSubmissions.deleteSubmission,
         create: FormSubmissions.createSubmission
+    },
+    schedules: {
+        list: Schedules.listSchedules,
+        get: Schedules.getSchedule,
+        getSchedulesForResource: Schedules.getSchedulesForResource,
+        create: Schedules.createSchedule,
+        cancel: Schedules.cancelSchedule,
+        delete: Schedules.deleteSchedule
     }
 };
 

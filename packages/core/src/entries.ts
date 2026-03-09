@@ -13,6 +13,11 @@ import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
 import { entryKey, entryListPrefix } from './utils/storageKeys.js';
 import type { EntryStatus } from '@moteur/types/Model.js';
 import { dispatch as webhookDispatch } from './webhooks/webhookService.js';
+import {
+    getCoreIdFieldIds,
+    stripCoreIdFromData,
+    ensureCoreIdValues
+} from './utils/coreIdFields.js';
 
 /** Options for listing entries without user (e.g. API key / collection pipeline). */
 export interface ListEntriesForProjectOptions {
@@ -111,7 +116,14 @@ export async function createEntry(
         throw new Error('Entry ID is required to create an entry.');
     }
 
-    await getModelSchema(user, projectId, modelId);
+    const schema = await getModelSchema(user, projectId, modelId);
+    const coreIdFields = getCoreIdFieldIds(schema);
+    if (coreIdFields.length > 0 && entry.data) {
+        entry = {
+            ...entry,
+            data: ensureCoreIdValues(entry.data, coreIdFields)
+        };
+    }
 
     const storage = getProjectStorage(projectId);
     const exists = await hasKey(storage, entryKey(modelId, entry.id));
@@ -170,7 +182,16 @@ export async function updateEntry(
     }
 
     const current = await getEntry(user, projectId, modelId, entryId);
-    const updated = { ...current, ...patch };
+    const schema = await getModelSchema(user, projectId, modelId);
+    const coreIdFields = getCoreIdFieldIds(schema);
+    let sanitizedPatch: Partial<Entry> = { ...patch };
+    if (patch.data && coreIdFields.length > 0) {
+        sanitizedPatch = {
+            ...patch,
+            data: { ...current.data, ...stripCoreIdFromData(patch.data, coreIdFields) }
+        };
+    }
+    const updated = { ...current, ...sanitizedPatch };
 
     triggerEvent('entry.beforeUpdate', { entry: updated, user, modelId, projectId });
     const storage = getProjectStorage(projectId);

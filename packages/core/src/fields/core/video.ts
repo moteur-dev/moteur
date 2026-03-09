@@ -52,6 +52,13 @@ fieldRegistry.register({
             type: 'boolean',
             default: true,
             label: 'Show Controls'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

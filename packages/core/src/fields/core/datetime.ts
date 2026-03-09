@@ -25,6 +25,13 @@ fieldRegistry.register({
             type: 'core/text',
             label: 'Placeholder',
             description: 'Placeholder text for the date field.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

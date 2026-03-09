@@ -40,6 +40,13 @@ fieldRegistry.register({
             default: false,
             label: 'Unique Items',
             description: 'Whether items in the list must be unique.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

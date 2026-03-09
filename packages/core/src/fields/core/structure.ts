@@ -23,6 +23,13 @@ fieldRegistry.register({
             label: 'Schema (inline)',
             description:
                 'The schema definition for this structure, which defines the fields and their types.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

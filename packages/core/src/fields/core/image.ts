@@ -81,6 +81,13 @@ fieldRegistry.register({
             type: 'core/boolean',
             default: false,
             description: 'Mark the image as decorative, hiding it from screen readers.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

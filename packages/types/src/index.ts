@@ -24,3 +24,4 @@ export * from './Template';
 export * from './User';
 export * from './ValidationResult';
 export * from './Webhook';
+export * from './Schedule';

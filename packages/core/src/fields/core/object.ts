@@ -18,6 +18,13 @@ fieldRegistry.register({
             default: true,
             label: 'Allow Empty',
             description: 'Whether the object can be empty.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

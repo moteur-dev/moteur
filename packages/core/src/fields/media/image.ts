@@ -29,6 +29,13 @@ fieldRegistry.register({
         maxHeight: {
             type: 'core/number',
             description: 'Maximum height (in pixels) for the image.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

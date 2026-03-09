@@ -1,16 +1,22 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
 
+/**
+ * Preferred way to express multi-value selects in new schemas.
+ * Stored as string array. For inline free-text tags with no external source, use ui: "tag".
+ * For tags referencing an external tag model, use core/tags.
+ */
 fieldRegistry.register({
-    type: 'core/select',
-    label: 'Select',
-    description: 'A select field.',
+    type: 'core/multi-select',
+    label: 'Multi Select',
+    description: 'Multiple choices from predefined options. Stored as string array.',
+    storeDirect: true,
     fields: {
         value: {
             type: 'string',
-            label: 'Value',
-            description: 'The selected value from the options.',
+            label: 'Values',
+            description: 'The selected values from the options (stored as string[]).',
             multilingual: true,
-            required: true
+            required: false
         }
     },
     optionsSchema: {
@@ -23,22 +29,18 @@ fieldRegistry.register({
                 subItems: {
                     type: 'object'
                 }
-            }
+            },
+            label: 'Choices',
+            description: 'Available options for selection.'
         },
         allowEmpty: {
-            type: 'boolean',
+            type: 'core/boolean',
             default: false,
             label: 'Allow Empty',
             description: 'Whether the select can be empty.'
         },
-        multiple: {
-            type: 'boolean',
-            default: false,
-            label: 'Multiple Selection',
-            description: 'Allow multiple selections in the select field.'
-        },
         placeholder: {
-            type: 'string',
+            type: 'core/text',
             label: 'Placeholder',
             description: 'Placeholder text for the select field.'
         },
@@ -46,7 +48,7 @@ fieldRegistry.register({
             type: 'core/text',
             label: 'UI Hint',
             description:
-                'Optional hint for Studio input rendering (e.g. "dropdown", "radio", "button-group"). Does not affect stored data.',
+                'Optional hint for Studio input rendering (e.g. "dropdown", "checkbox", "tag"). Does not affect stored data.',
             required: false
         }
     }

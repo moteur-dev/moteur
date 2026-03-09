@@ -35,6 +35,7 @@ export interface FieldMeta {
 export interface FieldOptions {
     required?: boolean; // Whether the field is mandatory
     multilingual?: boolean; // Whether the field supports multiple languages
+    ui?: string; // Free-text hint for Studio input type (e.g. "textarea", "radio", "slider")
     [key: string]: any; // Additional custom options
 }
 
