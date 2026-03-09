@@ -268,3 +268,58 @@ export async function deleteProject(user: User, projectId: string): Promise<void
 
     triggerEvent('project.afterDelete', { project, user });
 }
+
+const DEFAULT_DEMO_PROJECT_ID = 'demo';
+
+/**
+ * Returns the project ID to use as the demo template for new users.
+ * Set DEMO_PROJECT_ID in env to override (e.g. if your template project has another id).
+ */
+export function getDemoProjectId(): string {
+    const id = (process.env.DEMO_PROJECT_ID || DEFAULT_DEMO_PROJECT_ID).trim();
+    return id || DEFAULT_DEMO_PROJECT_ID;
+}
+
+/**
+ * Copies an existing project (e.g. demo) to a new project id and assigns it to the given user.
+ * Used for onboarding so new users always have one project available.
+ * @param sourceProjectId - Template project to copy (e.g. from getDemoProjectId())
+ * @param newProjectId - Must be valid and not already exist
+ * @param userId - User to assign as sole owner
+ */
+export async function copyProjectForNewUser(
+    sourceProjectId: string,
+    newProjectId: string,
+    userId: string
+): Promise<ProjectSchema> {
+    if (!isValidId(sourceProjectId) || !isValidId(newProjectId) || !userId) {
+        throw new Error('copyProjectForNewUser: invalid sourceProjectId, newProjectId, or userId');
+    }
+    if (isExistingProjectId(newProjectId)) {
+        throw new Error(`Project "${newProjectId}" already exists`);
+    }
+    if (!isExistingProjectId(sourceProjectId)) {
+        throw new Error(`Source project "${sourceProjectId}" not found`);
+    }
+
+    const base = baseProjectsDir();
+    const sourceDir = path.join(base, sourceProjectId);
+    const destDir = path.join(base, newProjectId);
+
+    fs.cpSync(sourceDir, destDir, { recursive: true });
+
+    const storage = getProjectStorage(newProjectId);
+    const project = await getJson<ProjectSchema>(storage, PROJECT_KEY);
+    if (!project) throw new Error(`Project data not found in "${sourceProjectId}"`);
+
+    const updated: ProjectSchema = {
+        ...project,
+        id: newProjectId,
+        label: (project.label || 'Demo').replace(/^demo$/i, 'My Demo') || 'My Demo',
+        users: [userId]
+    };
+    await putJson(storage, PROJECT_KEY, updated);
+    addProjectToUser(userId, newProjectId);
+
+    return { ...updated, id: newProjectId };
+}

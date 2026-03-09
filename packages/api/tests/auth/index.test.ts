@@ -16,10 +16,9 @@ describe('auth/index route wiring', () => {
     it('should expose core routes like /auth/login and /auth/me', async () => {
         const loginRes = await request(app)
             .post('/auth/login')
-            .send({ username: 'x', password: 'x' });
+            .send({ username: 'test@example.com', password: 'x' });
         const meRes = await request(app).get('/auth/me');
 
-        // Don't care about return value, just test 400/401 from empty input
         expect([400, 401]).toContain(loginRes.status);
         expect([401, 403]).toContain(meRes.status);
     });

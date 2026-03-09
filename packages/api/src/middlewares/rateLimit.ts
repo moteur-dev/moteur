@@ -25,6 +25,28 @@ function getFormsSubmitMax(): number {
     return Number.isFinite(n) && n > 0 ? n : 60;
 }
 
+const LOGIN_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function getLoginMax(): number {
+    const v = (process.env.API_RATE_LIMIT_LOGIN_MAX ?? '').trim();
+    if (v === '' || v === '0') return 10;
+    const n = parseInt(v, 10);
+    return Number.isFinite(n) && n > 0 ? n : 10;
+}
+
+/**
+ * Rate limiter for POST /auth/login to mitigate brute force.
+ * Key: IP. Default: 10 attempts per 15 min. Env: API_RATE_LIMIT_LOGIN_MAX.
+ */
+export const loginRateLimiter = rateLimit({
+    windowMs: LOGIN_WINDOW_MS,
+    max: getLoginMax(),
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: Request) => (req.ip || 'unknown') as string,
+    message: { error: 'Too many login attempts. Please try again later.' }
+});
+
 /**
  * Rate limiter for admin API (e.g. /admin/*).
  * Key: IP. Default: high limit (no practical limit); set API_RATE_LIMIT_ADMIN_MAX to enforce.

@@ -11,6 +11,10 @@ vi.mock('@moteur/core/auth', () => ({
     generateJWT: vi.fn().mockReturnValue('mock-jwt-token')
 }));
 
+vi.mock('../../src/auth/onboarding', () => ({
+    runOnboardingForNewUser: vi.fn().mockResolvedValue(undefined)
+}));
+
 vi.mock('axios', async () => {
     const actual = await vi.importActual<typeof import('axios')>('axios');
     const mocked = {
@@ -81,7 +85,7 @@ describe('GET /auth/github/callback', () => {
         const res = await request(app).get('/auth/github/callback').query({ code: 'valid-code' });
 
         expect(res.status).toBe(302);
-        expect(res.headers.location).toBe('/auth/success?token=mock-jwt-token');
+        expect(res.headers.location).toBe('/auth/callback?token=mock-jwt-token');
         expect(createUser).toHaveBeenCalled();
         expect(generateJWT).toHaveBeenCalledWith(
             expect.objectContaining({ email: 'newuser@example.com' })
@@ -111,7 +115,7 @@ describe('GET /auth/github/callback', () => {
         const res = await request(app).get('/auth/github/callback').query({ code: 'good-code' });
 
         expect(res.status).toBe(302);
-        expect(res.headers.location).toBe('/auth/success?token=mock-jwt-token');
+        expect(res.headers.location).toBe('/auth/callback?token=mock-jwt-token');
         expect(createUser).not.toHaveBeenCalled();
     });
 

@@ -5,6 +5,7 @@ import { generateJWT } from '@moteur/core/auth.js';
 import type { OpenAPIV3 } from 'openapi-types';
 import { getUserByEmail, createUser } from '@moteur/core/users.js';
 import { User } from '@moteur/types/User.js';
+import { runOnboardingForNewUser } from './onboarding.js';
 
 const googleAuthRoute: Router = Router();
 
@@ -52,6 +53,7 @@ googleAuthRoute.get('/google/callback', async (req: any, res: any) => {
         }
 
         let user = await getUserByEmail(profile.email);
+        let isNewUser = false;
 
         if (!user) {
             user = {
@@ -59,18 +61,26 @@ googleAuthRoute.get('/google/callback', async (req: any, res: any) => {
                 isActive: true,
                 email: profile.email,
                 name: profile.name,
-                //avatar: profile.picture,
                 roles: ['user'],
                 auth: { googleSub: profile.sub },
                 projects: []
             };
             await createUser(user as User);
+            isNewUser = true;
+        }
+
+        if (isNewUser) {
+            await runOnboardingForNewUser(user as User);
         }
 
         const token = generateJWT(user as User);
-
-        const redirectUrl = process.env.AUTH_REDIRECT_AFTER_LOGIN || '/auth/callback';
-        res.redirect(`${redirectUrl}?token=${token}`);
+        const redirectBase =
+            process.env.AUTH_REDIRECT_AFTER_LOGIN?.trim() || '/auth/callback';
+        const next = typeof req.query.next === 'string' ? req.query.next : '';
+        const params = new URLSearchParams({ token });
+        if (next) params.set('next', next);
+        const sep = redirectBase.includes('?') ? '&' : '?';
+        res.redirect(`${redirectBase}${sep}${params.toString()}`);
     } catch (err) {
         console.error('Google auth error:', err);
         return res.status(500).json({ error: 'Google login failed' });
