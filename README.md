@@ -149,6 +149,11 @@ The **moteur-admin** app gives you a full admin UI: projects, models, structures
 | [**Blueprints**](docs/Blueprints.md) | Blueprint kinds and usage. |
 | [**Workflows**](docs/Workflows.md) | Entry workflow (draft, review, published). |
 | [**Presence API**](docs/Presence%20API.md) | Real-time presence (e.g. editor cursors). |
+| [**Authentication**](docs/Authentication.md) | JWT and project API key: how to get and use them. |
+| [**Webhooks**](docs/Webhooks.md) | Outbound webhooks: events, payload, signature verification. |
+| [**Fields**](docs/Fields.md) | Core field types reference. |
+| [**Blocks**](docs/Blocks.md) | Core block types reference. |
+| [**Seeds**](docs/Seeds.md) | Canonical blueprints and how to run seed. |
 
 ---
 
@@ -163,42 +168,11 @@ The **moteur-admin** app gives you a full admin UI: projects, models, structures
 
 ### Seeds
 
-Canonical blueprint seed files live under `data/seeds/blueprints/` (e.g. `project/`, `model/`, `structure/`, `template/`). Run **`pnpm run seed`** to copy missing seeds into `data/blueprints/`. Use **`pnpm run seed:force`** to overwrite. See `data/seeds/README.md` for details.
+Canonical blueprint seed files live under `data/seeds/blueprints/` (e.g. `project/`, `model/`, `structure/`, `template/`). Run **`pnpm run seed`** to copy missing seeds into `data/blueprints/`; use **`pnpm run seed:force`** to overwrite. See [Seeds](docs/Seeds.md) and `data/seeds/README.md` for details.
 
-### Available fields (core)
+### Fields and blocks
 
-| Name               | Description                          | Usage                                      |
-|--------------------|--------------------------------------|--------------------------------------------|
-| **core/boolean**   | True/false toggle                    | Toggles, flags, visibility                 |
-| **core/color**     | Color picker or color string         | Backgrounds, highlights                     |
-| **core/image**     | Image with optional alt text         | Thumbnails, hero images                    |
-| **core/link**      | Accessible hyperlink                 | Buttons, CTAs                               |
-| **core/list**      | Repeated items (values or objects)   | Bullet points, tags                        |
-| **core/markdown**  | Markdown content (renders to HTML)   | Content blocks, notes                      |
-| **core/number**    | Numeric input                        | Ordering, scores, prices                   |
-| **core/object**    | Group of custom subfields            | Nested input groups                        |
-| **core/rich-text** | Rich HTML-formatted content          | Summaries, bios, content blocks            |
-| **core/select**    | Select from predefined options       | Layout choice, alignment                   |
-| **core/structure** | Reusable schema-based object         | Team members, addresses                    |
-| **core/text**      | Simple text string                   | Titles, labels, metadata                   |
-| **core/url**       | Simple URL string                    | Video embeds, social links                  |
-| **core/video**     | Embedded video player                | YouTube, Vimeo, self-hosted                |
-
-### Available blocks (core)
-
-| Name               | Description                         | Usage / Purpose                               |
-|--------------------|-------------------------------------|-----------------------------------------------|
-| **core/accordion** | Expandable list of sections         | FAQs, collapsible content                     |
-| **core/container** | Container for nested blocks         | Layout control, columns                       |
-| **core/gallery**   | Image grid or carousel              | Showcases, product images                     |
-| **core/hero**      | Large banner with title/cta         | Page header, promo block                      |
-| **core/image**     | Full-width or decorative image      | Separators, illustrations                     |
-| **core/quote**     | Highlighted quotation with author   | Testimonials, pull quotes                     |
-| **core/spacer**    | Vertical space between blocks       | Layout separation                             |
-| **core/text**      | Simple paragraph block              | Content sections, intros                      |
-| **core/video**     | Embedded video block                | YouTube, Vimeo embeds                         |
-
-Custom blocks and fields can be registered via the API or modules.
+Core field types (e.g. `core/text`, `core/rich-text`, `core/image`) and block types (e.g. `core/hero`, `core/text`) are listed in [Fields](docs/Fields.md) and [Blocks](docs/Blocks.md). Custom fields and blocks can be registered via the API or modules.
 
 ---
 

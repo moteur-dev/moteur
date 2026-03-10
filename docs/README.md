@@ -14,6 +14,9 @@ This folder contains the main documentation for **developers using Moteur**: con
 | **Run and configure the API** | [Configuration](Configuration.md) — environment variables. |
 | **Manage content from the terminal** | [CLI](CLI.md). |
 | **Pick a frontend stack** | [Starters](Starters.md) — Next.js, Astro, Eleventy, etc. |
+| **Authenticate (JWT, API key)** | [Authentication](Authentication.md). |
+| **Consume or send webhooks** | [Webhooks](Webhooks.md). |
+| **Field and block types** | [Fields](Fields.md), [Blocks](Blocks.md). |
 
 ---
 
@@ -24,12 +27,17 @@ This folder contains the main documentation for **developers using Moteur**: con
 | [**Public API and Collections**](Public%20API%20and%20Collections.md) | Quick guide: get a project API key, create a collection, and read entries/pages from your frontend. |
 | [**REST API**](REST%20API.md) | Full HTTP API: auth, projects, models, entries, collections, pages, navigations, admin, webhooks. OpenAPI/Swagger details included. |
 | [**Developer API**](Developer%20API.md) | TypeScript API reference for `@moteur/core`: projects, collections, entries, pages, navigations, webhooks, etc. |
+| [**Authentication**](Authentication.md) | JWT (login, refresh, OAuth) and project API key (read-only). Env vars for auth. |
 | [**Configuration**](Configuration.md) | Environment variables for the Moteur API (base path, CORS, rate limits, auth, storage). |
 | [**CLI**](CLI.md) | CLI reference: projects, models, entries, layouts, structures, templates, pages, blueprints. |
 | [**Starters**](Starters.md) | Official starters (Next.js, Astro, Eleventy, etc.) — same demo project, same content patterns. |
 | [**Blueprints**](Blueprints.md) | Blueprint kinds (project, model, structure, template) and how to use them. |
 | [**Workflows**](Workflows.md) | Entry workflow: draft, in_review, published. |
+| [**Webhooks**](Webhooks.md) | Outbound webhooks: event types, payload, signature verification, retries, filters. |
 | [**Presence API**](Presence%20API.md) | Real-time presence (e.g. editor cursors, form state). |
+| [**Fields**](Fields.md) | Core field types reference (models, structures, blocks, templates). |
+| [**Blocks**](Blocks.md) | Core block types reference (layouts). |
+| [**Seeds**](Seeds.md) | Canonical blueprints: what they are, how to run seed. |
 
 ---
 
