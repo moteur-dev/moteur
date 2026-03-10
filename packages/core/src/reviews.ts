@@ -8,7 +8,7 @@ import { getJson, putJson } from './utils/storageAdapterUtils.js';
 import { REVIEWS_KEY, entryKey, pageKey } from './utils/storageKeys.js';
 import { getModelSchema } from './models.js';
 import type { Entry } from '@moteur/types/Model.js';
-import type { Page } from '@moteur/types/Page.js';
+import type { PageNode } from '@moteur/types/Page.js';
 import { log, toActivityEvent } from './activityLogger.js';
 import { triggerEvent } from './utils/eventBus.js';
 import { createNotification } from './notifications.js';
@@ -194,7 +194,7 @@ export async function approveReview(
         await putJson(storage, REVIEWS_KEY, list);
 
         if (review.resourceType === 'page' && review.templateId && review.pageId) {
-            const page = await getJson<Page>(storage, pageKey(review.pageId));
+            const page = await getJson<PageNode>(storage, pageKey(review.pageId));
             if (page) {
                 await putJson(storage, pageKey(review.pageId), {
                     ...page,
@@ -367,7 +367,7 @@ export async function rejectReview(
         await putJson(storage, REVIEWS_KEY, list);
 
         if (review.resourceType === 'page' && review.pageId) {
-            const page = await getJson<Page>(storage, pageKey(review.pageId));
+            const page = await getJson<PageNode>(storage, pageKey(review.pageId));
             if (page) {
                 await putJson(storage, pageKey(review.pageId), { ...page, status: 'draft' });
             }
@@ -553,9 +553,12 @@ export async function submitForPageReview(
     }
 
     const storage = getProjectStorage(projectId);
-    const page = await getJson<Page>(storage, pageKey(pageId));
+    const page = await getJson<PageNode>(storage, pageKey(pageId));
     if (!page) {
         throw new Error(`Page "${pageId}" not found in project "${projectId}".`);
+    }
+    if (page.type === 'folder') {
+        throw new Error('Folder pages cannot be submitted for review.');
     }
 
     const now = new Date().toISOString();

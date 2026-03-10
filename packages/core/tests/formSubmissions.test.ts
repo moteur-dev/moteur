@@ -55,7 +55,8 @@ describe('formSubmissions', () => {
     });
 
     afterEach(async () => {
-        process.env.DATA_ROOT = originalDataRoot;
+        if (originalDataRoot !== undefined) process.env.DATA_ROOT = originalDataRoot;
+        else delete process.env.DATA_ROOT;
         await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
     });
 

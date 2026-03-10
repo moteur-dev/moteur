@@ -10,10 +10,10 @@
       "options": { "multilingual": true }
     },
     "seoDescription": {
-      "type": "core/textarea",
+      "type": "core/text",
       "label": "SEO Description",
       "description": "Custom meta description for search engines.",
-      "options": { "multilingual": true }
+      "options": { "multilingual": true, "ui": "textarea" }
     },
     "seoImage": {
       "type": "core/image",

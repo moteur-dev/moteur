@@ -22,7 +22,8 @@ describe('blueprints', () => {
     });
 
     afterEach(async () => {
-        process.env.BLUEPRINTS_DIR = originalBluprintsDir;
+        if (originalBluprintsDir !== undefined) process.env.BLUEPRINTS_DIR = originalBluprintsDir;
+        else delete process.env.BLUEPRINTS_DIR;
         await fs.rm(tempDir, { recursive: true, force: true });
     });
 

@@ -22,7 +22,6 @@ import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
 import { pageKey, pageListPrefix } from './utils/storageKeys.js';
 import { pageFilePath, trashPagesDir } from './utils/pathUtils.js';
 import { validatePage as validatePageAgainstTemplate } from './validators/validatePage.js';
-import { migratePagesIfNeeded } from './migrations/migratePages.js';
 import {
     buildNodeMap,
     buildChildMap,
@@ -55,7 +54,6 @@ function parsePageIds(listResult: string[]): string[] {
 
 async function loadAllPages(projectId: string): Promise<PageNode[]> {
     const storage = getProjectStorage(projectId);
-    await migratePagesIfNeeded(storage, projectId);
     const raw = await storage.list(pageListPrefix());
     const ids = parsePageIds(raw);
     const pages: PageNode[] = [];
@@ -99,7 +97,6 @@ export async function getPage(projectId: string, id: string): Promise<PageNode> 
     }
 
     const storage = getProjectStorage(projectId);
-    await migratePagesIfNeeded(storage, projectId);
     const page = await getJson<PageNode>(storage, pageKey(id));
     if (!page) {
         throw new Error(`Page "${id}" not found in project "${projectId}".`);

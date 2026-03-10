@@ -1,6 +1,6 @@
 import type { Asset } from '@moteur/types/Asset.js';
 import type { Entry } from '@moteur/types/Model.js';
-import type { Page } from '@moteur/types/Page.js';
+import type { StaticPage, CollectionPage } from '@moteur/types/Page.js';
 import type { ModelSchema } from '@moteur/types/Model.js';
 import type { TemplateSchema } from '@moteur/types/Template.js';
 import type { Field } from '@moteur/types/Field.js';
@@ -80,20 +80,26 @@ export async function resolveEntryAssets(
 
 export async function resolvePageAssets(
     projectId: string,
-    page: Page,
+    page: StaticPage | CollectionPage,
     templateSchema: TemplateSchema
-): Promise<Page> {
+): Promise<StaticPage | CollectionPage> {
     if (!page.fields || !templateSchema.fields) return page;
     const fields: Record<string, any> = {};
     for (const [key, value] of Object.entries(page.fields)) {
         const field = templateSchema.fields[key];
         const type = field ? getFieldType(field) : '';
         if (type === 'core/asset') {
-            fields[key] = await resolveAsset(projectId, value);
+            fields[key] = await resolveAsset(
+                projectId,
+                value as AssetFieldValue | null | undefined
+            );
             continue;
         }
         if (type === 'core/asset-list') {
-            fields[key] = await resolveAssetList(projectId, value);
+            fields[key] = await resolveAssetList(
+                projectId,
+                value as (AssetFieldValue | null | undefined)[] | null | undefined
+            );
             continue;
         }
         fields[key] = value;

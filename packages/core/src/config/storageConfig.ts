@@ -4,9 +4,12 @@ import fs from 'fs';
 
 /**
  * Root for resolving relative storage paths.
- * Default: process.cwd(). Override with DATA_ROOT for explicit root.
- * If DATA_ROOT is not set and data/users.json does not exist in cwd,
- * tries cwd/moteur (so running from workspace root still finds moteur/data).
+ * Override with DATA_ROOT for explicit root.
+ * If DATA_ROOT is not set:
+ * - If data/users.json exists in cwd, use cwd.
+ * - If cwd is inside packages/<name> (e.g. packages/core), use repo root so data lives at repo/data not packages/core/data.
+ * - If cwd/moteur/data exists (running from workspace root), use cwd/moteur.
+ * - Otherwise use cwd.
  */
 function getDataRoot(): string {
     const explicit = process.env.DATA_ROOT;
@@ -16,6 +19,12 @@ function getDataRoot(): string {
     if (fs.existsSync(dataUsersInCwd)) return cwd;
     const moteurData = path.join(cwd, 'moteur', 'data', 'users.json');
     if (fs.existsSync(moteurData)) return path.join(cwd, 'moteur');
+    // When running from packages/core (e.g. tests), put data at repo root (moteur/data), not packages/core/data
+    const dirName = path.basename(cwd);
+    const parentName = path.basename(path.dirname(cwd));
+    if (parentName === 'packages' && dirName === 'core') {
+        return path.resolve(cwd, '..', '..');
+    }
     return cwd;
 }
 

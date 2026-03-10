@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { validatePage } from '../../src/validators/validatePage.js';
-import type { Page } from '@moteur/types/Page.js';
 import type { TemplateSchema } from '@moteur/types/Template.js';
 
 describe('validatePage', () => {
@@ -25,15 +24,9 @@ describe('validatePage', () => {
     };
 
     it('returns valid when required fields are present', () => {
-        const page: Page = {
+        const page = {
             id: 'page1',
-            projectId: 'p1',
-            templateId: 'landing',
-            label: 'Home',
-            status: 'draft',
-            fields: { title: 'Hello', body: 'World' },
-            createdAt: '',
-            updatedAt: ''
+            fields: { title: 'Hello', body: 'World' }
         };
         const result = validatePage(page, schema);
         expect(result.valid).toBe(true);
@@ -41,15 +34,9 @@ describe('validatePage', () => {
     });
 
     it('returns invalid when required field is missing', () => {
-        const page: Page = {
+        const page = {
             id: 'page1',
-            projectId: 'p1',
-            templateId: 'landing',
-            label: 'Home',
-            status: 'draft',
-            fields: { body: 'Only body' },
-            createdAt: '',
-            updatedAt: ''
+            fields: { body: 'Only body' }
         };
         const result = validatePage(page, schema);
         expect(result.valid).toBe(false);
@@ -61,30 +48,18 @@ describe('validatePage', () => {
     });
 
     it('returns invalid when required field is empty string', () => {
-        const page: Page = {
+        const page = {
             id: 'page1',
-            projectId: 'p1',
-            templateId: 'landing',
-            label: 'Home',
-            status: 'draft',
-            fields: { title: '', body: 'x' },
-            createdAt: '',
-            updatedAt: ''
+            fields: { title: '', body: 'x' }
         };
         const result = validatePage(page, schema);
         expect(result.valid).toBe(false);
     });
 
     it('accepts optional field missing', () => {
-        const page: Page = {
+        const page = {
             id: 'page1',
-            projectId: 'p1',
-            templateId: 'landing',
-            label: 'Home',
-            status: 'draft',
-            fields: { title: 'Hi' },
-            createdAt: '',
-            updatedAt: ''
+            fields: { title: 'Hi' }
         };
         const result = validatePage(page, schema);
         expect(result.valid).toBe(true);
@@ -101,15 +76,9 @@ describe('validatePage', () => {
             createdAt: '',
             updatedAt: ''
         };
-        const page: Page = {
+        const page = {
             id: 'page1',
-            projectId: 'p1',
-            templateId: 'min',
-            label: 'P',
-            status: 'draft',
-            fields: {},
-            createdAt: '',
-            updatedAt: ''
+            fields: {} as Record<string, unknown>
         };
         const result = validatePage(page, minimalSchema);
         expect(result.valid).toBe(true);

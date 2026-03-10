@@ -11,7 +11,7 @@
       "modelType": "content",
       "fields": {
         "title": { "type": "core/text", "label": "Title", "options": { "multilingual": true } },
-        "excerpt": { "type": "core/textarea", "label": "Excerpt", "options": { "multilingual": true } },
+        "excerpt": { "type": "core/text", "label": "Excerpt", "options": { "multilingual": true, "ui": "textarea" } },
         "body": { "type": "core/rich-text", "label": "Body", "options": { "multilingual": true } }
       }
     }
