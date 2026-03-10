@@ -7,7 +7,9 @@
         "size": {
             "type": "core/select",
             "label": "Spacing size",
-            "options": ["xs", "sm", "md", "lg", "xl"],
+            "options": {
+                "choices": ["xs", "sm", "md", "lg", "xl"]
+            },
             "default": "md"
         },
         "custom": {

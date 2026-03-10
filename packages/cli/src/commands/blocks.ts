@@ -1,4 +1,5 @@
 import { listBlocks } from '@moteur/core/blocks.js';
+import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
 
 export async function listBlocksCommand(args: {
     project?: string;
@@ -13,7 +14,19 @@ export async function listBlocksCommand(args: {
             `📦 Available block types${args.project ? ' for project ' + args.project : ''}:`
         );
         Object.values(blocks).forEach(block => {
-            console.log(`- ${block.type} \t (${block.label}) \t\t- ${block.description})`);
+            console.log(`- ${block.type} \t (${block.label}) \t\t- ${block.description}`);
         });
     }
 }
+
+cliRegistry.register('blocks', {
+    name: '',
+    description: 'List all available block types',
+    action: listBlocksCommand
+});
+
+cliRegistry.register('blocks', {
+    name: 'list',
+    description: 'List all available block types',
+    action: listBlocksCommand
+});

@@ -14,7 +14,9 @@
         "level": {
             "type": "core/select",
             "label": "Heading Level",
-            "options": ["h1", "h2", "h3", "h4", "h5", "h6"],
+            "options": {
+                "choices": ["h1", "h2", "h3", "h4", "h5", "h6"]
+            },
             "default": "h2"
         }
     }

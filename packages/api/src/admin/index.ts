@@ -11,6 +11,7 @@ import adminAssetConfigRouter from './assetConfig.js';
 import adminNavigationsRouter from './navigations/index.js';
 import adminWebhooksRouter from './webhooks/index.js';
 import adminFormsRouter, { openapi as adminFormsSpec } from './forms/index.js';
+import adminBlocksRouter from './blocks.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -25,6 +26,7 @@ router.use('/:projectId/asset-config', adminAssetConfigRouter);
 router.use('/:projectId/navigations', adminNavigationsRouter);
 router.use('/:projectId/webhooks', adminWebhooksRouter);
 router.use('/:projectId/forms', adminFormsRouter);
+router.use('/:projectId/blocks', adminBlocksRouter);
 
 export const adminSpecs = {
     paths: mergePathSpecs(

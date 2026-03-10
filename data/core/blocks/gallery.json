@@ -19,7 +19,9 @@
         "layout": {
             "type": "core/select",
             "label": "Layout",
-            "options": ["grid", "carousel", "masonry"],
+            "options": {
+                "choices": ["grid", "carousel", "masonry"]
+            },
             "default": "grid"
         },
         "columns": {

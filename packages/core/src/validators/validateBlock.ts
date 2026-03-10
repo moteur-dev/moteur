@@ -8,19 +8,22 @@ import type { Field } from '@moteur/types/Field.js';
 export function validateBlock(blockInstance: any, blockSchema: BlockSchema): ValidationResult {
     const result = createValidationResult();
 
-    const fields = blockInstance?.fields || {};
+    const data = blockInstance?.data || {};
     const schemaFields = blockSchema?.fields || {};
 
     for (const fieldName of Object.keys(schemaFields)) {
         const fieldDef = schemaFields[fieldName] as Field;
-        const fieldValue = fields[fieldName];
-        const fieldPath = `fields.${fieldName}`;
+        const fieldValue = data[fieldName];
+        const fieldPath = `data.${fieldName}`;
 
         if (fieldValue === undefined || fieldValue === null) {
+            const isRequired = fieldDef.required === true;
             addIssue(result, {
-                type: 'warning',
-                code: 'BLOCK_FIELD_MISSING',
-                message: `Missing value for required field "${fieldName}".`,
+                type: isRequired ? 'error' : 'warning',
+                code: isRequired ? 'BLOCK_FIELD_REQUIRED' : 'BLOCK_FIELD_MISSING',
+                message: isRequired
+                    ? `Required field "${fieldName}" is missing.`
+                    : `Optional field "${fieldName}" has no value.`,
                 path: fieldPath
             });
             continue;
@@ -43,13 +46,13 @@ export function validateBlock(blockInstance: any, blockSchema: BlockSchema): Val
         }
     }
 
-    for (const key of Object.keys(fields)) {
+    for (const key of Object.keys(data)) {
         if (!schemaFields[key]) {
             addIssue(result, {
                 type: 'warning',
                 code: 'BLOCK_FIELD_UNEXPECTED',
                 message: `Unexpected field "${key}" not defined in block schema.`,
-                path: `fields.${key}`
+                path: `data.${key}`
             });
         }
     }

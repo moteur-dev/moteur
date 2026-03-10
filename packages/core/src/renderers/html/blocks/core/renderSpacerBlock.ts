@@ -7,10 +7,19 @@ export function renderSpacerBlock(block: Block, _opts: RenderOptions): string {
     const meta = block.meta ?? {};
     const blockId = meta.id ?? `spacer-${Math.random().toString(36).slice(2)}`;
 
-    const size = data.size ?? 1;
-    const unit = data.unit ?? 'rem'; // fallback to rem for safety
+    const sizeMap: Record<string, string> = {
+        xs: '0.5rem',
+        sm: '1rem',
+        md: '2rem',
+        lg: '4rem',
+        xl: '8rem'
+    };
 
-    const inlineStyle = `height: ${size}${unit}`;
+    const sizeValue = data.size ?? 'md';
+    const customPx = data.custom;
+    const inlineStyle = customPx
+        ? `height: ${customPx}px`
+        : `height: ${sizeMap[sizeValue] ?? sizeMap.md}`;
 
     const attrs = renderAttributesFromMeta({
         ...meta,
