@@ -1,6 +1,6 @@
 # REST API Reference
 
-This document describes the **currently implemented** HTTP API. All paths are relative to the API base path (e.g. empty or `/api` via `API_BASE_PATH`). Authentication uses JWT (Bearer token) or **project API key** for collection endpoints (see Collections).
+This document describes the **HTTP API** for integrating with Moteur: authenticate, manage projects and content (admin), or read content for your frontend (public collections). All paths are relative to the API base path (e.g. empty or `/api` via `API_BASE_PATH`). For interactive docs, use **Swagger UI** at `/docs` when the server is running; for the OpenAPI spec, see [OpenAPI](#-openapi) below. Authentication uses JWT (Bearer token) or **project API key** for collection endpoints (see Collections).
 
 **Response convention:** List endpoints return a wrapper object `{ resourceName: T[] }` or a bare array where noted. Single-resource endpoints return `{ resourceName: T }` or `{ token, user }` for auth. Errors return `{ error: string }`.
 

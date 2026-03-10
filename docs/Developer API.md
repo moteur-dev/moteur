@@ -1,6 +1,6 @@
 # 🔧 Moteur Developer API Reference
 
-This reference describes the **programmatic TypeScript API** from `@moteur/core` (and `@moteur/types`) for reading, writing, and managing Moteur data. It is not the HTTP REST API; see [REST API.md](REST%20API.md) for that.
+This reference describes the **programmatic TypeScript API** from `@moteur/core` (and `@moteur/types`) for reading, writing, and managing Moteur data in Node or TypeScript (e.g. in scripts, backends, or build tools). Use it when you need the same capabilities as the HTTP API without making REST calls. For the HTTP API, see [REST API](REST%20API.md).
 
 > import { Moteur } from '@moteur/core';
 
