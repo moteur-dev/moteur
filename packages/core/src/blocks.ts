@@ -31,7 +31,7 @@ export function listBlocks(projectId?: string): Record<string, BlockSchema> {
         }
 
         try {
-            const files = fs.readdirSync(root).filter(file => file.endsWith('on'));
+            const files = fs.readdirSync(root).filter(file => file.endsWith('.json'));
 
             for (const file of files) {
                 try {

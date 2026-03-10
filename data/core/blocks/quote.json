@@ -2,6 +2,7 @@
     "type": "core/quote",
     "label": "Quote",
     "description": "A block for displaying a quote with an optional author and author image.",
+    "category": "content",
     "fields": {
       "text": {
         "type": "core/rich-text",

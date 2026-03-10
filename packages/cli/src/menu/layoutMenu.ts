@@ -23,12 +23,12 @@ export async function addBlockToLayout(projectId: string, layoutId: string) {
     const schema = blockTypes[selectedType];
     const newBlock: any = {
         type: selectedType,
-        fields: {}
+        data: {}
     };
 
     console.log('\n⚙️  Please fill in the fields for this block:');
     for (const [key, fieldSchema] of Object.entries(schema.fields)) {
-        newBlock.fields[key] = await renderCliField(fieldSchema.type, fieldSchema);
+        newBlock.data[key] = await renderCliField(fieldSchema.type, fieldSchema);
     }
 
     if (schema.optionsSchema) {

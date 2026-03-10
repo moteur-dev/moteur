@@ -31,7 +31,8 @@ export function validateSelectField(value: any, field: Field, path: string): Val
         return issues;
     }
 
-    const choices = field.options?.choices ?? field.options?.values;
+    const opts = field.options;
+    const choices = Array.isArray(opts) ? opts : (opts?.choices ?? opts?.values);
     if (Array.isArray(choices) && choices.length > 0) {
         const allowed = choices.map((c: any) => (typeof c === 'string' ? c : c?.value));
         if (!allowed.includes(value)) {

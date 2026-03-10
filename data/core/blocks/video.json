@@ -7,21 +7,21 @@
         "video": {
             "type": "core/video",
             "label": "Video",
-            "description": "The video to display in the hero block.",
+            "description": "The video to display in the video block.",
             "multilingual": true,
             "required": true
         },
         "title": {
             "type": "core/text",
             "label": "Title",
-            "description": "The title of the hero block.",
+            "description": "The title of the video block.",
             "multilingual": true,
             "required": true
         },
         "description": {
             "type": "core/text",
             "label": "Description",
-            "description": "A short description of the hero block.",
+            "description": "A short description of the video block.",
             "multilingual": true,
             "required": false
         }

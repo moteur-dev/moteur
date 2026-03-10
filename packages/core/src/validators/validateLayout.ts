@@ -48,10 +48,13 @@ export function validateLayout(layout: Layout, options?: ValidateLayoutOptions):
             const fieldPath = `${blockPath}.data.${fieldName}`;
 
             if (fieldValue === undefined || fieldValue === null) {
+                const isRequired = fieldDef.required === true;
                 addIssue(result, {
-                    type: 'warning',
-                    code: 'LAYOUT_MISSING_FIELD',
-                    message: `Missing value for field "${fieldName}".`,
+                    type: isRequired ? 'error' : 'warning',
+                    code: isRequired ? 'LAYOUT_REQUIRED_FIELD' : 'LAYOUT_MISSING_FIELD',
+                    message: isRequired
+                        ? `Required field "${fieldName}" is missing.`
+                        : `Optional field "${fieldName}" has no value.`,
                     path: fieldPath
                 });
                 continue;
