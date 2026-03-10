@@ -1,24 +1,28 @@
 import { beforeEach, afterAll, describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { moveToTrash, restoreFromTrash, deleteTrashedItem } from '../../src/utils/trashUtils';
 
-const tmpBase = path.join('tmp-test');
-const sourceFile = path.join(tmpBase, 'test.txt');
-const trashFile = path.join(tmpBase, '.trash', 'test.txt');
-const restoreFile = path.join(tmpBase, 'restored.txt');
+let tmpBase: string;
+let sourceFile: string;
+let trashFile: string;
+let restoreFile: string;
 
-beforeEach(() => {
-    // Clean up any previous test data
-    fs.rmSync(tmpBase, { recursive: true, force: true });
+beforeEach(async () => {
+    tmpBase = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'moteur-trashUtils-'));
+    sourceFile = path.join(tmpBase, 'test.txt');
+    trashFile = path.join(tmpBase, '.trash', 'test.txt');
+    restoreFile = path.join(tmpBase, 'restored.txt');
 
-    // Recreate test file
     fs.mkdirSync(path.dirname(sourceFile), { recursive: true });
     fs.writeFileSync(sourceFile, 'Hello, world!', 'utf-8');
 });
 
 afterAll(() => {
-    fs.rmSync(tmpBase, { recursive: true, force: true });
+    if (tmpBase && fs.existsSync(tmpBase)) {
+        fs.rmSync(tmpBase, { recursive: true, force: true });
+    }
 });
 
 describe('trashUtils', () => {

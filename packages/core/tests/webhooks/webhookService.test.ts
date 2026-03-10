@@ -55,8 +55,10 @@ describe('webhookService', () => {
     });
 
     afterEach(async () => {
-        process.env.DATA_ROOT = originalDataRoot;
-        process.env.NODE_ENV = originalNodeEnv;
+        if (originalDataRoot !== undefined) process.env.DATA_ROOT = originalDataRoot;
+        else delete process.env.DATA_ROOT;
+        if (originalNodeEnv !== undefined) process.env.NODE_ENV = originalNodeEnv;
+        else delete process.env.NODE_ENV;
         vi.unstubAllGlobals();
         await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
     });
