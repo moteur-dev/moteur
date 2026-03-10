@@ -1,9 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateSelectField } from '../../validators/fields/core/validateSelectField.js';
 
 fieldRegistry.register({
     type: 'core/select',
     label: 'Select',
     description: 'A select field.',
+    validate: validateSelectField,
+    storeDirect: true,
     fields: {
         value: {
             type: 'string',
@@ -41,6 +44,13 @@ fieldRegistry.register({
             type: 'string',
             label: 'Placeholder',
             description: 'Placeholder text for the select field.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering (e.g. "dropdown", "radio", "button-group"). Does not affect stored data.',
+            required: false
         }
     }
 });

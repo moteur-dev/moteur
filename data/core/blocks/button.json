@@ -1,0 +1,14 @@
+{
+    "type": "core/button",
+    "label": "Button",
+    "description": "A standalone call-to-action button or link.",
+    "category": "content",
+    "variantHints": ["primary", "secondary", "ghost", "danger"],
+    "fields": {
+        "link": {
+            "type": "core/link",
+            "label": "Link",
+            "required": true
+        }
+    }
+}

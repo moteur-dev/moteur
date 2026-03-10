@@ -1,6 +1,6 @@
 import { Field } from '@moteur/types/Field.js';
 import { ValidationIssue } from '@moteur/types/ValidationResult.js';
-import { getStructureFromCore } from '../../../structures.js';
+import * as structures from '../../../structures.js';
 import { validateFieldValue } from '../../validateFieldValue.js';
 
 export function validateStructureField(value: any, field: Field, path: string): ValidationIssue[] {
@@ -14,7 +14,7 @@ export function validateStructureField(value: any, field: Field, path: string): 
     if (structureId && inlineSchema) {
         issues.push({
             type: 'error',
-            code: 'INVALID_STRUCTURE_CONFIGURATION',
+            code: 'STRUCTURE_INVALID_CONFIGURATION',
             message: 'Cannot define both "structure" and "inlineSchema". Choose one.',
             path
         });
@@ -25,7 +25,7 @@ export function validateStructureField(value: any, field: Field, path: string): 
     let schemaFields: Record<string, any> | undefined;
     if (structureId) {
         try {
-            const sharedSchema = getStructureFromCore(structureId);
+            const sharedSchema = structures.getStructureFromCore(structureId);
             schemaFields = sharedSchema.fields;
         } catch (_error) {
             issues.push({
@@ -41,7 +41,7 @@ export function validateStructureField(value: any, field: Field, path: string): 
     } else {
         issues.push({
             type: 'error',
-            code: 'MISSING_STRUCTURE_OR_SCHEMA',
+            code: 'STRUCTURE_MISSING_SCHEMA',
             message: 'Either "structure" or "inlineSchema" must be defined in field.options.',
             path
         });
@@ -53,7 +53,7 @@ export function validateStructureField(value: any, field: Field, path: string): 
     if (!contentValue || typeof contentValue !== 'object') {
         issues.push({
             type: 'error',
-            code: 'INVALID_STRUCTURE_CONTENT',
+            code: 'STRUCTURE_INVALID_CONTENT',
             message: 'The "content" field must be an object.',
             path
         });
@@ -64,7 +64,7 @@ export function validateStructureField(value: any, field: Field, path: string): 
         // Defensive fallback if somehow it's still missing
         issues.push({
             type: 'error',
-            code: 'MISSING_STRUCTURE_FIELDS',
+            code: 'STRUCTURE_MISSING_FIELDS',
             message: 'Structure schema fields are missing.',
             path
         });

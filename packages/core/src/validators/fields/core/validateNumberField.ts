@@ -4,14 +4,15 @@ import { ValidationIssue } from '@moteur/types/ValidationResult.js';
 export function validateNumberField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
 
-    if (typeof value !== 'number') {
+    if (typeof value !== 'number' || Number.isNaN(value)) {
         issues.push({
             type: 'error',
-            code: 'INVALID_NUMBER_TYPE',
+            code: 'NUMBER_INVALID_TYPE',
             message: 'Expected a number value.',
             path,
             context: { value }
         });
+        return issues;
     }
 
     const opts = field.options || {};

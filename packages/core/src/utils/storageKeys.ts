@@ -84,3 +84,11 @@ export function submissionKey(formId: string, submissionId: string): string {
 export function submissionListPrefix(formId: string): string {
     return `forms/${formId}/submissions/`;
 }
+
+export function scheduleKey(scheduleId: string): string {
+    return `schedules/${scheduleId}.json`;
+}
+
+export function scheduleListPrefix(): string {
+    return 'schedules/';
+}

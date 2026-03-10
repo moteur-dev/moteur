@@ -8,7 +8,7 @@ export function validateListField(value: any, field: Field, path: string): Valid
     if (!Array.isArray(value)) {
         issues.push({
             type: 'error',
-            code: 'INVALID_LIST_TYPE',
+            code: 'LIST_INVALID_TYPE',
             message: 'Expected a list (array) of values.',
             path,
             context: { value }
@@ -20,7 +20,7 @@ export function validateListField(value: any, field: Field, path: string): Valid
     if (!itemField) {
         issues.push({
             type: 'warning',
-            code: 'INVALID_LIST_MISSING_ITEMS',
+            code: 'LIST_MISSING_ITEMS',
             message: 'No "items" field definition found for list.',
             path,
             context: { value }

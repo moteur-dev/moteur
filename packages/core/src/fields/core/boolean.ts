@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateBooleanField } from '../../validators/fields/core/validateBooleanField.js';
 
 fieldRegistry.register({
     type: 'core/boolean',
     label: 'Boolean',
     description: 'A true/false toggle field.',
     storeDirect: true,
+    validate: validateBooleanField,
     fields: {
         value: {
             type: 'core/boolean',
@@ -25,6 +27,13 @@ fieldRegistry.register({
             default: 'No',
             label: 'False Label',
             description: 'Label for the false state.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering (e.g. "toggle", "checkbox"). Does not affect stored data.',
+            required: false
         }
     }
 });

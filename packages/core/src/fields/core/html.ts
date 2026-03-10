@@ -1,9 +1,15 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateHtmlField } from '../../validators/fields/core/validateHtmlField.js';
 
+/**
+ * @deprecated Use core/rich-text instead. core/html is kept for backward compatibility with existing schemas.
+ */
 fieldRegistry.register({
     type: 'core/html',
     label: 'HTML',
     description: 'A field that stores raw HTML content.',
+    validate: validateHtmlField,
+    storeDirect: true,
     fields: {
         html: {
             type: 'core/text',
@@ -42,6 +48,12 @@ fieldRegistry.register({
                     default: true
                 }
             }
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

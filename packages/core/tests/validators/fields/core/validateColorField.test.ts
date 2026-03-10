@@ -31,7 +31,7 @@ describe('validateColorField', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     type: 'error',
-                    code: 'INVALID_COLOR_FORMAT'
+                    code: 'COLOR_INVALID_FORMAT'
                 })
             ])
         );
@@ -43,7 +43,7 @@ describe('validateColorField', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     type: 'error',
-                    code: 'INVALID_COLOR_FORMAT'
+                    code: 'COLOR_INVALID_FORMAT'
                 })
             ])
         );
@@ -54,7 +54,7 @@ describe('validateColorField', () => {
         expect(issues).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    code: 'INVALID_COLOR_STING'
+                    code: 'COLOR_INVALID_TYPE'
                 })
             ])
         );
@@ -65,7 +65,7 @@ describe('validateColorField', () => {
         expect(issues).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    code: 'INVALID_COLOR_PRESET'
+                    code: 'COLOR_INVALID_PRESET'
                 })
             ])
         );

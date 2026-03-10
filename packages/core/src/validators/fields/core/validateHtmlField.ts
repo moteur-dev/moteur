@@ -3,13 +3,75 @@ import { Field } from '@moteur/types/Field.js';
 // @ts-expect-error - Sanitize HTML does not have a default export
 import sanitizeHtml from 'sanitize-html';
 
+const KNOWN_HTML_TAGS = new Set([
+    'p',
+    'strong',
+    'em',
+    'ul',
+    'ol',
+    'li',
+    'a',
+    'br',
+    'span',
+    'div',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'blockquote',
+    'pre',
+    'code',
+    'hr',
+    'sub',
+    'sup',
+    'mark',
+    'small',
+    'table',
+    'thead',
+    'tbody',
+    'tfoot',
+    'tr',
+    'th',
+    'td',
+    'caption',
+    'img',
+    'figure',
+    'figcaption',
+    'picture',
+    'source',
+    'video',
+    'audio',
+    'details',
+    'summary',
+    'abbr',
+    'cite',
+    'del',
+    'ins',
+    'time',
+    'dl',
+    'dt',
+    'dd',
+    'section',
+    'article',
+    'aside',
+    'nav',
+    'header',
+    'footer',
+    'iframe',
+    'embed',
+    'object',
+    'param'
+]);
+
 export function validateHtmlField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
 
     if (typeof value !== 'string') {
         issues.push({
             type: 'error',
-            code: 'INVALID_HTML_TYPE',
+            code: 'HTML_INVALID_TYPE',
             message: 'Value must be a string (HTML).',
             path,
             context: { value }
@@ -17,7 +79,6 @@ export function validateHtmlField(value: any, field: Field, path: string): Valid
         return issues;
     }
 
-    // Sanitize using field's config
     const allowedTags = field.options?.allowedTags ?? ['p', 'strong', 'em', 'ul', 'li', 'a'];
     const allowedAttributes = field.options?.allowedAttributes ?? { a: ['href', 'target'] };
 
@@ -33,9 +94,7 @@ export function validateHtmlField(value: any, field: Field, path: string): Valid
         });
     }
 
-    // Optionally: validate configured allowedTags themselves
-    const validTags = ['p', 'strong', 'em', 'ul', 'li', 'a', 'br', 'span', 'div'];
-    const invalidTags = (allowedTags as string[]).filter(tag => !validTags.includes(tag));
+    const invalidTags = (allowedTags as string[]).filter(tag => !KNOWN_HTML_TAGS.has(tag));
     if (invalidTags.length > 0) {
         issues.push({
             type: 'warning',

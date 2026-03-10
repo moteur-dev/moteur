@@ -97,6 +97,10 @@ export function pageFilePath(projectId: string, pageId: string): string {
     return path.join(basePagesDir(projectId), `${pageId}.json`);
 }
 
+export function scheduleFilePath(projectId: string, scheduleId: string): string {
+    return path.join(projectDir(projectId), 'schedules', `${scheduleId}.json`);
+}
+
 /** Original asset file path: assets/original/{id}-{filename} */
 export function assetOriginalPath(projectId: string, assetId: string, filename: string): string {
     return path.join(baseAssetsDir(projectId), 'original', `${assetId}-${filename}`);
@@ -149,4 +153,8 @@ export function trashTemplatesDir(projectId: string): string {
 
 export function trashPagesDir(projectId: string): string {
     return path.join(baseProjectsTrashDir(), projectId, 'pages');
+}
+
+export function trashScheduleDir(projectId: string, scheduleId: string): string {
+    return path.join(baseProjectsTrashDir(), projectId, 'schedules', scheduleId);
 }

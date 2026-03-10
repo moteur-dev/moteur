@@ -6,5 +6,13 @@ fieldRegistry.register({
     description:
         'Reference to a project asset (image, video, or document) with optional usage-level alt and caption.',
     storeDirect: true,
-    options: {}
+    optionsSchema: {
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description:
+                'Optional hint for Studio input rendering (e.g. "upload", "url"). Does not affect stored data.',
+            required: false
+        }
+    }
 });

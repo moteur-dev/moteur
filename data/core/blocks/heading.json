@@ -1,0 +1,21 @@
+{
+    "type": "core/heading",
+    "label": "Heading",
+    "description": "A semantic heading block. Level controls h1–h6 output.",
+    "category": "content",
+    "variantHints": ["display", "section", "label"],
+    "fields": {
+        "text": {
+            "type": "core/text",
+            "label": "Heading Text",
+            "multilingual": true,
+            "required": true
+        },
+        "level": {
+            "type": "core/select",
+            "label": "Heading Level",
+            "options": ["h1", "h2", "h3", "h4", "h5", "h6"],
+            "default": "h2"
+        }
+    }
+}

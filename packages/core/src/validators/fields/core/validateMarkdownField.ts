@@ -7,7 +7,7 @@ export function validateMarkdownField(value: any, field: Field, path: string): V
     if (typeof value !== 'string') {
         issues.push({
             type: 'error',
-            code: 'INVALID_MARKDOWN_TYPE',
+            code: 'MARKDOWN_INVALID_TYPE',
             message: 'Expected a markdown string.',
             path,
             context: { value }

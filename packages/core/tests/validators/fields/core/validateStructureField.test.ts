@@ -1,12 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { validateStructureField } from '../../../../src/validators/fields/core/validateStructureField.js';
 import { Field } from '@moteur/types/Field.js';
-import { getStructureFromCore } from '../../../../src/structures.js';
-
-// --- Mock getStructureFromCore (used by validateStructureField for shared schema) ---
-vi.mock('../../../../src/structures.js', () => ({
-    getStructureFromCore: vi.fn()
-}));
+import * as structures from '../../../../src/structures.js';
 
 describe('validateStructureField', () => {
     const sharedSchemaFields = {
@@ -15,11 +10,15 @@ describe('validateStructureField', () => {
     };
 
     beforeEach(() => {
-        vi.clearAllMocks();
+        vi.restoreAllMocks();
     });
 
     it('validates structure using shared schema', () => {
-        (getStructureFromCore as vi.Mock).mockReturnValue({ fields: sharedSchemaFields });
+        vi.spyOn(structures, 'getStructureFromCore').mockReturnValue({
+            type: 'core/mySharedStructure',
+            label: 'My Shared Structure',
+            fields: sharedSchemaFields
+        });
 
         const field: Field = {
             type: 'core/structure',
@@ -80,7 +79,7 @@ describe('validateStructureField', () => {
         expect(issues).toContainEqual(
             expect.objectContaining({
                 type: 'error',
-                code: 'INVALID_STRUCTURE_CONFIGURATION'
+                code: 'STRUCTURE_INVALID_CONFIGURATION'
             })
         );
     });
@@ -101,13 +100,13 @@ describe('validateStructureField', () => {
         expect(issues).toContainEqual(
             expect.objectContaining({
                 type: 'error',
-                code: 'MISSING_STRUCTURE_OR_SCHEMA'
+                code: 'STRUCTURE_MISSING_SCHEMA'
             })
         );
     });
 
     it('errors when shared schema is not found', () => {
-        (getStructureFromCore as vi.Mock).mockImplementation(() => {
+        vi.spyOn(structures, 'getStructureFromCore').mockImplementation(() => {
             throw new Error('Schema not found');
         });
 
@@ -149,7 +148,7 @@ describe('validateStructureField', () => {
         expect(issues).toContainEqual(
             expect.objectContaining({
                 type: 'error',
-                code: 'INVALID_STRUCTURE_CONTENT'
+                code: 'STRUCTURE_INVALID_CONTENT'
             })
         );
     });

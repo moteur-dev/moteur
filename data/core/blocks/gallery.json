@@ -1,22 +1,31 @@
 {
     "type": "core/gallery",
     "label": "Gallery",
-    "description": "A hero field with a title, subtitle, and optional background image.",
+    "description": "A collection of images displayed in a grid or carousel layout.",
+    "category": "media",
     "fields": {
-        "title": {
-            "type": "core/text",
-            "label": "Title",
-            "multilingual": true,
+        "images": {
+            "type": "core/asset-list",
+            "label": "Images",
             "required": true
         },
-        "subtitle": {
-            "type": "core/rich-text",
-            "label": "Subtitle",
+        "caption": {
+            "type": "core/text",
+            "label": "Caption",
             "multilingual": true
+        }
+    },
+    "optionsSchema": {
+        "layout": {
+            "type": "core/select",
+            "label": "Layout",
+            "options": ["grid", "carousel", "masonry"],
+            "default": "grid"
         },
-        "backgroundImage": {
-            "type": "core/image",
-            "label": "Background Image"
+        "columns": {
+            "type": "core/number",
+            "label": "Columns",
+            "default": 3
         }
     }
 }

@@ -22,7 +22,7 @@ describe('validateTableField', () => {
     it('rejects if rows is not an array', () => {
         const issues = validateTableField('not-an-array', baseField, 'data.table');
         expect(issues).toEqual(
-            expect.arrayContaining([expect.objectContaining({ code: 'INVALID_TABLE_FORMAT' })])
+            expect.arrayContaining([expect.objectContaining({ code: 'TABLE_INVALID_FORMAT' })])
         );
     });
 
@@ -80,7 +80,7 @@ describe('validateTableField', () => {
         expect(validateTableField(invalid, field, 'data.table')).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    code: 'INVALID_NUMBER_TYPE',
+                    code: 'NUMBER_INVALID_TYPE',
                     path: 'data.table[0][1]'
                 })
             ])

@@ -1,9 +1,11 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateListField } from '../../validators/fields/core/validateListField.js';
 
 fieldRegistry.register({
     type: 'core/list',
     label: 'List',
     description: 'A repeatable list of values or structured objects.',
+    validate: validateListField,
     fields: {
         items: {
             type: 'core/object',
@@ -40,6 +42,12 @@ fieldRegistry.register({
             default: false,
             label: 'Unique Items',
             description: 'Whether items in the list must be unique.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

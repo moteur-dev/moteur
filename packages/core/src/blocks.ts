@@ -100,7 +100,9 @@ export function createBlock(schema: BlockSchema): BlockSchema {
         description: schema.description,
         category: schema.category,
         fields: schema.fields ?? {},
-        optionsSchema: schema.optionsSchema
+        optionsSchema: schema.optionsSchema,
+        ...(schema.variantHints != null && { variantHints: schema.variantHints }),
+        ...(schema.editorial != null && { editorial: schema.editorial })
     };
     fs.writeFileSync(filePath, JSON.stringify(toWrite, null, 4), 'utf-8');
     return toWrite as BlockSchema;

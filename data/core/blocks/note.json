@@ -1,0 +1,15 @@
+{
+    "type": "core/note",
+    "editorial": true,
+    "label": "Note",
+    "description": "An editorial note visible only in Studio. Never rendered in frontend output.",
+    "category": "editorial",
+    "fields": {
+        "text": {
+            "type": "core/text",
+            "label": "Note",
+            "multilingual": false,
+            "required": true
+        }
+    }
+}

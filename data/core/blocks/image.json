@@ -2,24 +2,27 @@
     "type": "core/image",
     "label": "Image",
     "description": "A single image block.",
+    "category": "media",
     "fields": {
         "image": {
             "type": "core/image",
             "label": "Image",
-            "multilingual": true,
             "required": true
         },
         "title": {
-          "type": "core/string",
-          "multilingual": true
+            "type": "core/text",
+            "label": "Title",
+            "multilingual": true
         },
         "caption": {
-          "type": "core/string",
-          "multilingual": true
+            "type": "core/text",
+            "label": "Caption",
+            "multilingual": true
         },
         "credit": {
-          "type": "core/string",
-          "multilingual": true
+            "type": "core/text",
+            "label": "Credit",
+            "multilingual": true
         }
     }
 }

@@ -5,12 +5,18 @@ export type WebhookEvent =
     | 'entry.published'
     | 'entry.unpublished'
     | 'entry.deleted'
+    | 'entry.scheduled'
+    | 'entry.unscheduled'
+    | 'entry.schedule.failed'
     | 'asset.created'
     | 'asset.updated'
     | 'asset.deleted'
     | 'page.published'
     | 'page.unpublished'
     | 'page.deleted'
+    | 'page.scheduled'
+    | 'page.unscheduled'
+    | 'page.schedule.failed'
     | 'review.submitted'
     | 'review.approved'
     | 'review.rejected'
@@ -88,7 +94,18 @@ export type WebhookPayloadData =
     | PagePayloadData
     | ReviewPayloadData
     | CommentPayloadData
-    | FormPayloadData;
+    | FormPayloadData
+    | SchedulePayloadData;
+
+export type SchedulePayloadData = {
+    scheduleId: string;
+    entryId?: string;
+    pageId?: string;
+    modelId?: string;
+    action: 'publish' | 'unpublish';
+    scheduledAt?: string;
+    error?: string;
+};
 
 export type EntryPayloadData = {
     entryId: string;

@@ -1,10 +1,13 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateLinkField } from '../../validators/fields/core/validateLinkField.js';
 
 fieldRegistry.register({
     type: 'core/link',
     label: 'Link',
     description:
         'A structured hyperlink with label, accessibility options, and visual customization.',
+    validate: validateLinkField,
+    resolveValue: false,
     fields: {
         url: {
             type: 'core/text',
@@ -73,6 +76,12 @@ fieldRegistry.register({
             default: false,
             label: 'Relative Only',
             description: 'Restrict the link to relative URLs only.'
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

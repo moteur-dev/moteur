@@ -1,0 +1,8 @@
+{
+    "type": "core/divider",
+    "label": "Divider",
+    "description": "A visual or structural section break.",
+    "category": "layout",
+    "variantHints": ["line", "spacer", "ornament"],
+    "fields": {}
+}

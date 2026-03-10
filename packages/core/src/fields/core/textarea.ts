@@ -1,9 +1,15 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTextField } from '../../validators/fields/core/validateTextField.js';
 
+/**
+ * @deprecated Use core/text with ui: "textarea" instead. core/textarea is kept for backward compatibility with existing schemas.
+ */
 fieldRegistry.register({
     type: 'core/textarea',
     label: 'Text Area',
     description: 'A multi-line string field, useful for paragraphs or descriptions.',
+    validate: validateTextField,
+    storeDirect: true,
     fields: {
         text: {
             type: 'string',
@@ -52,6 +58,12 @@ fieldRegistry.register({
                     description: 'Error message when validation fails.'
                 }
             }
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

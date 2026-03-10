@@ -1,0 +1,18 @@
+{
+    "type": "core/table",
+    "label": "Table",
+    "description": "Tabular data with optional row and column headers.",
+    "category": "content",
+    "fields": {
+        "table": {
+            "type": "core/table",
+            "label": "Table Data",
+            "required": true
+        },
+        "caption": {
+            "type": "core/text",
+            "label": "Caption",
+            "multilingual": true
+        }
+    }
+}

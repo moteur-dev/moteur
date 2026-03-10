@@ -5,6 +5,7 @@ import { resolveEntryAssets } from '@moteur/core/assets/assetResolver.js';
 import { resolveEntryUrl } from '@moteur/core/pages.js';
 import type { OpenAPIV3 } from 'openapi-types';
 import { requireProjectAccess } from '../middlewares/auth.js';
+import { stripEditorialBlocksFromPayload } from '../utils/stripBlockSchema.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -29,7 +30,8 @@ router.get('/', requireProjectAccess, async (req: any, res: any) => {
                 })
             );
         }
-        return res.json({ entries });
+        const filtered = stripEditorialBlocksFromPayload(entries);
+        return res.json({ entries: filtered });
     } catch (err: any) {
         return res.status(500).json({ error: err.message });
     }

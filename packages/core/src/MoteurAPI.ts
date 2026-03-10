@@ -16,6 +16,7 @@ import type * as Assets from './assets/assetService';
 import type * as Webhooks from './webhooks/webhookService';
 import type * as Forms from './forms';
 import type * as FormSubmissions from './formSubmissions';
+import type * as Schedules from './schedules';
 
 export interface MoteurAPI {
     projects: typeof Projects;
@@ -103,5 +104,13 @@ export interface MoteurAPI {
         get: typeof FormSubmissions.getSubmission;
         delete: typeof FormSubmissions.deleteSubmission;
         create: typeof FormSubmissions.createSubmission;
+    };
+    schedules: {
+        list: typeof Schedules.listSchedules;
+        get: typeof Schedules.getSchedule;
+        getSchedulesForResource: typeof Schedules.getSchedulesForResource;
+        create: typeof Schedules.createSchedule;
+        cancel: typeof Schedules.cancelSchedule;
+        delete: typeof Schedules.deleteSchedule;
     };
 }

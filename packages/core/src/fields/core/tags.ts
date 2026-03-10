@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTagsField } from '../../validators/fields/core/validateTagsField.js';
 
 fieldRegistry.register({
     type: 'core/tags',
     label: 'Tags',
     description: 'A list of tag IDs, with multilingual support in the tag model.',
     storeDirect: true,
+    validate: validateTagsField,
     multilingual: false,
     fields: {
         value: {
@@ -40,6 +42,12 @@ fieldRegistry.register({
             label: 'Tag Model Source',
             description: 'Reference to where tags are defined, like "project/tags".',
             required: true
+        },
+        ui: {
+            type: 'core/text',
+            label: 'UI Hint',
+            description: 'Optional hint for Studio input rendering. Does not affect stored data.',
+            required: false
         }
     }
 });

@@ -1,3 +1,5 @@
+import { ValidationIssue } from './ValidationResult.js';
+
 export interface Field {
     id?: string; // Unique identifier for the field
     type: string; // Field type (e.g., "text", "number")
@@ -8,6 +10,8 @@ export interface Field {
     options?: Record<string, any>; // Additional options for the field
     [key: string]: any; // Additional custom options
 }
+
+export type FieldValidator = (value: any, field: Field, path: string) => ValidationIssue[];
 
 export interface FieldSchema {
     id?: string; // Unique identifier for the field schema (field type, e.g., "core/text")
@@ -20,6 +24,8 @@ export interface FieldSchema {
     required?: boolean; // Whether the field is mandatory
     pattern?: string; // Regex pattern for validation
     storeDirect?: boolean; // Store as primitive value (e.g., string, number)
+    validate?: FieldValidator; // Optional validator registered with this field type
+    resolveValue?: boolean; // If false, skip storeDirect unwrapping (field handles its own)
     [key: string]: any; // Additional custom options
 }
 
@@ -35,6 +41,7 @@ export interface FieldMeta {
 export interface FieldOptions {
     required?: boolean; // Whether the field is mandatory
     multilingual?: boolean; // Whether the field supports multiple languages
+    ui?: string; // Free-text hint for Studio input type (e.g. "textarea", "radio", "slider")
     [key: string]: any; // Additional custom options
 }
 
@@ -83,17 +90,7 @@ export const fieldSchema: FieldSchema = {
                 required: false
             }
         },
-        /*fields: {
-            id: 'Fields',
-            type: 'core/list',
-            label: 'Nested Fields',
-            description: 'Nested fields for complex structures',
-            options: {
-                itemType: 'core/object',
-                allowEmpty: true,
-                required: false
-            }
-        }*/ storeDirect: {
+        storeDirect: {
             id: 'storeDirect',
             type: 'core/boolean',
             label: 'Store Directly',

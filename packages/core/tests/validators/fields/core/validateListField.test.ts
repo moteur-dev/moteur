@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateListField } from '../../../..//src/validators/fields/core/validateListField.js';
+import { validateListField } from '../../../../src/validators/fields/core/validateListField.js';
 import { Field } from '@moteur/types/Field.js';
 
 describe('validateListField', () => {

@@ -7,7 +7,8 @@ export type ActivityResourceType =
     | 'model'
     | 'project'
     | 'user'
-    | 'blueprint';
+    | 'blueprint'
+    | 'schedule';
 
 export type ActivityAction =
     | 'created'
@@ -19,7 +20,8 @@ export type ActivityAction =
     | 'resolved'
     | 'submitted_for_review'
     | 'approved'
-    | 'rejected';
+    | 'rejected'
+    | 'schedule_failed';
 
 export interface ActivityEvent {
     id: string;

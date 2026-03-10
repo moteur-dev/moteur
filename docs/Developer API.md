@@ -281,6 +281,33 @@ Marks all notifications for the user in the project as read.
 
 ---
 
+## 📅 Schedules API
+
+Scheduled publishing for entries and pages. A **Schedule** is a first-class object per project; execution is handled by a hybrid scheduler (timeouts + periodic sweep). When workflow requires review, only users with **reviewer** or **admin** role can create schedules; for **publish** the resource must have an approved review. **Unpublish** has no review requirement.
+
+### `Moteur.schedules.list(user: User, projectId: string, options?: ListSchedulesOptions): Promise<Schedule[]>`
+Returns schedules for the project, optionally filtered by `resourceType`, `resourceId`, `status`, or `action`. Sorted by `scheduledAt` ascending.
+
+### `Moteur.schedules.get(user: User, projectId: string, scheduleId: string): Promise<Schedule>`
+Returns a single schedule by ID. Throws if not found.
+
+### `Moteur.schedules.getSchedulesForResource(projectId: string, resourceType: 'entry' | 'page', resourceId: string): Promise<Schedule[]>`
+Returns all non-cancelled, non-done schedules for the given resource. No auth — for internal use (scheduler engine, public resource endpoints).
+
+### `Moteur.schedules.create(user: User, projectId: string, input: CreateScheduleInput): Promise<Schedule>`
+Creates a schedule. `input` must include `resourceType`, `resourceId`, `action` (`'publish'` \| `'unpublish'`), and `scheduledAt` (ISO datetime; normalized to UTC). For entries, `modelId` is required. Validates: date in the future; when workflow requires review, user must be reviewer/admin and (for publish) resource must have an approved review. Only one pending schedule per resource+action; throws if one exists. Fires webhooks `entry.scheduled` or `page.scheduled` and registers the schedule with the scheduler engine.
+
+### `Moteur.schedules.cancel(user: User, projectId: string, scheduleId: string): Promise<Schedule>`
+Cancels a pending schedule. Sets `status` to `'cancelled'`. Throws if schedule is not pending. Fires webhooks `entry.unscheduled` or `page.unscheduled` and tells the scheduler engine to clear the timeout.
+
+### `Moteur.schedules.delete(user: User, projectId: string, scheduleId: string): Promise<void>`
+Soft-deletes a schedule. Allowed only when `status` is `'done'`, `'failed'`, or `'cancelled'`. Throws if status is `'pending'` or `'processing'` (cancel first).
+
+### Scheduler engine (internal use)
+`schedulerEngine.init()` is called on API server startup to hydrate pending schedules and start the periodic sweep. `schedulerEngine.stopSweep()` is called on SIGTERM/SIGINT for graceful shutdown. Exported as `schedulerEngine` from `@moteur/core` for server integration; `register(schedule)` and `cancel(scheduleId)` are used by the schedules API.
+
+---
+
 ## 🧩 Fields API
 
 ### `Moteur.fields.loadFields(): Record<string, Field>`

@@ -1,7 +1,8 @@
 {
     "type": "core/video",
-    "label": "Hero",
-    "description": "A block containing a single video.",
+    "label": "Video",
+    "description": "A block containing a single video with optional title and description.",
+    "category": "media",
     "fields": {
         "video": {
             "type": "core/video",
