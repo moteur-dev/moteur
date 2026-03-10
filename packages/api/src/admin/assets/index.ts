@@ -9,7 +9,11 @@ import {
     moveToFolder,
     regenerateVariants
 } from '@moteur/core/assets/assetService.js';
+import { getProject } from '@moteur/core/projects.js';
+import { getAdapter } from '@moteur/ai';
+import { getCredits, deductCredits, getCreditCost } from '@moteur/ai';
 import { requireProjectAccess } from '../../middlewares/auth.js';
+import { analyseImage as runImageAnalysis } from '../../ai/imageAnalysis.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -29,7 +33,7 @@ router.post('/', requireProjectAccess, upload.single('file'), async (req: any, r
         const title = req.body.title as string | undefined;
         const credit = req.body.credit as string | undefined;
         const keepLocalCopy = req.body.keepLocalCopy === 'true' || req.body.keepLocalCopy === true;
-        const asset = await uploadAsset(
+        let asset = await uploadAsset(
             projectId,
             req.user!,
             {
@@ -39,6 +43,37 @@ router.post('/', requireProjectAccess, upload.single('file'), async (req: any, r
             },
             { folder, alt, title, credit, keepLocalCopy }
         );
+
+        const project = await getProject(req.user!, projectId);
+        if (
+            project.ai?.autoAnalyseImages &&
+            asset.type === 'image' &&
+            asset.url &&
+            !alt
+        ) {
+            const adapter = await getAdapter();
+            if (adapter?.analyseImage) {
+                const cost = getCreditCost('analyse.image');
+                const balance = getCredits(projectId);
+                if (balance >= cost) {
+                    const deduct = deductCredits(projectId, cost);
+                    if (deduct.success) {
+                        try {
+                            const result = await runImageAnalysis(adapter, asset.url, {
+                                locale: project.defaultLocale ?? 'en',
+                            });
+                            asset = await updateAsset(projectId, req.user!, asset.id, {
+                                alt: result.alt,
+                                caption: result.caption,
+                            });
+                        } catch {
+                            // Analysis failed; return asset without alt/caption
+                        }
+                    }
+                }
+            }
+        }
+
         return res.status(201).json(asset);
     } catch (err: any) {
         if (err?.message?.includes('exceeds max'))

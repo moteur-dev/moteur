@@ -71,4 +71,12 @@ export type Asset = {
 
     createdAt: string;
     updatedAt: string;
+
+    // ── AI-generated image metadata ──
+    /** Prompt sent to the image generation provider (stored when asset was created via Generate). */
+    generationPrompt?: string;
+    /** Provider identifier e.g. 'openai/dall-e-3'. */
+    aiProvider?: string;
+    /** When true, this asset was created from AI image generation. */
+    aiGenerated?: boolean;
 };

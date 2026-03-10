@@ -1,75 +1,85 @@
-// src/routes/ai/generate-image.ts
+/**
+ * POST /ai/generate-image — Generate images from text prompt.
+ * Uses project's image provider (getImageAdapter), deducts 10 credits, returns variants.
+ */
+
 import express, { Router } from 'express';
 import { z } from 'zod';
+import { getProject } from '@moteur/core/projects.js';
+import {
+    generateImages,
+    AIError,
+    getCredits,
+} from '@moteur/ai';
 import { requireAuth } from '../middlewares/auth.js';
 
-const router: Router = express.Router();
+const router: express.Router = Router();
 
-/** Lazy loader for OpenAI client */
-async function getOpenAI() {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) return null;
-
-    const { OpenAI } = await import('openai');
-    return new OpenAI({ apiKey });
-}
-
-const schema = z.object({
-    prompt: z.string().min(5),
-    size: z.enum(['1024x1024', '1792x1024', '1024x1792']).default('1024x1024'),
-    quality: z.string().default('hd')
+const bodySchema = z.object({
+    prompt: z.string().min(1),
+    styleHints: z.array(z.enum(['photographic', 'illustration', 'technical-diagram', 'editorial', 'abstract'])).optional(),
+    aspectRatio: z.enum(['1:1', '4:3', '16:9', '3:2']).optional(),
+    count: z.number().int().min(1).max(2).optional(),
+    projectId: z.string().min(1),
+    entryId: z.string().optional(),
+    source: z.enum(['field', 'brief', 'library']).optional(),
 });
 
-type _PromptOptions = {
-    scene: string; // e.g. "A robot arm assembling gears"
-    style?: string; // e.g. "Retro-futuristic 1970s poster"
-    medium?: string; // e.g. "Screenprint with halftone"
-    palette?: string; // e.g. "Bold oranges and muted browns"
-    quality?: string; // e.g. "High resolution, cinematic detail"
-    composition?: string; // e.g. "Geometric layout, balanced framing"
-    extras?: string[]; // e.g. ["No text", "Background-friendly"]
-};
-
 router.post('/generate-image', requireAuth, async (req: any, res: any) => {
-    const parseResult = schema.safeParse(req.body ?? {});
-    if (!parseResult.success) {
-        return res.status(400).json({ error: 'Invalid or missing prompt/params' });
+    const parse = bodySchema.safeParse(req.body ?? {});
+    if (!parse.success) {
+        return res.status(400).json({ error: 'Invalid request', details: parse.error.flatten() });
     }
-
-    const { prompt, size, quality } = parseResult.data;
-
-    // Soft dependency: return 503 if OpenAI is disabled
-    const openai = await getOpenAI();
-    if (!openai) {
-        console.warn('[AI] OpenAI disabled: no OPENAI_API_KEY found.');
-        return res.status(503).json({
-            error: 'AI image generation is disabled (missing OPENAI_API_KEY)'
-        });
-    }
+    const { prompt, styleHints, aspectRatio, count, projectId, entryId, source } = parse.data;
 
     try {
-        const response = await openai.responses.create({
-            model: 'gpt-4o',
-            input: `Generate an image of ${prompt}. Use size: ${size}. Quality: ${quality}.`,
-            tools: [{ type: 'image_generation' }]
-        });
-
-        const imageBase64 = response.output
-            .filter(o => o.type === 'image_generation_call')
-            .map(o => o.result)[0];
-
-        if (!imageBase64 || typeof imageBase64 !== 'string') {
-            console.error('Invalid image result:', response);
-            return res.status(500).json({ error: 'Image generation failed' });
+        const project = await getProject(req.user, projectId);
+        if (project.users?.length && !project.users.includes(req.user.id)) {
+            return res.status(403).json({ error: 'Access to this project is forbidden' });
         }
+        const projectSettings = { imageProvider: project.ai?.imageProvider ?? null };
+        const credits = getCredits(projectId);
+        const context = {
+            projectId,
+            projectName: project.label,
+            projectLocales: project.supportedLocales ?? [project.defaultLocale],
+            defaultLocale: project.defaultLocale,
+            credits: { remaining: credits },
+        };
+
+        const result = await generateImages(
+            { prompt, styleHints, aspectRatio, count },
+            context,
+            projectSettings
+        );
 
         return res.json({
-            image: `data:image/png;base64,${imageBase64}`,
-            responseId: response.id
+            variants: result.variants.map((v) => ({ url: v.url, width: v.width, height: v.height })),
+            prompt: result.prompt,
+            creditsUsed: result.creditsUsed,
+            creditsRemaining: result.creditsRemaining,
         });
     } catch (err: any) {
-        console.error('OpenAI API error:', err);
-        return res.status(500).json({ error: err.message || 'OpenAI request failed' });
+        const code = err?.code ?? (err instanceof AIError ? err.code : undefined);
+        if (code === 'insufficient_credits') {
+            return res.status(402).json({
+                error: 'insufficient_credits',
+                creditsRemaining: err?.details?.remaining ?? getCredits(projectId),
+            });
+        }
+        if (code === 'image_provider_not_configured') {
+            return res.status(422).json({ error: 'image_provider_not_configured' });
+        }
+        if (err instanceof AIError) {
+            // other AIError codes fall through to 500
+        }
+        if (err?.name === 'NotImplementedError') {
+            return res.status(503).json({
+                error: 'Image generation is not implemented for the selected provider.',
+            });
+        }
+        console.error('AI generate-image failed:', err);
+        return res.status(500).json({ error: err?.message ?? 'Image generation failed' });
     }
 });
 

@@ -29,6 +29,7 @@ This folder contains the main documentation for **developers using Moteur**: con
 | [**Developer API**](Developer%20API.md) | TypeScript API reference for `@moteur/core`: projects, collections, entries, pages, navigations, webhooks, etc. |
 | [**Authentication**](Authentication.md) | JWT (login, refresh, OAuth) and project API key (read-only). Env vars for auth. |
 | [**Configuration**](Configuration.md) | Environment variables for the Moteur API (base path, CORS, rate limits, auth, storage). |
+| [**AI**](AI.md) | AI layer: providers (OpenAI, Anthropic, Mock), configurable credits, writing (per-action endpoints), translation, generate/entry, generate/fields, generate/image, status. |
 | [**CLI**](CLI.md) | CLI reference: projects, models, entries, layouts, structures, templates, pages, blueprints. |
 | [**Starters**](Starters.md) | Official starters (Next.js, Astro, Eleventy, etc.) — same demo project, same content patterns. |
 | [**Blueprints**](Blueprints.md) | Blueprint kinds (project, model, structure, template) and how to use them. |

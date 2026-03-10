@@ -53,6 +53,12 @@ export interface UploadOptions {
     title?: string;
     credit?: string;
     keepLocalCopy?: boolean;
+    /** AI-generated image: prompt sent to the provider. */
+    generationPrompt?: string;
+    /** AI-generated image: provider id e.g. 'openai/dall-e-3'. */
+    aiProvider?: string;
+    /** AI-generated image: set true when asset was created from generation. */
+    aiGenerated?: boolean;
 }
 
 export async function uploadAsset(
@@ -257,6 +263,9 @@ export async function uploadAsset(
     if (options?.alt) initial.alt = options.alt;
     if (options?.credit) initial.credit = options.credit;
     if (options?.folder) initial.folder = options.folder;
+    if (options?.generationPrompt != null) initial.generationPrompt = options.generationPrompt;
+    if (options?.aiProvider != null) initial.aiProvider = options.aiProvider;
+    if (options?.aiGenerated != null) initial.aiGenerated = options.aiGenerated;
 
     const idx = assets.findIndex(a => a.id === id);
     if (idx >= 0) assets[idx] = { ...initial };

@@ -14,7 +14,7 @@ const isTestEnv = (): boolean => process.env.NODE_ENV === 'test' || process.env.
 
 export function listBlocks(projectId?: string): Record<string, BlockSchema> {
     const registry: Record<string, BlockSchema> = {};
-    const namespaces = ['core'];
+    const namespaces = ['core', 'journal'];
 
     if (!isTestEnv()) {
         console.log(`Loading blocks for project: ${projectId || 'all'}`);

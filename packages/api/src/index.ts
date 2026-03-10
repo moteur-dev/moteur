@@ -198,6 +198,7 @@ const httpServer = createServer(app);
 
 // ✅ Plug in presence socket engine and broadcast activity events to project room
 const io = createPresenceServer(httpServer);
+app.locals.io = io;
 onEvent('activity.logged', async ctx => {
     try {
         io.to(ctx.event.projectId).emit('activity:event', ctx.event);

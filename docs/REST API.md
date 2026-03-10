@@ -386,11 +386,27 @@ Under a project and model. JWT + project access. Path param: `projectId`, `model
 
 ## 🤖 AI
 
+All AI endpoints use the shared layer ([AI](AI.md)). When no provider is configured, AI is disabled (503; Studio hides AI via `GET /ai/status`). Project-scoped operations consume credits; 402 when insufficient.
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/ai/generate-entry` | Generate entry (project access). |
-| POST | `/ai/generate-fields` | Generate fields (admin). |
-| POST | `/ai/generate-image` | Generate image (auth). |
+| GET | `/ai/status` | Whether AI is enabled (auth). Used by Studio to show/hide AI UI. |
+| POST | `/ai/write/draft` | AI draft for field (project access). |
+| POST | `/ai/write/rewrite` | Rewrite content (project access). |
+| POST | `/ai/write/shorten` | Shorten content (project access). |
+| POST | `/ai/write/expand` | Expand content (project access). |
+| POST | `/ai/write/tone/formal` | Formal tone (project access). |
+| POST | `/ai/write/tone/conversational` | Conversational tone (project access). |
+| POST | `/ai/write/tone/editorial` | Editorial tone (project access). |
+| POST | `/ai/write/summarise-excerpt` | Summarise excerpt (project access). |
+| POST | `/ai/translate/field` | Translate one multilingual field (project access). |
+| POST | `/ai/translate/entry` | Translate whole entry into target locales (project access). |
+| POST | `/ai/generate/entry` | Generate entry from prompt + model schema (project access). |
+| POST | `/ai/generate/fields` | Generate field definitions from prompt (admin). |
+| POST | `/ai/generate/image` | *(Legacy)* Generate single image (auth; global adapter). Prefer `/ai/generate-image` for project-scoped flow. |
+| POST | `/ai/generate-image` | Generate image variants from prompt (auth; projectId; project `ai.imageProvider`). **402** insufficient credits, **422** provider not configured. |
+| POST | `/ai/save-generated-image` | Save chosen variant URL to project media library (auth; projectId). |
+| POST | `/ai/analyse/image` | Analyse image for alt/caption (auth; optional entryId/fieldPath for presence). **402** if insufficient credits. |
 
 ---
 

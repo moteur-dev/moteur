@@ -19,6 +19,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "linkedom": "^0.18.0",
+    "@moteur/ai": "workspace:*",
     "@moteur/core": "workspace:*",
     "@moteur/presence": "workspace:*",
     "@moteur/types": "workspace:*",
