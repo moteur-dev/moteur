@@ -45,17 +45,3 @@ export interface FolderPage extends PageNodeBase {
 }
 
 export type PageNode = StaticPage | CollectionPage | FolderPage;
-
-/** @deprecated Use PageNode (StaticPage) for new code. Kept for migration and backward compat. */
-export interface Page {
-    id: string;
-    projectId: string;
-    templateId: string;
-    label: string;
-    slug?: string;
-    parentId?: string;
-    status: string;
-    fields: Record<string, any>;
-    createdAt: string;
-    updatedAt: string;
-}

@@ -3,7 +3,7 @@ import { validateHtmlField } from '../../../../src/validators/fields/core/valida
 import { Field } from '@moteur/types/Field.js';
 
 describe('validateHtmlField', () => {
-    const field: Field = { type: 'core/html', label: 'Content' };
+    const field: Field = { type: 'core/rich-text', label: 'Content' };
 
     it('validates string as valid HTML', () => {
         const issues = validateHtmlField('<p>Hello</p>', field, 'data.content');

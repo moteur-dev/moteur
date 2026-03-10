@@ -3,7 +3,6 @@ import { RenderOptions } from '@moteur/types/Renderer.js';
 import { renderFallbackField } from './rendererFallbackField.js';
 import { renderBooleanField } from './fields/core/renderBooleanField.js';
 import { renderColorField } from './fields/core/renderColorField.js';
-import { renderHtmlField } from './fields/core/renderHtmlField.js';
 import { renderImageField } from './fields/core/renderImageField.js';
 import { renderLinkField } from './fields/core/renderLinkField.js';
 import { renderListField } from './fields/core/renderListField.js';
@@ -20,7 +19,6 @@ const fieldRenderers: Record<string, (value: any, options: RenderOptions, field:
     {
         'core/boolean': renderBooleanField,
         'core/color': renderColorField,
-        'core/html': renderHtmlField,
         'core/image': renderImageField,
         'core/link': renderLinkField,
         'core/list': renderListField,
