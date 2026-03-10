@@ -5,7 +5,7 @@ import { validateFieldValue } from '../../validateFieldValue.js';
 export function validateObjectField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
 
-    if (typeof value !== 'object' || value === null) {
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
         issues.push({
             type: 'error',
             code: 'OBJECT_INVALID_TYPE',

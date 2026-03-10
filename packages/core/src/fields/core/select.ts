@@ -6,6 +6,7 @@ fieldRegistry.register({
     label: 'Select',
     description: 'A select field.',
     validate: validateSelectField,
+    storeDirect: true,
     fields: {
         value: {
             type: 'string',

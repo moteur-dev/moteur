@@ -6,6 +6,7 @@ fieldRegistry.register({
     label: 'Text',
     description: 'A single-line string field with multilingual support.',
     validate: validateTextField,
+    storeDirect: true,
     fields: {
         text: {
             type: 'string',

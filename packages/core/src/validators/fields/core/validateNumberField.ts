@@ -4,7 +4,7 @@ import { ValidationIssue } from '@moteur/types/ValidationResult.js';
 export function validateNumberField(value: any, field: Field, path: string): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
 
-    if (typeof value !== 'number') {
+    if (typeof value !== 'number' || Number.isNaN(value)) {
         issues.push({
             type: 'error',
             code: 'NUMBER_INVALID_TYPE',

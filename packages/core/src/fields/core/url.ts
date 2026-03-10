@@ -6,6 +6,7 @@ fieldRegistry.register({
     label: 'URL',
     description: 'A URL field.',
     validate: validateTextField,
+    storeDirect: true,
     fields: {
         url: {
             type: 'string',

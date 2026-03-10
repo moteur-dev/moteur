@@ -6,6 +6,7 @@ fieldRegistry.register({
     label: 'Markdown',
     description: 'A markdown-based long text field with multilingual support.',
     validate: validateMarkdownField,
+    storeDirect: true,
     fields: {
         markdown: {
             type: 'core/text',

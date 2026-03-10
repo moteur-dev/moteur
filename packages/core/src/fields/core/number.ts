@@ -6,6 +6,7 @@ fieldRegistry.register({
     label: 'Number',
     description: 'A number.',
     validate: validateNumberField,
+    storeDirect: true,
     fields: {
         value: {
             type: 'number',

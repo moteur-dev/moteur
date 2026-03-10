@@ -9,6 +9,7 @@ fieldRegistry.register({
     label: 'HTML',
     description: 'A field that stores raw HTML content.',
     validate: validateHtmlField,
+    storeDirect: true,
     fields: {
         html: {
             type: 'core/text',

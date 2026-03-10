@@ -1,3 +1,5 @@
+import { ValidationIssue } from './ValidationResult.js';
+
 export interface Field {
     id?: string; // Unique identifier for the field
     type: string; // Field type (e.g., "text", "number")
@@ -9,16 +11,7 @@ export interface Field {
     [key: string]: any; // Additional custom options
 }
 
-export type FieldValidator = (value: any, field: Field, path: string) => FieldValidationIssue[];
-
-export interface FieldValidationIssue {
-    type: 'error' | 'warning';
-    code: string;
-    message: string;
-    path?: string;
-    hint?: string;
-    context?: Record<string, any>;
-}
+export type FieldValidator = (value: any, field: Field, path: string) => ValidationIssue[];
 
 export interface FieldSchema {
     id?: string; // Unique identifier for the field schema (field type, e.g., "core/text")
@@ -97,17 +90,7 @@ export const fieldSchema: FieldSchema = {
                 required: false
             }
         },
-        /*fields: {
-            id: 'Fields',
-            type: 'core/list',
-            label: 'Nested Fields',
-            description: 'Nested fields for complex structures',
-            options: {
-                itemType: 'core/object',
-                allowEmpty: true,
-                required: false
-            }
-        }*/ storeDirect: {
+        storeDirect: {
             id: 'storeDirect',
             type: 'core/boolean',
             label: 'Store Directly',

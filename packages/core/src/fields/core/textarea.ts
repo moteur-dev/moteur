@@ -9,6 +9,7 @@ fieldRegistry.register({
     label: 'Text Area',
     description: 'A multi-line string field, useful for paragraphs or descriptions.',
     validate: validateTextField,
+    storeDirect: true,
     fields: {
         text: {
             type: 'string',

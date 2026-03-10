@@ -9,6 +9,7 @@ fieldRegistry.register({
     label: 'Rich Text',
     description: 'Formatted HTML content with multilingual support. Canonical name for core/html.',
     validate: validateTextField,
+    storeDirect: true,
     fields: {
         html: {
             type: 'core/text',
