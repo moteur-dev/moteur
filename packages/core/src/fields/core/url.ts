@@ -1,9 +1,11 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTextField } from '../../validators/fields/core/validateTextField.js';
 
 fieldRegistry.register({
     type: 'core/url',
     label: 'URL',
     description: 'A URL field.',
+    validate: validateTextField,
     fields: {
         url: {
             type: 'string',

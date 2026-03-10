@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTextField } from '../../validators/fields/core/validateTextField.js';
 
 /**
  * Unique identifier. Auto-generated UUID. Read-only — never writable via API.
@@ -12,6 +13,7 @@ fieldRegistry.register({
     label: 'ID',
     description: 'A unique identifier. Auto-generated UUID. Read-only — never writable via API.',
     storeDirect: true,
+    validate: validateTextField,
     fields: {
         value: {
             type: 'core/text',

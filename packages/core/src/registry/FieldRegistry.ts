@@ -23,11 +23,11 @@ class FieldRegistry {
         if (!fieldSchema) {
             throw new Error(`Field type "${type}" not found in registry.`);
         }
-        return this.fieldTypes[type];
+        return fieldSchema;
     }
 
     has(type: string): boolean {
-        return !!this.get(type);
+        return type in this.fieldTypes;
     }
 
     all(): Record<string, FieldSchema> {

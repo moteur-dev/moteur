@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateHtmlField } from '../../validators/fields/core/validateHtmlField.js';
 
 /**
  * @deprecated Use core/rich-text instead. core/html is kept for backward compatibility with existing schemas.
@@ -7,6 +8,7 @@ fieldRegistry.register({
     type: 'core/html',
     label: 'HTML',
     description: 'A field that stores raw HTML content.',
+    validate: validateHtmlField,
     fields: {
         html: {
             type: 'core/text',

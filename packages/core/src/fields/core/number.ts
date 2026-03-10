@@ -1,9 +1,11 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateNumberField } from '../../validators/fields/core/validateNumberField.js';
 
 fieldRegistry.register({
     type: 'core/number',
     label: 'Number',
     description: 'A number.',
+    validate: validateNumberField,
     fields: {
         value: {
             type: 'number',

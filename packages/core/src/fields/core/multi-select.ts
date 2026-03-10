@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateMultiSelectField } from '../../validators/fields/core/validateMultiSelectField.js';
 
 /**
  * Preferred way to express multi-value selects in new schemas.
@@ -10,6 +11,7 @@ fieldRegistry.register({
     label: 'Multi Select',
     description: 'Multiple choices from predefined options. Stored as string array.',
     storeDirect: true,
+    validate: validateMultiSelectField,
     fields: {
         value: {
             type: 'string',

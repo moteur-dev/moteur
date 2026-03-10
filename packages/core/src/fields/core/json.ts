@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateJsonField } from '../../validators/fields/core/validateJsonField.js';
 
 /**
  * Raw JSON blob. Escape hatch for unstructured or developer-defined data.
@@ -9,6 +10,7 @@ fieldRegistry.register({
     label: 'JSON',
     description: 'A raw JSON blob. Escape hatch for unstructured or developer-defined data.',
     storeDirect: true,
+    validate: validateJsonField,
     fields: {
         value: {
             type: 'core/object',

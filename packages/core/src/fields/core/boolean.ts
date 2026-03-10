@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateBooleanField } from '../../validators/fields/core/validateBooleanField.js';
 
 fieldRegistry.register({
     type: 'core/boolean',
     label: 'Boolean',
     description: 'A true/false toggle field.',
     storeDirect: true,
+    validate: validateBooleanField,
     fields: {
         value: {
             type: 'core/boolean',

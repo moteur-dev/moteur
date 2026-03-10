@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateRelationsField } from '../../validators/fields/core/validateRelationsField.js';
 
 /**
  * References to multiple entries in another model. Stored as array of { id, label, model }.
@@ -8,6 +9,7 @@ fieldRegistry.register({
     label: 'Relations',
     description: 'References to multiple entries in another model. Stored as array.',
     storeDirect: true,
+    validate: validateRelationsField,
     fields: {
         value: {
             type: 'core/list',

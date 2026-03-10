@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateSelectField } from '../../validators/fields/core/validateSelectField.js';
 
 /**
  * Workflow status for an entry. Opt-in — not on every model by default.
@@ -8,6 +9,7 @@ fieldRegistry.register({
     label: 'Status',
     description: 'Workflow status for an entry. Opt-in — not on every model by default.',
     storeDirect: true,
+    validate: validateSelectField,
     fields: {
         value: {
             type: 'core/text',

@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTagsField } from '../../validators/fields/core/validateTagsField.js';
 
 fieldRegistry.register({
     type: 'core/categories',
     label: 'Categories',
     description: 'A list of category IDs, referencing a structured category model.',
     storeDirect: true,
+    validate: validateTagsField,
     multilingual: false,
     fields: {
         items: {

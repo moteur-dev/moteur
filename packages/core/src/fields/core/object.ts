@@ -1,9 +1,11 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateObjectField } from '../../validators/fields/core/validateObjectField.js';
 
 fieldRegistry.register({
     type: 'core/object',
     label: 'Object',
     description: 'Flexible key-value object.',
+    validate: validateObjectField,
     fields: {
         value: {
             type: 'object',

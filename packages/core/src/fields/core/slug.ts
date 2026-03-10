@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateSlugField } from '../../validators/fields/core/validateSlugField.js';
 
 fieldRegistry.register({
     type: 'core/slug',
     label: 'Slug',
     description: 'A URL-friendly identifier, usually generated from another field like title.',
     storeDirect: true,
+    validate: validateSlugField,
     optionsSchema: {
         multilingual: {
             type: 'core/boolean',

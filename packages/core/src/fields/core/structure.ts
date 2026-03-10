@@ -1,9 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateStructureField } from '../../validators/fields/core/validateStructureField.js';
 
 fieldRegistry.register({
     type: 'core/structure',
     label: 'Structure',
     description: 'A reusable structured field defined by a shared schema.',
+    validate: validateStructureField,
+    resolveValue: false,
     fields: {
         value: {
             type: 'core/object',

@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTextField } from '../../validators/fields/core/validateTextField.js';
 
 /**
  * @deprecated Use core/text with ui: "textarea" instead. core/textarea is kept for backward compatibility with existing schemas.
@@ -7,6 +8,7 @@ fieldRegistry.register({
     type: 'core/textarea',
     label: 'Text Area',
     description: 'A multi-line string field, useful for paragraphs or descriptions.',
+    validate: validateTextField,
     fields: {
         text: {
             type: 'string',

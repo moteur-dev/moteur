@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateNumberField } from '../../validators/fields/core/validateNumberField.js';
 
 /**
  * Manual sort order. Integer. Opt-in — not on every model by default.
@@ -8,6 +9,7 @@ fieldRegistry.register({
     label: 'Order',
     description: 'Manual sort order. Integer. Opt-in — not on every model by default.',
     storeDirect: true,
+    validate: validateNumberField,
     fields: {
         value: {
             type: 'core/number',

@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateEmailField } from '../../validators/fields/core/validateEmailField.js';
 
 /**
  * Email field. Validated against standard email format on save.
@@ -8,6 +9,7 @@ fieldRegistry.register({
     label: 'Email',
     description: 'An email address. Validated against standard email format.',
     storeDirect: true,
+    validate: validateEmailField,
     fields: {
         value: {
             type: 'core/text',

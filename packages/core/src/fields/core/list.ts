@@ -1,9 +1,11 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateListField } from '../../validators/fields/core/validateListField.js';
 
 fieldRegistry.register({
     type: 'core/list',
     label: 'List',
     description: 'A repeatable list of values or structured objects.',
+    validate: validateListField,
     fields: {
         items: {
             type: 'core/object',

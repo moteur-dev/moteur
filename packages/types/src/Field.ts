@@ -9,6 +9,17 @@ export interface Field {
     [key: string]: any; // Additional custom options
 }
 
+export type FieldValidator = (value: any, field: Field, path: string) => FieldValidationIssue[];
+
+export interface FieldValidationIssue {
+    type: 'error' | 'warning';
+    code: string;
+    message: string;
+    path?: string;
+    hint?: string;
+    context?: Record<string, any>;
+}
+
 export interface FieldSchema {
     id?: string; // Unique identifier for the field schema (field type, e.g., "core/text")
     type: string; // Schema type
@@ -20,6 +31,8 @@ export interface FieldSchema {
     required?: boolean; // Whether the field is mandatory
     pattern?: string; // Regex pattern for validation
     storeDirect?: boolean; // Store as primitive value (e.g., string, number)
+    validate?: FieldValidator; // Optional validator registered with this field type
+    resolveValue?: boolean; // If false, skip storeDirect unwrapping (field handles its own)
     [key: string]: any; // Additional custom options
 }
 

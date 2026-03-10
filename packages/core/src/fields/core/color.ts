@@ -1,10 +1,13 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateColorField } from '../../validators/fields/core/validateColorField.js';
 
 fieldRegistry.register({
     type: 'core/color',
     label: 'Color',
     description: 'A hexadecimal color field.',
     storeDirect: true,
+    validate: validateColorField,
+    resolveValue: false,
     fields: {
         color: {
             type: 'core/text',

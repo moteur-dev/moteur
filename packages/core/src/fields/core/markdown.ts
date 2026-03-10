@@ -1,9 +1,11 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateMarkdownField } from '../../validators/fields/core/validateMarkdownField.js';
 
 fieldRegistry.register({
     type: 'core/markdown',
     label: 'Markdown',
     description: 'A markdown-based long text field with multilingual support.',
+    validate: validateMarkdownField,
     fields: {
         markdown: {
             type: 'core/text',

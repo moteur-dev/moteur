@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTextField } from '../../validators/fields/core/validateTextField.js';
 
 /**
  * Phone field. Explicitly NO format validation — phone formats vary globally
@@ -9,6 +10,7 @@ fieldRegistry.register({
     label: 'Phone',
     description: 'A phone number string. No format enforcement — phone formats vary globally.',
     storeDirect: true,
+    validate: validateTextField,
     fields: {
         value: {
             type: 'core/text',

@@ -1,9 +1,11 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTextField } from '../../validators/fields/core/validateTextField.js';
 
 fieldRegistry.register({
     type: 'core/text',
     label: 'Text',
     description: 'A single-line string field with multilingual support.',
+    validate: validateTextField,
     fields: {
         text: {
             type: 'string',

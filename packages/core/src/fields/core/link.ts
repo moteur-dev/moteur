@@ -1,10 +1,13 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateLinkField } from '../../validators/fields/core/validateLinkField.js';
 
 fieldRegistry.register({
     type: 'core/link',
     label: 'Link',
     description:
         'A structured hyperlink with label, accessibility options, and visual customization.',
+    validate: validateLinkField,
+    resolveValue: false,
     fields: {
         url: {
             type: 'core/text',

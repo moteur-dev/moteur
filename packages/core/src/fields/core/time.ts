@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateDateTimeField } from '../../validators/fields/core/validateDatetimeField.js';
 
 fieldRegistry.register({
     type: 'core/time',
     label: 'Time',
     description: 'A time value stored as HH:MM string.',
     storeDirect: true,
+    validate: validateDateTimeField,
     fields: {
         value: {
             type: 'core/text',

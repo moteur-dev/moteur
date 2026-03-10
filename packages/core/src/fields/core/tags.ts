@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTagsField } from '../../validators/fields/core/validateTagsField.js';
 
 fieldRegistry.register({
     type: 'core/tags',
     label: 'Tags',
     description: 'A list of tag IDs, with multilingual support in the tag model.',
     storeDirect: true,
+    validate: validateTagsField,
     multilingual: false,
     fields: {
         value: {

@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTableField } from '../../validators/fields/core/validateTableField.js';
 
 fieldRegistry.register({
     type: 'core/table',
     label: 'Table',
     description: 'A 2D table with optional row/column titles and mixed cell types.',
     storeDirect: false,
+    validate: validateTableField,
     fields: {
         rows: {
             type: 'core/list',

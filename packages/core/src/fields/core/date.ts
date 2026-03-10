@@ -1,10 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateDateTimeField } from '../../validators/fields/core/validateDatetimeField.js';
 
 fieldRegistry.register({
     type: 'core/date',
     label: 'Date',
     description: 'A date value stored as ISO 8601 date string (YYYY-MM-DD).',
     storeDirect: true,
+    validate: validateDateTimeField,
     fields: {
         value: {
             type: 'core/text',

@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateRelationField } from '../../validators/fields/core/validateRelationField.js';
 
 /**
  * Reference to a single entry in another model. Stored as { id, label, model }.
@@ -8,6 +9,7 @@ fieldRegistry.register({
     label: 'Relation',
     description: 'A reference to a single entry in another model.',
     storeDirect: true,
+    validate: validateRelationField,
     fields: {
         value: {
             type: 'core/object',

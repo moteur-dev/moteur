@@ -1,4 +1,5 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateTextField } from '../../validators/fields/core/validateTextField.js';
 
 /**
  * Icon identifier string. Refers to whatever icon system the project uses. No validation.
@@ -9,6 +10,7 @@ fieldRegistry.register({
     description:
         'An icon identifier string. Refers to whatever icon system the project uses. No validation.',
     storeDirect: true,
+    validate: validateTextField,
     fields: {
         value: {
             type: 'core/text',

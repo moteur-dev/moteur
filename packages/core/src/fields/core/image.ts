@@ -1,9 +1,12 @@
 import fieldRegistry from '../../registry/FieldRegistry.js';
+import { validateImageField } from '../../validators/fields/core/validateImageField.js';
 
 fieldRegistry.register({
     type: 'core/image',
     label: 'Image',
     description: 'An image field with alt text, caption, and optional credit.',
+    validate: validateImageField,
+    resolveValue: false,
     fields: {
         src: {
             type: 'core/media-image',
