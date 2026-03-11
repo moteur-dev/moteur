@@ -32,28 +32,29 @@ function getCostForAction(action: WritingAction, fieldMeta: FieldMeta): number {
             ['body', 'description', 'content'].includes(fieldMeta.fieldKey);
         return getCreditCost(isLong ? 'write.draft_long' : 'write.draft');
     }
-    if (action === 'tone:formal' || action === 'tone:conversational' || action === 'tone:editorial') {
+    if (
+        action === 'tone:formal' ||
+        action === 'tone:conversational' ||
+        action === 'tone:editorial'
+    ) {
         return getCreditCost('write.tone');
     }
     if (action === 'summarise-excerpt') return getCreditCost('write.summarise_excerpt');
     return getCreditCost(`write.${action}` as 'write.rewrite' | 'write.shorten' | 'write.expand');
 }
 
-function inferTargetLength(fieldKey: string, fieldType: string): 'short' | 'medium' | 'long' {
+function inferTargetLength(fieldKey: string, _fieldType: string): 'short' | 'medium' | 'long' {
     if (['title', 'name', 'slug'].includes(fieldKey)) return 'short';
     if (['body', 'description', 'content'].includes(fieldKey)) return 'long';
     return 'medium';
 }
 
-function buildDraftPrompt(
-    fieldMeta: FieldMeta,
-    context: MoteurAIContext,
-    locale: string
-): string {
+function buildDraftPrompt(fieldMeta: FieldMeta, context: MoteurAIContext, locale: string): string {
     const modelLabel = context.model?.label ?? 'entry';
-    const title = context.entry && typeof context.entry.title === 'string'
-        ? context.entry.title
-        : (context.entry && (context.entry as any).title);
+    const title =
+        context.entry && typeof context.entry.title === 'string'
+            ? context.entry.title
+            : context.entry && (context.entry as any).title;
     const titleStr = title != null ? String(title) : '';
     const category = context.entry && (context.entry as any).category;
     const issue = context.entry && (context.entry as any).issue;
@@ -70,15 +71,19 @@ function buildDraftPrompt(
         '',
         'Entry context:',
         titleStr ? `- Title: ${titleStr}` : '',
-        category ? `- Category: ${typeof category === 'string' ? category : (category as any)?.name ?? category}` : '',
-        issue ? `- Issue: ${typeof issue === 'string' ? issue : (issue as any)?.name ?? issue}` : '',
+        category
+            ? `- Category: ${typeof category === 'string' ? category : ((category as any)?.name ?? category)}`
+            : '',
+        issue
+            ? `- Issue: ${typeof issue === 'string' ? issue : ((issue as any)?.name ?? issue)}`
+            : '',
         '',
         `Field being written: ${fieldMeta.label}`,
         `Field type: ${typeLabel}`,
         `Target length: ${targetLength}`,
         `Locale: ${locale}`,
         '',
-        `Write in ${locale} only. Do not include a title or heading unless the field itself is a heading. Do not explain what you are writing — return only the content.`,
+        `Write in ${locale} only. Do not include a title or heading unless the field itself is a heading. Do not explain what you are writing — return only the content.`
     ];
     return parts.filter(Boolean).join('\n');
 }
@@ -90,7 +95,7 @@ function buildRewritePrompt(fieldMeta: FieldMeta, currentValue: string): string 
         'Return only the revised content — no explanation.',
         '',
         'Original:',
-        currentValue,
+        currentValue
     ].join('\n');
 }
 
@@ -101,7 +106,7 @@ function buildShortenPrompt(fieldMeta: FieldMeta, currentValue: string): string 
         'Return only the shortened content — no explanation.',
         '',
         'Original:',
-        currentValue,
+        currentValue
     ].join('\n');
 }
 
@@ -112,7 +117,7 @@ function buildExpandPrompt(fieldMeta: FieldMeta, currentValue: string): string {
         'Return only the expanded content — no explanation.',
         '',
         'Original:',
-        currentValue,
+        currentValue
     ].join('\n');
 }
 
@@ -127,7 +132,7 @@ function buildTonePrompt(
         'Return only the rewritten content — no explanation.',
         '',
         'Original:',
-        currentValue,
+        currentValue
     ].join('\n');
 }
 
@@ -145,7 +150,7 @@ function buildSummariseExcerptPrompt(bodyValue: string, locale: string): string 
         `Write in ${locale}. Return only the excerpt — no explanation.`,
         '',
         'Body:',
-        body,
+        body
     ].join('\n');
 }
 
@@ -180,21 +185,30 @@ export async function runWritingAction(
     if (action === 'draft') {
         prompt = buildDraftPrompt(fieldMeta, context, locale);
     } else if (action === 'rewrite') {
-        if (currentValue == null || currentValue === '') throw new Error('Rewrite requires current value');
+        if (currentValue == null || currentValue === '')
+            throw new Error('Rewrite requires current value');
         prompt = buildRewritePrompt(fieldMeta, currentValue);
     } else if (action === 'shorten') {
-        if (currentValue == null || currentValue === '') throw new Error('Shorten requires current value');
+        if (currentValue == null || currentValue === '')
+            throw new Error('Shorten requires current value');
         prompt = buildShortenPrompt(fieldMeta, currentValue);
     } else if (action === 'expand') {
-        if (currentValue == null || currentValue === '') throw new Error('Expand requires current value');
+        if (currentValue == null || currentValue === '')
+            throw new Error('Expand requires current value');
         prompt = buildExpandPrompt(fieldMeta, currentValue);
-    } else if (action === 'tone:formal' || action === 'tone:conversational' || action === 'tone:editorial') {
-        if (currentValue == null || currentValue === '') throw new Error('Tone adjustment requires current value');
+    } else if (
+        action === 'tone:formal' ||
+        action === 'tone:conversational' ||
+        action === 'tone:editorial'
+    ) {
+        if (currentValue == null || currentValue === '')
+            throw new Error('Tone adjustment requires current value');
         const tone = action.replace('tone:', '') as 'formal' | 'conversational' | 'editorial';
         prompt = buildTonePrompt(fieldMeta, currentValue, tone);
     } else if (action === 'summarise-excerpt') {
         const body = options?.bodyValueForExcerpt;
-        if (!body || body.trim() === '') throw new Error('Summarise as excerpt requires body content');
+        if (!body || body.trim() === '')
+            throw new Error('Summarise as excerpt requires body content');
         prompt = buildSummariseExcerptPrompt(body, locale);
     } else {
         throw new Error(`Unknown writing action: ${action}`);
@@ -219,5 +233,5 @@ function plainTextToHtml(text: string): string {
     const paragraphs = escaped.split(/\n\n+/).filter(Boolean);
     if (paragraphs.length === 0) return '';
     if (paragraphs.length === 1) return `<p>${paragraphs[0]}</p>`;
-    return paragraphs.map((p) => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('');
+    return paragraphs.map(p => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('');
 }

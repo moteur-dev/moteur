@@ -9,17 +9,13 @@ export type {
     GenerateOptions,
     ImageGenerateOptions,
     ImageResult,
-    MoteurAIAdapter,
+    MoteurAIAdapter
 } from './types.js';
 
 export { getAdapter, setAdapter } from './adapter.js';
 export { getAdapterFromEnv, clearAdapterCache } from './getAdapter.js';
 export { getCredits, deductCredits, setCredits } from './credits.js';
-export {
-    getCreditCost,
-    DEFAULT_CREDIT_COSTS,
-    resetCreditCostOverrides,
-} from './creditCosts.js';
+export { getCreditCost, DEFAULT_CREDIT_COSTS, resetCreditCostOverrides } from './creditCosts.js';
 export { MockAdapter } from './providers/MockAdapter.js';
 export { AIError, NotImplementedError } from './errors.js';
 export type { AIErrorCode, AIErrorDetails } from './errors.js';
@@ -30,5 +26,5 @@ export type {
     GenerationRequest,
     GenerationResult,
     GeneratedImage,
-    StyleHint,
+    StyleHint
 } from './imageGeneration.js';

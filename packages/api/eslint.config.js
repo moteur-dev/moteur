@@ -7,6 +7,8 @@ export default [
     languageOptions: {
       globals: {
         setImmediate: 'readonly',
+        Node: 'readonly',
+        Text: 'readonly',
       },
     },
   },

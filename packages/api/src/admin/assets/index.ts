@@ -45,12 +45,7 @@ router.post('/', requireProjectAccess, upload.single('file'), async (req: any, r
         );
 
         const project = await getProject(req.user!, projectId);
-        if (
-            project.ai?.autoAnalyseImages &&
-            asset.type === 'image' &&
-            asset.url &&
-            !alt
-        ) {
+        if (project.ai?.autoAnalyseImages && asset.type === 'image' && asset.url && !alt) {
             const adapter = await getAdapter();
             if (adapter?.analyseImage) {
                 const cost = getCreditCost('analyse.image');
@@ -60,11 +55,11 @@ router.post('/', requireProjectAccess, upload.single('file'), async (req: any, r
                     if (deduct.success) {
                         try {
                             const result = await runImageAnalysis(adapter, asset.url, {
-                                locale: project.defaultLocale ?? 'en',
+                                locale: project.defaultLocale ?? 'en'
                             });
                             asset = await updateAsset(projectId, req.user!, asset.id, {
                                 alt: result.alt,
-                                caption: result.caption,
+                                caption: result.caption
                             });
                         } catch {
                             // Analysis failed; return asset without alt/caption

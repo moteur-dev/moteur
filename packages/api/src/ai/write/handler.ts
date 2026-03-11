@@ -15,7 +15,7 @@ export function createWriteHandler(action: WritingAction) {
             bodyValueForExcerpt,
             currentValue,
             currentEntryData,
-            graceRegenerate,
+            graceRegenerate
         } = (req as any).body;
         const projectId = (req as any).body.projectId || (req as any).params.projectId;
         const modelId = (req as any).body.modelId || (req as any).params.modelId;
@@ -37,7 +37,10 @@ export function createWriteHandler(action: WritingAction) {
                 return;
             }
 
-            const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(Boolean);
+            const projectLocales = [
+                project.defaultLocale,
+                ...(project.supportedLocales ?? [])
+            ].filter(Boolean);
             const creditsRemaining = getCredits(projectId);
 
             let entry: Record<string, unknown> | null = null;
@@ -64,7 +67,7 @@ export function createWriteHandler(action: WritingAction) {
                 fieldType !== 'core/textarea'
             ) {
                 res.status(400).json({
-                    error: 'AI writing is only supported for core/text, core/rich-text, and core/textarea',
+                    error: 'AI writing is only supported for core/text, core/rich-text, and core/textarea'
                 });
                 return;
             }
@@ -72,7 +75,7 @@ export function createWriteHandler(action: WritingAction) {
             const fieldMeta: FieldMeta = {
                 label: fieldDef.label ?? fieldPath,
                 type: fieldType as 'core/text' | 'core/rich-text' | 'core/textarea',
-                fieldKey: fieldPath,
+                fieldKey: fieldPath
             };
 
             const context: MoteurAIContext = {
@@ -82,31 +85,29 @@ export function createWriteHandler(action: WritingAction) {
                 defaultLocale: project.defaultLocale ?? 'en',
                 model: { id: modelId, label: model.label ?? modelId, fields: model.fields ?? {} },
                 entry: entry ?? undefined,
-                credits: { remaining: creditsRemaining },
+                credits: { remaining: creditsRemaining }
             };
 
             const currentFieldValue =
                 currentValue !== undefined
-                    ? (currentValue === null ? null : String(currentValue))
+                    ? currentValue === null
+                        ? null
+                        : String(currentValue)
                     : entry && entry[fieldPath] != null
                       ? String(entry[fieldPath])
                       : null;
 
             const bodyForExcerpt =
                 bodyValueForExcerpt ??
-                (entry && typeof (entry as any).body === 'string' ? (entry as any).body : undefined);
+                (entry && typeof (entry as any).body === 'string'
+                    ? (entry as any).body
+                    : undefined);
 
-            const value = await runWritingAction(
-                action,
-                currentFieldValue,
-                fieldMeta,
-                context,
-                {
-                    locale,
-                    bodyValueForExcerpt: bodyForExcerpt,
-                    skipDeduction: !!graceRegenerate,
-                }
-            );
+            const value = await runWritingAction(action, currentFieldValue, fieldMeta, context, {
+                locale,
+                bodyValueForExcerpt: bodyForExcerpt,
+                skipDeduction: !!graceRegenerate
+            });
 
             const remaining = getCredits(projectId);
             const cost = creditsRemaining - remaining;
@@ -115,19 +116,19 @@ export function createWriteHandler(action: WritingAction) {
             res.json({
                 value,
                 creditsUsed,
-                creditsRemaining: remaining,
+                creditsRemaining: remaining
             });
         } catch (err: any) {
             if (err.message === 'INSUFFICIENT_CREDITS') {
                 res.status(402).json({
                     error: 'insufficient_credits',
-                    message: 'Not enough AI credits for this action',
+                    message: 'Not enough AI credits for this action'
                 });
                 return;
             }
             if (err.message === 'AI provider not configured') {
                 res.status(503).json({
-                    error: 'AI writing is disabled (no provider configured)',
+                    error: 'AI writing is disabled (no provider configured)'
                 });
                 return;
             }

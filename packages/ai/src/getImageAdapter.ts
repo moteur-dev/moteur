@@ -14,8 +14,7 @@ export interface ProjectAISettings {
     imageProvider?: 'openai' | 'fal' | 'replicate' | null;
 }
 
-const OPENAI_API_KEY =
-    process.env.MOTEUR_AI_API_KEY ?? process.env.OPENAI_API_KEY;
+const OPENAI_API_KEY = process.env.MOTEUR_AI_API_KEY ?? process.env.OPENAI_API_KEY;
 
 /**
  * Returns an adapter that supports generateImage for the given project settings.

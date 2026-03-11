@@ -2,13 +2,19 @@ import request from 'supertest';
 import express from 'express';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import saveGeneratedImageRouter from '../../src/ai/saveGeneratedImage.js';
-import { requireAuth } from '../../src/middlewares/auth.js';
+import { requireAuth as _requireAuth } from '../../src/middlewares/auth.js';
 
 vi.mock('../../src/middlewares/auth', () => ({
     requireAuth: (req: any, _res: any, next: any) => {
-        req.user = { id: 'user1', name: 'User', email: 'u@test.com', roles: ['admin'], isActive: true };
+        req.user = {
+            id: 'user1',
+            name: 'User',
+            email: 'u@test.com',
+            roles: ['admin'],
+            isActive: true
+        };
         next();
-    },
+    }
 }));
 
 vi.mock('axios', () => ({
@@ -16,22 +22,22 @@ vi.mock('axios', () => ({
         get: vi.fn().mockResolvedValue({
             status: 200,
             data: Buffer.from('fake-png-bytes'),
-            headers: { 'content-type': 'image/png' },
-        }),
-    },
+            headers: { 'content-type': 'image/png' }
+        })
+    }
 }));
 
 const mockUploadAsset = vi.fn();
 vi.mock('@moteur/core/assets/assetService.js', () => ({
-    uploadAsset: (...args: any[]) => mockUploadAsset(...args),
+    uploadAsset: (...args: any[]) => mockUploadAsset(...args)
 }));
 
 vi.mock('@moteur/core/projects', () => ({
     getProject: vi.fn().mockResolvedValue({
         id: 'p1',
         users: ['user1'],
-        assetConfig: {},
-    }),
+        assetConfig: {}
+    })
 }));
 
 const app = express();
@@ -49,7 +55,7 @@ describe('POST /ai/save-generated-image', () => {
             type: 'image',
             generationPrompt: 'a cat',
             aiProvider: 'openai/dall-e-3',
-            aiGenerated: true,
+            aiGenerated: true
         });
     });
 
@@ -64,30 +70,26 @@ describe('POST /ai/save-generated-image', () => {
         const { getProject } = await import('@moteur/core/projects.js');
         vi.mocked(getProject).mockResolvedValueOnce({
             id: 'p1',
-            users: ['other-user'],
+            users: ['other-user']
         } as any);
-        const res = await request(app)
-            .post('/save-generated-image')
-            .send({
-                variantUrl: 'https://provider.com/img.png',
-                prompt: 'a cat',
-                provider: 'openai/dall-e-3',
-                aspectRatio: '1:1',
-                projectId: 'p1',
-            });
+        const res = await request(app).post('/save-generated-image').send({
+            variantUrl: 'https://provider.com/img.png',
+            prompt: 'a cat',
+            provider: 'openai/dall-e-3',
+            aspectRatio: '1:1',
+            projectId: 'p1'
+        });
         expect(res.status).toBe(403);
     });
 
     it('returns 200 with asset including generationPrompt and aiGenerated', async () => {
-        const res = await request(app)
-            .post('/save-generated-image')
-            .send({
-                variantUrl: 'https://provider.com/img.png',
-                prompt: 'a cat',
-                provider: 'openai/dall-e-3',
-                aspectRatio: '1:1',
-                projectId: 'p1',
-            });
+        const res = await request(app).post('/save-generated-image').send({
+            variantUrl: 'https://provider.com/img.png',
+            prompt: 'a cat',
+            provider: 'openai/dall-e-3',
+            aspectRatio: '1:1',
+            projectId: 'p1'
+        });
         expect(res.status).toBe(200);
         expect(res.body.asset).toBeDefined();
         expect(res.body.asset.generationPrompt).toBe('a cat');
@@ -99,12 +101,12 @@ describe('POST /ai/save-generated-image', () => {
             expect.objectContaining({
                 buffer: expect.any(Buffer),
                 originalName: expect.stringMatching(/generated-\d+\.(png|webp|jpg)/),
-                mimeType: expect.stringMatching(/^image\//),
+                mimeType: expect.stringMatching(/^image\//)
             }),
             expect.objectContaining({
                 generationPrompt: 'a cat',
                 aiProvider: 'openai/dall-e-3',
-                aiGenerated: true,
+                aiGenerated: true
             })
         );
     });

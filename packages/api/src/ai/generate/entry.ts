@@ -24,13 +24,15 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
     const mid = modelId || req.params.modelId;
 
     if (!prompt || !pid || !mid) {
-        return res.status(400).json({ error: 'Missing required parameters: prompt, projectId, modelId' });
+        return res
+            .status(400)
+            .json({ error: 'Missing required parameters: prompt, projectId, modelId' });
     }
 
     const adapter = await getAdapter();
     if (!adapter?.generate) {
         return res.status(503).json({
-            error: 'AI entry generation is disabled (no provider configured)',
+            error: 'AI entry generation is disabled (no provider configured)'
         });
     }
 
@@ -44,14 +46,14 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
         if (balance < cost) {
             return res.status(402).json({
                 error: 'insufficient_credits',
-                message: 'Not enough AI credits for entry generation',
+                message: 'Not enough AI credits for entry generation'
             });
         }
         const { success } = deductCredits(pid, cost);
         if (!success) {
             return res.status(402).json({
                 error: 'insufficient_credits',
-                message: 'Not enough AI credits',
+                message: 'Not enough AI credits'
             });
         }
 
@@ -83,7 +85,7 @@ ${fieldList}
         const content = await adapter.generate(prompt, {
             system: systemPrompt,
             temperature: 0.6,
-            maxTokens: 4096,
+            maxTokens: 4096
         });
         if (!content?.trim()) throw new Error('Empty response from AI');
 
@@ -95,7 +97,7 @@ ${fieldList}
             success: true,
             entry: parsed,
             creditsUsed: cost,
-            creditsRemaining: remaining,
+            creditsRemaining: remaining
         });
     } catch (err: any) {
         console.error('AI generate/entry failed:', err);
@@ -115,7 +117,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                         schema: {
                             type: 'object',
                             properties: {
-                                prompt: { type: 'string', description: 'User-provided description' },
+                                prompt: {
+                                    type: 'string',
+                                    description: 'User-provided description'
+                                },
                                 projectId: { type: 'string' },
                                 modelId: { type: 'string' },
                                 locale: { type: 'string', default: 'en' }

@@ -2,22 +2,22 @@ import request from 'supertest';
 import express from 'express';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import generateImageRouter from '../../src/ai/generateImage.js';
-import { requireAuth } from '../../src/middlewares/auth.js';
-import { setCredits, getCredits } from '@moteur/ai';
+import { requireAuth as _requireAuth } from '../../src/middlewares/auth.js';
+import { setCredits, getCredits as _getCredits } from '@moteur/ai';
 
 vi.mock('../../src/middlewares/auth', () => ({
     requireAuth: (req: any, _res: any, next: any) => {
         req.user = { id: 'user1', roles: ['admin'] };
         next();
-    },
+    }
 }));
 
 const { mockGenerateImages } = vi.hoisted(() => ({ mockGenerateImages: vi.fn() }));
-vi.mock('@moteur/ai', async (importOriginal) => {
+vi.mock('@moteur/ai', async importOriginal => {
     const actual = await importOriginal<typeof import('@moteur/ai')>();
     return {
         ...actual,
-        generateImages: mockGenerateImages,
+        generateImages: mockGenerateImages
     };
 });
 
@@ -28,8 +28,8 @@ vi.mock('@moteur/core/projects', () => ({
         defaultLocale: 'en',
         supportedLocales: ['en'],
         users: ['user1'],
-        ai: { imageProvider: 'openai' },
-    }),
+        ai: { imageProvider: 'openai' }
+    })
 }));
 
 const app = express();
@@ -43,9 +43,7 @@ describe('POST /ai/generate-image', () => {
     });
 
     it('returns 400 when prompt or projectId missing', async () => {
-        const res = await request(app)
-            .post('/generate-image')
-            .send({ projectId: 'p1' });
+        const res = await request(app).post('/generate-image').send({ projectId: 'p1' });
         expect(res.status).toBe(400);
     });
 
@@ -54,7 +52,7 @@ describe('POST /ai/generate-image', () => {
         vi.mocked(getProject).mockResolvedValueOnce({
             id: 'p1',
             users: ['other-user'],
-            ai: { imageProvider: 'openai' },
+            ai: { imageProvider: 'openai' }
         } as any);
         const res = await request(app)
             .post('/generate-image')
@@ -66,7 +64,7 @@ describe('POST /ai/generate-image', () => {
         mockGenerateImages.mockRejectedValueOnce(
             Object.assign(new Error('Insufficient credits'), {
                 code: 'insufficient_credits',
-                details: { required: 10, remaining: 2 },
+                details: { required: 10, remaining: 2 }
             })
         );
         const res = await request(app)
@@ -91,23 +89,37 @@ describe('POST /ai/generate-image', () => {
     it('returns 200 with variants, prompt, creditsUsed, creditsRemaining', async () => {
         mockGenerateImages.mockResolvedValueOnce({
             variants: [
-                { url: 'https://example.com/1.png', width: 1024, height: 1024, provider: 'openai/dall-e-3' },
-                { url: 'https://example.com/2.png', width: 1024, height: 1024, provider: 'openai/dall-e-3' },
+                {
+                    url: 'https://example.com/1.png',
+                    width: 1024,
+                    height: 1024,
+                    provider: 'openai/dall-e-3'
+                },
+                {
+                    url: 'https://example.com/2.png',
+                    width: 1024,
+                    height: 1024,
+                    provider: 'openai/dall-e-3'
+                }
             ],
             prompt: 'a cat\nStyle: photographic',
             creditsUsed: 10,
-            creditsRemaining: 90,
+            creditsRemaining: 90
         });
         const res = await request(app)
             .post('/generate-image')
             .send({
                 prompt: 'a cat',
                 styleHints: ['photographic'],
-                projectId: 'p1',
+                projectId: 'p1'
             });
         expect(res.status).toBe(200);
         expect(res.body.variants).toHaveLength(2);
-        expect(res.body.variants[0]).toEqual({ url: 'https://example.com/1.png', width: 1024, height: 1024 });
+        expect(res.body.variants[0]).toEqual({
+            url: 'https://example.com/1.png',
+            width: 1024,
+            height: 1024
+        });
         expect(res.body.prompt).toBe('a cat\nStyle: photographic');
         expect(res.body.creditsUsed).toBe(10);
         expect(res.body.creditsRemaining).toBe(90);

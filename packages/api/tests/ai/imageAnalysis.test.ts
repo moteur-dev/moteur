@@ -11,7 +11,7 @@ describe('imageAnalysis service', () => {
 
     it('returns alt and caption from adapter in parallel', async () => {
         const result = await analyseImage(adapter, 'https://example.com/img.png', {
-            locale: 'en',
+            locale: 'en'
         });
         expect(result).toHaveProperty('alt');
         expect(result).toHaveProperty('caption');
@@ -26,7 +26,7 @@ describe('imageAnalysis service', () => {
             locale: 'fr',
             modelLabel: 'Article',
             entryTitle: 'My Post',
-            categoryName: 'News',
+            categoryName: 'News'
         });
         expect(result.caption).toBeDefined();
     });
@@ -34,7 +34,7 @@ describe('imageAnalysis service', () => {
     it('trims alt to 125 chars', async () => {
         vi.spyOn(adapter, 'analyseImage').mockResolvedValue('x'.repeat(200));
         const result = await analyseImage(adapter, 'https://example.com/img.png', {
-            locale: 'en',
+            locale: 'en'
         });
         expect(result.alt.length).toBeLessThanOrEqual(125);
     });

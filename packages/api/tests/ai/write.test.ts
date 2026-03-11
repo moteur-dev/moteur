@@ -2,25 +2,25 @@ vi.mock('../../src/middlewares/auth', () => ({
     requireProjectAccess: (req: any, _res: any, next: any) => {
         req.user = { id: 'user1', roles: ['admin'] };
         next();
-    },
+    }
 }));
 
 vi.mock('@moteur/core/projects', () => ({
-    getProject: vi.fn(),
+    getProject: vi.fn()
 }));
 vi.mock('@moteur/core/models', () => ({
-    getModelSchema: vi.fn(),
+    getModelSchema: vi.fn()
 }));
 vi.mock('@moteur/core/entries', () => ({
-    getEntry: vi.fn(),
+    getEntry: vi.fn()
 }));
 
 const runWritingActionMock = vi.fn();
 vi.mock('../../src/ai/writing', () => ({
-    runWritingAction: (...args: unknown[]) => runWritingActionMock(...args),
+    runWritingAction: (...args: unknown[]) => runWritingActionMock(...args)
 }));
 vi.mock('../../src/ai/credits', () => ({
-    getCredits: vi.fn(() => 100),
+    getCredits: vi.fn(() => 100)
 }));
 
 import request from 'supertest';
@@ -39,7 +39,7 @@ const mockProject = {
     id: 'proj1',
     label: 'Test Project',
     defaultLocale: 'en',
-    supportedLocales: ['fr'],
+    supportedLocales: ['fr']
 };
 const mockModel = {
     id: 'article',
@@ -47,8 +47,8 @@ const mockModel = {
     fields: {
         title: { type: 'core/text', label: 'Title' },
         body: { type: 'core/rich-text', label: 'Body' },
-        excerpt: { type: 'core/text', label: 'Excerpt' },
-    },
+        excerpt: { type: 'core/text', label: 'Excerpt' }
+    }
 };
 
 describe('POST /write/draft and /write/rewrite', () => {
@@ -60,15 +60,13 @@ describe('POST /write/draft and /write/rewrite', () => {
     });
 
     it('returns 200 with value and credits when draft succeeds', async () => {
-        const res = await request(app)
-            .post('/write/draft')
-            .send({
-                projectId: 'proj1',
-                modelId: 'article',
-                entryId: 'e1',
-                fieldPath: 'title',
-                locale: 'en',
-            });
+        const res = await request(app).post('/write/draft').send({
+            projectId: 'proj1',
+            modelId: 'article',
+            entryId: 'e1',
+            fieldPath: 'title',
+            locale: 'en'
+        });
 
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty('value', 'Generated content');
@@ -77,37 +75,31 @@ describe('POST /write/draft and /write/rewrite', () => {
     });
 
     it('returns 400 when projectId or modelId missing', async () => {
-        const res = await request(app)
-            .post('/write/draft')
-            .send({
-                fieldPath: 'title',
-                locale: 'en',
-            });
+        const res = await request(app).post('/write/draft').send({
+            fieldPath: 'title',
+            locale: 'en'
+        });
         expect(res.status).toBe(400);
         expect(res.body.error).toMatch(/projectId|modelId|required/);
     });
 
     it('returns 400 when fieldPath or locale missing', async () => {
-        const res = await request(app)
-            .post('/write/draft')
-            .send({
-                projectId: 'proj1',
-                modelId: 'article',
-            });
+        const res = await request(app).post('/write/draft').send({
+            projectId: 'proj1',
+            modelId: 'article'
+        });
         expect(res.status).toBe(400);
     });
 
     it('returns 402 when runWritingAction throws INSUFFICIENT_CREDITS', async () => {
         runWritingActionMock.mockRejectedValue(new Error('INSUFFICIENT_CREDITS'));
 
-        const res = await request(app)
-            .post('/write/draft')
-            .send({
-                projectId: 'proj1',
-                modelId: 'article',
-                fieldPath: 'title',
-                locale: 'en',
-            });
+        const res = await request(app).post('/write/draft').send({
+            projectId: 'proj1',
+            modelId: 'article',
+            fieldPath: 'title',
+            locale: 'en'
+        });
 
         expect(res.status).toBe(402);
         expect(res.body.error).toBe('insufficient_credits');
@@ -116,47 +108,42 @@ describe('POST /write/draft and /write/rewrite', () => {
     it('returns 404 when model not found', async () => {
         vi.mocked(getModelSchema).mockResolvedValue(null);
 
-        const res = await request(app)
-            .post('/write/draft')
-            .send({
-                projectId: 'proj1',
-                modelId: 'missing',
-                fieldPath: 'title',
-                locale: 'en',
-            });
+        const res = await request(app).post('/write/draft').send({
+            projectId: 'proj1',
+            modelId: 'missing',
+            fieldPath: 'title',
+            locale: 'en'
+        });
 
         expect(res.status).toBe(404);
         expect(res.body.error).toBe('Model not found');
     });
 
     it('returns 400 when field not on model', async () => {
-        const res = await request(app)
-            .post('/write/draft')
-            .send({
-                projectId: 'proj1',
-                modelId: 'article',
-                fieldPath: 'unknownField',
-                locale: 'en',
-            });
+        const res = await request(app).post('/write/draft').send({
+            projectId: 'proj1',
+            modelId: 'article',
+            fieldPath: 'unknownField',
+            locale: 'en'
+        });
 
         expect(res.status).toBe(400);
         expect(res.body.error).toContain('not found');
     });
 
     it('passes graceRegenerate to runWritingAction when body has graceRegenerate true', async () => {
-        await request(app)
-            .post('/write/rewrite')
-            .send({
-                projectId: 'proj1',
-                modelId: 'article',
-                fieldPath: 'title',
-                locale: 'en',
-                currentValue: 'Some text',
-                graceRegenerate: true,
-            });
+        await request(app).post('/write/rewrite').send({
+            projectId: 'proj1',
+            modelId: 'article',
+            fieldPath: 'title',
+            locale: 'en',
+            currentValue: 'Some text',
+            graceRegenerate: true
+        });
 
         expect(runWritingActionMock).toHaveBeenCalled();
-        const lastCall = runWritingActionMock.mock.calls[runWritingActionMock.mock.calls.length - 1];
+        const lastCall =
+            runWritingActionMock.mock.calls[runWritingActionMock.mock.calls.length - 1];
         const options = lastCall?.[4];
         expect(options?.skipDeduction).toBe(true);
     });

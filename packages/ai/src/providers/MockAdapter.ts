@@ -6,7 +6,7 @@ import type {
     MoteurAIAdapter,
     GenerateOptions,
     ImageGenerateOptions,
-    ImageResult,
+    ImageResult
 } from '../types.js';
 
 export class MockAdapter implements MoteurAIAdapter {
@@ -27,17 +27,14 @@ export class MockAdapter implements MoteurAIAdapter {
         return Promise.resolve(`[mock image: ${prompt.slice(0, 30)}]`);
     }
 
-    generateImage(
-        prompt: string,
-        options?: ImageGenerateOptions
-    ): Promise<ImageResult[]> {
+    generateImage(prompt: string, options?: ImageGenerateOptions): Promise<ImageResult[]> {
         const count = options?.count ?? 1;
         return Promise.resolve(
             Array.from({ length: count }, (_, i) => ({
                 url: `https://mock.example/img-${i}.png`,
                 width: 1024,
                 height: 1024,
-                prompt,
+                prompt
             }))
         );
     }

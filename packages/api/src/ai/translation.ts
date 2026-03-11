@@ -27,9 +27,11 @@ export type EntryData = Record<string, unknown>;
 export interface ModelSchemaLike {
     id: string;
     label?: string;
-    fields?: Record<string, { type?: string; label?: string; options?: { multilingual?: boolean } }>;
+    fields?: Record<
+        string,
+        { type?: string; label?: string; options?: { multilingual?: boolean } }
+    >;
 }
-
 
 function buildTranslatePrompt(
     fieldType: string,
@@ -62,9 +64,7 @@ async function translateHtmlWithDom(
     adapter: { generate: (p: string, o?: any) => Promise<string> }
 ): Promise<string> {
     if (!html || !html.trim()) return html;
-    const wrapped = html.trimStart().startsWith('<')
-        ? html
-        : `<p>${html}</p>`;
+    const wrapped = html.trimStart().startsWith('<') ? html : `<p>${html}</p>`;
     const { document } = parseHTML(`<!DOCTYPE html><html><body>${wrapped}</body></html>`);
     const body = document.body;
     if (!body) return html;
@@ -78,7 +78,7 @@ async function translateHtmlWithDom(
     };
     walk(body);
     if (textNodes.length === 0) return html;
-    const texts = textNodes.map((t) => t.text);
+    const texts = textNodes.map(t => t.text);
     const prompt = buildTranslatePrompt('rich-text', fromLocale, toLocale, texts.join('\n---\n'));
     const result = await adapter.generate(prompt, { maxTokens: 4096, temperature: 0.2 });
     const translated = result.trim();
@@ -98,7 +98,10 @@ export async function translateField(
     options?: { skipDeduction?: boolean }
 ): Promise<string | RichTextValue> {
     const projectId = context.projectId;
-    const cost = fieldType === 'core/rich-text' ? getCreditCost('translate.rich_text') : getCreditCost('translate.field');
+    const cost =
+        fieldType === 'core/rich-text'
+            ? getCreditCost('translate.rich_text')
+            : getCreditCost('translate.field');
     const adapter = await getAdapter();
     if (!adapter?.generate) {
         throw new Error('AI provider not configured');
@@ -131,7 +134,9 @@ function getTextFieldKeys(blockSchema: Record<string, { type?: string }> | undef
     return Object.entries(blockSchema)
         .filter(
             ([_, def]) =>
-                def?.type === 'core/text' || def?.type === 'core/rich-text' || def?.type === 'core/textarea'
+                def?.type === 'core/text' ||
+                def?.type === 'core/rich-text' ||
+                def?.type === 'core/textarea'
         )
         .map(([k]) => k);
 }
@@ -152,18 +157,23 @@ async function translateOneBlock(
     for (const key of textKeys) {
         const raw = data[key];
         if (raw == null) continue;
-        const source = typeof raw === 'object' && raw !== null && !Array.isArray(raw) && (raw as any)[fromLocale] != null
-            ? String((raw as any)[fromLocale])
-            : typeof raw === 'string'
-              ? raw
-              : null;
+        const source =
+            typeof raw === 'object' &&
+            raw !== null &&
+            !Array.isArray(raw) &&
+            (raw as any)[fromLocale] != null
+                ? String((raw as any)[fromLocale])
+                : typeof raw === 'string'
+                  ? raw
+                  : null;
         if (source == null || !String(source).trim()) continue;
         const prompt = buildTranslatePrompt('text', fromLocale, toLocale, source);
         const translated = await adapter.generate(prompt, { maxTokens: 2048, temperature: 0.2 });
         const trimmed = translated.trim();
-        const existing = typeof data[key] === 'object' && data[key] !== null && !Array.isArray(data[key])
-            ? (data[key] as Record<string, string>)
-            : {};
+        const existing =
+            typeof data[key] === 'object' && data[key] !== null && !Array.isArray(data[key])
+                ? (data[key] as Record<string, string>)
+                : {};
         (data as any)[key] = { ...existing, [toLocale]: trimmed };
     }
     return { ...block, data };
@@ -217,7 +227,8 @@ function isTargetEmptyOrStale(
     if (typeof fieldValue === 'object' && !Array.isArray(fieldValue)) {
         const v = (fieldValue as Record<string, unknown>)[toLocale];
         if (v == null || (typeof v === 'string' && !v.trim())) return true;
-        if (_sourceUpdatedAt && _targetUpdatedAt && _sourceUpdatedAt > _targetUpdatedAt) return true;
+        if (_sourceUpdatedAt && _targetUpdatedAt && _sourceUpdatedAt > _targetUpdatedAt)
+            return true;
         return false;
     }
     return false;
@@ -259,7 +270,9 @@ export async function translateEntry(
             if (!isEmptyOrStale) continue;
 
             const sourceValue =
-                typeof rawValue === 'object' && rawValue !== null && (rawValue as any)[fromLocale] != null
+                typeof rawValue === 'object' &&
+                rawValue !== null &&
+                (rawValue as any)[fromLocale] != null
                     ? String((rawValue as any)[fromLocale])
                     : typeof rawValue === 'string'
                       ? rawValue
@@ -275,7 +288,10 @@ export async function translateEntry(
                 { skipDeduction: true }
             );
             if (!result[fieldPath]) {
-                result[fieldPath] = typeof rawValue === 'object' && rawValue !== null ? { ...(rawValue as object) } : {};
+                result[fieldPath] =
+                    typeof rawValue === 'object' && rawValue !== null
+                        ? { ...(rawValue as object) }
+                        : {};
             }
             (result[fieldPath] as Record<string, string>)[toLocale] = translated as string;
         }

@@ -2,25 +2,25 @@ vi.mock('../../src/middlewares/auth', () => ({
     requireProjectAccess: (req: any, _res: any, next: any) => {
         req.user = { id: 'user1', roles: ['admin'] };
         next();
-    },
+    }
 }));
 
 vi.mock('@moteur/core/projects', () => ({
-    getProject: vi.fn(),
+    getProject: vi.fn()
 }));
 vi.mock('@moteur/core/models', () => ({
-    getModelSchema: vi.fn(),
+    getModelSchema: vi.fn()
 }));
 vi.mock('@moteur/core/entries', () => ({
-    getEntry: vi.fn(),
+    getEntry: vi.fn()
 }));
 
 const translateEntryMock = vi.fn();
 vi.mock('../../src/ai/translation', () => ({
-    translateEntry: (...args: unknown[]) => translateEntryMock(...args),
+    translateEntry: (...args: unknown[]) => translateEntryMock(...args)
 }));
 vi.mock('../../src/ai/credits', () => ({
-    getCredits: vi.fn(() => 100),
+    getCredits: vi.fn(() => 100)
 }));
 
 import request from 'supertest';
@@ -39,19 +39,19 @@ const mockProject = {
     id: 'proj1',
     label: 'Test Project',
     defaultLocale: 'en',
-    supportedLocales: ['fr'],
+    supportedLocales: ['fr']
 };
 const mockModel = {
     id: 'article',
     label: 'Article',
     fields: {
         title: { type: 'core/text', label: 'Title', options: { multilingual: true } },
-        body: { type: 'core/rich-text', label: 'Body', options: { multilingual: true } },
-    },
+        body: { type: 'core/rich-text', label: 'Body', options: { multilingual: true } }
+    }
 };
 const mockEntry = {
     id: 'e1',
-    data: { title: { en: 'Hello' }, body: { en: '<p>Content</p>' } },
+    data: { title: { en: 'Hello' }, body: { en: '<p>Content</p>' } }
 };
 
 describe('POST /translate/entry', () => {
@@ -61,7 +61,7 @@ describe('POST /translate/entry', () => {
         vi.mocked(getEntry).mockResolvedValue(mockEntry as any);
         translateEntryMock.mockResolvedValue({
             title: { fr: 'Bonjour' },
-            body: { fr: '<p>Contenu</p>' },
+            body: { fr: '<p>Contenu</p>' }
         });
     });
 
@@ -73,7 +73,7 @@ describe('POST /translate/entry', () => {
                 modelId: 'article',
                 entryId: 'e1',
                 fromLocale: 'en',
-                toLocales: ['fr'],
+                toLocales: ['fr']
             });
 
         expect(res.status).toBe(200);
@@ -90,32 +90,28 @@ describe('POST /translate/entry', () => {
             .send({
                 entryId: 'e1',
                 fromLocale: 'en',
-                toLocales: ['fr'],
+                toLocales: ['fr']
             });
         expect(res.status).toBe(400);
         expect(res.body.error).toMatch(/projectId|modelId|required/);
     });
 
     it('returns 400 when entryId, fromLocale or toLocales missing', async () => {
-        const res = await request(app)
-            .post('/translate/entry')
-            .send({
-                projectId: 'proj1',
-                modelId: 'article',
-            });
+        const res = await request(app).post('/translate/entry').send({
+            projectId: 'proj1',
+            modelId: 'article'
+        });
         expect(res.status).toBe(400);
     });
 
     it('returns 400 when toLocales is empty', async () => {
-        const res = await request(app)
-            .post('/translate/entry')
-            .send({
-                projectId: 'proj1',
-                modelId: 'article',
-                entryId: 'e1',
-                fromLocale: 'en',
-                toLocales: [],
-            });
+        const res = await request(app).post('/translate/entry').send({
+            projectId: 'proj1',
+            modelId: 'article',
+            entryId: 'e1',
+            fromLocale: 'en',
+            toLocales: []
+        });
         expect(res.status).toBe(400);
     });
 
@@ -129,7 +125,7 @@ describe('POST /translate/entry', () => {
                 modelId: 'article',
                 entryId: 'e1',
                 fromLocale: 'en',
-                toLocales: ['fr'],
+                toLocales: ['fr']
             });
 
         expect(res.status).toBe(402);
@@ -146,7 +142,7 @@ describe('POST /translate/entry', () => {
                 modelId: 'missing',
                 entryId: 'e1',
                 fromLocale: 'en',
-                toLocales: ['fr'],
+                toLocales: ['fr']
             });
 
         expect(res.status).toBe(404);

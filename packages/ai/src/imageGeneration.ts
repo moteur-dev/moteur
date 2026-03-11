@@ -5,7 +5,8 @@
 
 import type { MoteurAIContext } from './types.js';
 import { getImageAdapter, type ProjectAISettings } from './getImageAdapter.js';
-import { getCredits, deductCredits, getCreditCost } from './credits.js';
+import { getCredits, deductCredits } from './credits.js';
+import { getCreditCost } from './creditCosts.js';
 import { AIError } from './errors.js';
 
 export interface GenerationRequest {
@@ -61,7 +62,7 @@ export async function generateImages(
     if (balance < cost) {
         throw new AIError('insufficient_credits', {
             required: cost,
-            remaining: balance,
+            remaining: balance
         });
     }
 
@@ -69,7 +70,7 @@ export async function generateImages(
     if (!deduct.success) {
         throw new AIError('insufficient_credits', {
             required: cost,
-            remaining: deduct.remaining,
+            remaining: deduct.remaining
         });
     }
 
@@ -84,21 +85,21 @@ export async function generateImages(
 
     const results = await adapter.generateImage(assembledPrompt, {
         aspectRatio,
-        count,
+        count
     });
 
     const provider = providerLabel(projectSettings);
-    const variants: GeneratedImage[] = (results ?? []).map((r) => ({
+    const variants: GeneratedImage[] = (results ?? []).map(r => ({
         url: r.url,
         width: r.width,
         height: r.height,
-        provider,
+        provider
     }));
 
     return {
         variants,
         prompt: assembledPrompt,
         creditsUsed: cost,
-        creditsRemaining: getCredits(context.projectId),
+        creditsRemaining: getCredits(context.projectId)
     };
 }

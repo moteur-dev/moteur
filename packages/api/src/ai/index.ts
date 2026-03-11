@@ -21,7 +21,7 @@ router.use('/write', writeRouter);
 router.use('/analyse', analyseRouter);
 
 export const aiSpecs = {
-    paths: mergePathSpecs(statusSpec, generateSpec),
+    paths: mergePathSpecs(statusSpec, generateSpec)
 };
 
 export default router;

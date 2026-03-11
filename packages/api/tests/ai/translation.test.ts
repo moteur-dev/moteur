@@ -3,7 +3,7 @@ import {
     translateField,
     translateBlockArray,
     translateEntry,
-    type Block,
+    type Block
 } from '../../src/ai/translation.js';
 import { setAdapter } from '../../src/ai/adapter.js';
 import { setCredits } from '../../src/ai/credits.js';
@@ -15,7 +15,7 @@ const baseContext: MoteurAIContext = {
     projectId: PROJECT_ID,
     projectLocales: ['en', 'fr'],
     defaultLocale: 'en',
-    credits: { remaining: 100 },
+    credits: { remaining: 100 }
 };
 
 describe('translateField', () => {
@@ -28,35 +28,23 @@ describe('translateField', () => {
     });
 
     it('translates plain text and deducts 1 credit', async () => {
-        const result = await translateField(
-            'Hello world',
-            'core/text',
-            'en',
-            'fr',
-            baseContext
-        );
+        const result = await translateField('Hello world', 'core/text', 'en', 'fr', baseContext);
         expect(result).toContain('[mock:');
         expect(result).toBeDefined();
     });
 
     it('preserves HTML structure for rich-text (DOM path)', async () => {
         const html = '<p>Hello <strong>world</strong></p>';
-        const result = await translateField(
-            html,
-            'core/rich-text',
-            'en',
-            'fr',
-            baseContext
-        );
+        const result = await translateField(html, 'core/rich-text', 'en', 'fr', baseContext);
         expect(typeof result).toBe('string');
         expect((result as string).length).toBeGreaterThan(0);
     });
 
     it('throws INSUFFICIENT_CREDITS when balance too low', async () => {
         setCredits(PROJECT_ID, 0);
-        await expect(
-            translateField('Hi', 'core/text', 'en', 'fr', baseContext)
-        ).rejects.toThrow('INSUFFICIENT_CREDITS');
+        await expect(translateField('Hi', 'core/text', 'en', 'fr', baseContext)).rejects.toThrow(
+            'INSUFFICIENT_CREDITS'
+        );
     });
 });
 
@@ -75,9 +63,9 @@ describe('translateBlockArray', () => {
                 type: 'core/hero',
                 data: {
                     title: { en: 'Welcome' },
-                    backgroundImage: { src: '/img.png' },
-                },
-            },
+                    backgroundImage: { src: '/img.png' }
+                }
+            }
         ];
         const getSchema = (type: string) =>
             type === 'core/hero'
@@ -99,7 +87,7 @@ describe('translateBlockArray', () => {
         setCredits(PROJECT_ID, 1);
         const blocks: Block[] = [
             { type: 'core/text', data: { content: { en: 'A' } } },
-            { type: 'core/text', data: { content: { en: 'B' } } },
+            { type: 'core/text', data: { content: { en: 'B' } } }
         ];
         const getSchema = () => ({ content: { type: 'core/text' } });
         const { blocks: out, partial } = await translateBlockArray(
@@ -129,24 +117,18 @@ describe('translateEntry', () => {
             data: {
                 title: { en: 'Hello' },
                 body: { en: 'Content' },
-                slug: 'hello',
-            },
+                slug: 'hello'
+            }
         };
         const model = {
             id: 'article',
             fields: {
                 title: { type: 'core/text', options: { multilingual: true } },
                 body: { type: 'core/rich-text', options: { multilingual: true } },
-                slug: { type: 'core/slug', options: { multilingual: false } },
-            },
+                slug: { type: 'core/slug', options: { multilingual: false } }
+            }
         };
-        const result = await translateEntry(
-            entry,
-            model as any,
-            'en',
-            ['fr'],
-            baseContext
-        );
+        const result = await translateEntry(entry, model as any, 'en', ['fr'], baseContext);
         expect(result).toHaveProperty('title');
         expect((result.title as any).fr).toBeDefined();
         expect(result).not.toHaveProperty('slug');

@@ -19,7 +19,7 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
     }
     if (!entryId || !fromLocale || !Array.isArray(toLocales) || toLocales.length === 0) {
         return res.status(400).json({
-            error: 'entryId, fromLocale, and toLocales (non-empty array) are required',
+            error: 'entryId, fromLocale, and toLocales (non-empty array) are required'
         });
     }
 
@@ -31,7 +31,9 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
         }
         const entry = await getEntry(req.user!, projectId, modelId, entryId);
 
-        const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(Boolean);
+        const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(
+            Boolean
+        );
         const context: MoteurAIContext = {
             projectId,
             projectName: project.label,
@@ -39,7 +41,7 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
             defaultLocale: project.defaultLocale ?? 'en',
             model: { id: modelId, label: model.label ?? modelId, fields: model.fields ?? {} },
             entry: entry.data,
-            credits: { remaining: getCredits(projectId) },
+            credits: { remaining: getCredits(projectId) }
         };
 
         const fields = await translateEntry(
@@ -56,18 +58,18 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
         return res.json({
             fields,
             creditsUsed,
-            creditsRemaining: remaining,
+            creditsRemaining: remaining
         });
     } catch (err: any) {
         if (err.message === 'INSUFFICIENT_CREDITS') {
             return res.status(402).json({
                 error: 'insufficient_credits',
-                message: 'Not enough AI credits',
+                message: 'Not enough AI credits'
             });
         }
         if (err.message === 'AI provider not configured') {
             return res.status(503).json({
-                error: 'AI translation is disabled (no provider configured)',
+                error: 'AI translation is disabled (no provider configured)'
             });
         }
         console.error('[AI translate/entry]', err);

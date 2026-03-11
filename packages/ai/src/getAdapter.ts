@@ -48,7 +48,7 @@ export async function getAdapterFromEnv(): Promise<MoteurAIAdapter> {
             const { createAnthropicAdapter } = await import('./providers/AnthropicAdapter.js');
             cachedAdapter = await createAnthropicAdapter(apiKey);
             return cachedAdapter;
-        } catch (e) {
+        } catch (_e) {
             throw new Error(
                 'MOTEUR_AI_PROVIDER is "anthropic" but @anthropic-ai/sdk could not be loaded. Install it or use another provider.'
             );

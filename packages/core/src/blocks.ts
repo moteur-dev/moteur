@@ -14,7 +14,7 @@ const isTestEnv = (): boolean => process.env.NODE_ENV === 'test' || process.env.
 
 export function listBlocks(projectId?: string): Record<string, BlockSchema> {
     const registry: Record<string, BlockSchema> = {};
-    const namespaces = ['core', 'journal'];
+    const namespaces = ['core', 'demo'];
 
     if (!isTestEnv()) {
         console.log(`Loading blocks for project: ${projectId || 'all'}`);
@@ -45,8 +45,10 @@ export function listBlocks(projectId?: string): Record<string, BlockSchema> {
                         continue;
                     }
 
-                    // Ensure the type is normalized with its namespace
-                    const key = `${namespace}/${normalizeType(schema.type)}`;
+                    // Key: use type as-is when already namespaced (e.g. demo/pull-quote), else namespace/slug
+                    const key = schema.type.includes('/')
+                        ? schema.type
+                        : `${namespace}/${normalizeType(schema.type)}`;
                     registry[key] = schema;
                 } catch (err) {
                     if (!isTestEnv()) {

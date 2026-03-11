@@ -14,7 +14,10 @@ export function getCredits(projectId: string): number {
     return DEFAULT_CREDITS;
 }
 
-export function deductCredits(projectId: string, amount: number): { success: boolean; remaining: number } {
+export function deductCredits(
+    projectId: string,
+    amount: number
+): { success: boolean; remaining: number } {
     const current = getCredits(projectId);
     if (current < amount) {
         return { success: false, remaining: current };

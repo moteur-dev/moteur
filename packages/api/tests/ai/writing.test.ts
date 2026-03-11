@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { runWritingAction, type WritingAction, type FieldMeta } from '../../src/ai/writing.js';
+import { describe, it, expect, beforeEach, afterEach, vi as _vi } from 'vitest';
+import { runWritingAction, type FieldMeta } from '../../src/ai/writing.js';
 import { setAdapter } from '../../src/ai/adapter.js';
 import { setCredits, getCredits } from '../../src/ai/credits.js';
 import type { MoteurAIAdapter, MoteurAIContext } from '@moteur/ai';
@@ -13,13 +13,13 @@ const baseContext: MoteurAIContext = {
     defaultLocale: 'en',
     model: { id: 'article', label: 'Article', fields: {} },
     entry: { title: 'Hello World', category: 'News' },
-    credits: { remaining: 100 },
+    credits: { remaining: 100 }
 };
 
 const mockAdapter: MoteurAIAdapter = {
     async generate(prompt: string) {
         return `[generated for: ${prompt.slice(0, 50)}...]`;
-    },
+    }
 };
 
 describe('runWritingAction', () => {
@@ -36,7 +36,7 @@ describe('runWritingAction', () => {
         const fieldMeta: FieldMeta = {
             label: 'Title',
             type: 'core/text',
-            fieldKey: 'title',
+            fieldKey: 'title'
         };
         const result = await runWritingAction('draft', null, fieldMeta, baseContext);
         expect(result).toContain('[generated for:');
@@ -47,7 +47,7 @@ describe('runWritingAction', () => {
         const fieldMeta: FieldMeta = {
             label: 'Body',
             type: 'core/rich-text',
-            fieldKey: 'body',
+            fieldKey: 'body'
         };
         setCredits(PROJECT_ID, 10);
         await runWritingAction('draft', null, fieldMeta, baseContext);
@@ -58,7 +58,7 @@ describe('runWritingAction', () => {
         const fieldMeta: FieldMeta = {
             label: 'Excerpt',
             type: 'core/text',
-            fieldKey: 'excerpt',
+            fieldKey: 'excerpt'
         };
         const result = await runWritingAction(
             'rewrite',
@@ -74,14 +74,9 @@ describe('runWritingAction', () => {
         const fieldMeta: FieldMeta = {
             label: 'Content',
             type: 'core/text',
-            fieldKey: 'content',
+            fieldKey: 'content'
         };
-        await runWritingAction(
-            'tone:formal',
-            'Some content',
-            fieldMeta,
-            baseContext
-        );
+        await runWritingAction('tone:formal', 'Some content', fieldMeta, baseContext);
         expect(getCredits(PROJECT_ID)).toBe(99);
     });
 
@@ -89,15 +84,12 @@ describe('runWritingAction', () => {
         const fieldMeta: FieldMeta = {
             label: 'Excerpt',
             type: 'core/text',
-            fieldKey: 'excerpt',
+            fieldKey: 'excerpt'
         };
-        const result = await runWritingAction(
-            'summarise-excerpt',
-            null,
-            fieldMeta,
-            baseContext,
-            { bodyValueForExcerpt: 'Long article body here...', locale: 'en' }
-        );
+        const result = await runWritingAction('summarise-excerpt', null, fieldMeta, baseContext, {
+            bodyValueForExcerpt: 'Long article body here...',
+            locale: 'en'
+        });
         expect(result).toContain('[generated for:');
         expect(getCredits(PROJECT_ID)).toBe(98);
     });
@@ -107,22 +99,22 @@ describe('runWritingAction', () => {
         const fieldMeta: FieldMeta = {
             label: 'Title',
             type: 'core/text',
-            fieldKey: 'title',
+            fieldKey: 'title'
         };
-        await expect(
-            runWritingAction('draft', null, fieldMeta, baseContext)
-        ).rejects.toThrow('INSUFFICIENT_CREDITS');
+        await expect(runWritingAction('draft', null, fieldMeta, baseContext)).rejects.toThrow(
+            'INSUFFICIENT_CREDITS'
+        );
     });
 
     it('skipDeduction does not deduct credits (grace regeneration)', async () => {
         const fieldMeta: FieldMeta = {
             label: 'Title',
             type: 'core/text',
-            fieldKey: 'title',
+            fieldKey: 'title'
         };
         const before = getCredits(PROJECT_ID);
         await runWritingAction('draft', null, fieldMeta, baseContext, {
-            skipDeduction: true,
+            skipDeduction: true
         });
         expect(getCredits(PROJECT_ID)).toBe(before);
     });
@@ -131,7 +123,7 @@ describe('runWritingAction', () => {
         const fieldMeta: FieldMeta = {
             label: 'Body',
             type: 'core/rich-text',
-            fieldKey: 'body',
+            fieldKey: 'body'
         };
         const result = await runWritingAction('draft', null, fieldMeta, baseContext);
         expect(result).toMatch(/<p>/);

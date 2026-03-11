@@ -73,5 +73,4 @@ describe('PresenceStore', () => {
         expect(store.tryLockField('p1', 'cover.alt', 'ai:image-analysis')).toBe(false);
         expect(store.getLocks('p1')).toEqual({ 'cover.alt': 'u1' });
     });
-
 });

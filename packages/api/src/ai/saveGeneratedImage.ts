@@ -18,7 +18,7 @@ const bodySchema = z.object({
     aspectRatio: z.string(),
     projectId: z.string().min(1),
     entryId: z.string().optional(),
-    fieldPath: z.string().optional(),
+    fieldPath: z.string().optional()
 });
 
 router.post('/save-generated-image', requireAuth, async (req: any, res: any) => {
@@ -26,7 +26,15 @@ router.post('/save-generated-image', requireAuth, async (req: any, res: any) => 
     if (!parse.success) {
         return res.status(400).json({ error: 'Invalid request', details: parse.error.flatten() });
     }
-    const { variantUrl, prompt, provider, aspectRatio, projectId, entryId, fieldPath } = parse.data;
+    const {
+        variantUrl,
+        prompt,
+        provider,
+        aspectRatio: _aspectRatio,
+        projectId,
+        entryId,
+        fieldPath
+    } = parse.data;
 
     try {
         const project = await getProject(req.user, projectId);
@@ -37,7 +45,7 @@ router.post('/save-generated-image', requireAuth, async (req: any, res: any) => 
             responseType: 'arraybuffer',
             timeout: 30000,
             maxContentLength: 20 * 1024 * 1024, // 20 MB
-            validateStatus: (s) => s === 200,
+            validateStatus: s => s === 200
         });
         const buffer = Buffer.from(response.data);
         const contentType = (response.headers['content-type'] as string) || 'image/png';
@@ -55,16 +63,16 @@ router.post('/save-generated-image', requireAuth, async (req: any, res: any) => 
             {
                 generationPrompt: prompt,
                 aiProvider: provider,
-                aiGenerated: true,
+                aiGenerated: true
             }
         );
 
         return res.json({
             asset: {
                 ...asset,
-                url: asset.localUrl ?? asset.url,
+                url: asset.localUrl ?? asset.url
             },
-            ...(entryId && fieldPath && { entryId, fieldPath }),
+            ...(entryId && fieldPath && { entryId, fieldPath })
         });
     } catch (err: any) {
         if (err?.response?.status && err.response.status !== 200) {

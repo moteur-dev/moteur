@@ -42,8 +42,5 @@ export interface MoteurAIAdapter {
     generateStructured?<T>(prompt: string, schema: object, options?: GenerateOptions): Promise<T>;
     embed?(text: string): Promise<number[]>;
     analyseImage?(imageUrl: string, prompt: string, options?: GenerateOptions): Promise<string>;
-    generateImage?(
-        prompt: string,
-        options?: ImageGenerateOptions
-    ): Promise<ImageResult[]>;
+    generateImage?(prompt: string, options?: ImageGenerateOptions): Promise<ImageResult[]>;
 }

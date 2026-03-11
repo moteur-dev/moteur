@@ -32,7 +32,7 @@ router.post('/', requireAdmin, async (req: any, res: any) => {
     const adapter = await getAdapter();
     if (!adapter?.generate) {
         return res.status(503).json({
-            error: 'AI generation is disabled (no provider configured)',
+            error: 'AI generation is disabled (no provider configured)'
         });
     }
 
@@ -77,7 +77,7 @@ ${availableFieldTypes}
         const content = await adapter.generate(userContent, {
             system: systemPrompt,
             temperature: 0.4,
-            maxTokens: 2048,
+            maxTokens: 2048
         });
         if (!content?.trim()) throw new Error('Empty response from AI');
 
@@ -111,7 +111,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                     }
                 }
             },
-            responses: { '200': { description: 'Fields generated' }, '503': { description: 'AI disabled' } }
+            responses: {
+                '200': { description: 'Fields generated' },
+                '503': { description: 'AI disabled' }
+            }
         }
     }
 };

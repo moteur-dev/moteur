@@ -19,7 +19,8 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
         get: {
             summary: 'Check if AI is enabled',
             tags: ['AI'],
-            description: 'Returns whether an AI provider is configured. Studio uses this to show or hide AI features.',
+            description:
+                'Returns whether an AI provider is configured. Studio uses this to show or hide AI features.',
             responses: {
                 '200': {
                     description: 'AI status',

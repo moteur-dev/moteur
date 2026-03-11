@@ -24,11 +24,11 @@ Do not start with "Image of" or "Photo of".
 Locale: {locale}`;
 
 function buildCaptionPrompt(ctx: ImageAnalysisContext): string {
-    const parts: string[] = [
-        'Write an editorial image caption for this image.',
-    ];
+    const parts: string[] = ['Write an editorial image caption for this image.'];
     if (ctx.modelLabel && ctx.entryTitle) {
-        parts.push(`Context: this image appears in a ${ctx.modelLabel} entry titled "${ctx.entryTitle}".`);
+        parts.push(
+            `Context: this image appears in a ${ctx.modelLabel} entry titled "${ctx.entryTitle}".`
+        );
     }
     if (ctx.categoryName) {
         parts.push(`Category: ${ctx.categoryName}`);
@@ -54,11 +54,11 @@ export async function analyseImage(
 
     const [alt, caption] = await Promise.all([
         adapter.analyseImage(imageUrl, altPrompt, { maxTokens: 256, temperature: 0.2 }),
-        adapter.analyseImage(imageUrl, captionPrompt, { maxTokens: 512, temperature: 0.3 }),
+        adapter.analyseImage(imageUrl, captionPrompt, { maxTokens: 512, temperature: 0.3 })
     ]);
 
     return {
         alt: (alt ?? '').trim().slice(0, 125),
-        caption: (caption ?? '').trim(),
+        caption: (caption ?? '').trim()
     };
 }

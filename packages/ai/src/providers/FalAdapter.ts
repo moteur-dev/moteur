@@ -3,12 +3,7 @@
  * All methods throw NotImplementedError; implement in a later prompt.
  */
 
-import type {
-    MoteurAIAdapter,
-    GenerateOptions,
-    ImageGenerateOptions,
-    ImageResult,
-} from '../types.js';
+import type { MoteurAIAdapter, ImageGenerateOptions, ImageResult } from '../types.js';
 import { NotImplementedError } from '../errors.js';
 
 export async function createFalAdapter(): Promise<MoteurAIAdapter> {
@@ -23,6 +18,6 @@ export async function createFalAdapter(): Promise<MoteurAIAdapter> {
         generateImage: notImpl('generateImage') as (
             prompt: string,
             options?: ImageGenerateOptions
-        ) => Promise<ImageResult[]>,
+        ) => Promise<ImageResult[]>
     };
 }

@@ -6,23 +6,23 @@
 import express, { Router } from 'express';
 import { z } from 'zod';
 import { getProject } from '@moteur/core/projects.js';
-import {
-    generateImages,
-    AIError,
-    getCredits,
-} from '@moteur/ai';
+import { generateImages, AIError, getCredits } from '@moteur/ai';
 import { requireAuth } from '../middlewares/auth.js';
 
 const router: express.Router = Router();
 
 const bodySchema = z.object({
     prompt: z.string().min(1),
-    styleHints: z.array(z.enum(['photographic', 'illustration', 'technical-diagram', 'editorial', 'abstract'])).optional(),
+    styleHints: z
+        .array(
+            z.enum(['photographic', 'illustration', 'technical-diagram', 'editorial', 'abstract'])
+        )
+        .optional(),
     aspectRatio: z.enum(['1:1', '4:3', '16:9', '3:2']).optional(),
     count: z.number().int().min(1).max(2).optional(),
     projectId: z.string().min(1),
     entryId: z.string().optional(),
-    source: z.enum(['field', 'brief', 'library']).optional(),
+    source: z.enum(['field', 'brief', 'library']).optional()
 });
 
 router.post('/generate-image', requireAuth, async (req: any, res: any) => {
@@ -30,7 +30,15 @@ router.post('/generate-image', requireAuth, async (req: any, res: any) => {
     if (!parse.success) {
         return res.status(400).json({ error: 'Invalid request', details: parse.error.flatten() });
     }
-    const { prompt, styleHints, aspectRatio, count, projectId, entryId, source } = parse.data;
+    const {
+        prompt,
+        styleHints,
+        aspectRatio,
+        count,
+        projectId,
+        entryId: _entryId,
+        source: _source
+    } = parse.data;
 
     try {
         const project = await getProject(req.user, projectId);
@@ -44,7 +52,7 @@ router.post('/generate-image', requireAuth, async (req: any, res: any) => {
             projectName: project.label,
             projectLocales: project.supportedLocales ?? [project.defaultLocale],
             defaultLocale: project.defaultLocale,
-            credits: { remaining: credits },
+            credits: { remaining: credits }
         };
 
         const result = await generateImages(
@@ -54,17 +62,17 @@ router.post('/generate-image', requireAuth, async (req: any, res: any) => {
         );
 
         return res.json({
-            variants: result.variants.map((v) => ({ url: v.url, width: v.width, height: v.height })),
+            variants: result.variants.map(v => ({ url: v.url, width: v.width, height: v.height })),
             prompt: result.prompt,
             creditsUsed: result.creditsUsed,
-            creditsRemaining: result.creditsRemaining,
+            creditsRemaining: result.creditsRemaining
         });
     } catch (err: any) {
         const code = err?.code ?? (err instanceof AIError ? err.code : undefined);
         if (code === 'insufficient_credits') {
             return res.status(402).json({
                 error: 'insufficient_credits',
-                creditsRemaining: err?.details?.remaining ?? getCredits(projectId),
+                creditsRemaining: err?.details?.remaining ?? getCredits(projectId)
             });
         }
         if (code === 'image_provider_not_configured') {
@@ -75,7 +83,7 @@ router.post('/generate-image', requireAuth, async (req: any, res: any) => {
         }
         if (err?.name === 'NotImplementedError') {
             return res.status(503).json({
-                error: 'Image generation is not implemented for the selected provider.',
+                error: 'Image generation is not implemented for the selected provider.'
             });
         }
         console.error('AI generate-image failed:', err);

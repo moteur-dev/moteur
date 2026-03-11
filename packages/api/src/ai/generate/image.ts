@@ -14,7 +14,7 @@ const schema = z.object({
 const sizeToAspectRatio = {
     '1024x1024': '1:1' as const,
     '1792x1024': '16:9' as const,
-    '1024x1792': '3:2' as const,
+    '1024x1792': '3:2' as const
 };
 
 router.post('/', requireAuth, async (req: any, res: any) => {
@@ -28,7 +28,7 @@ router.post('/', requireAuth, async (req: any, res: any) => {
     const adapter = await getAdapter();
     if (!adapter?.generateImage) {
         return res.status(503).json({
-            error: 'AI image generation is disabled (no provider with generateImage support configured)',
+            error: 'AI image generation is disabled (no provider with generateImage support configured)'
         });
     }
 
@@ -47,7 +47,7 @@ router.post('/', requireAuth, async (req: any, res: any) => {
             image: results[0].url,
             width: results[0].width,
             height: results[0].height,
-            prompt: results[0].prompt,
+            prompt: results[0].prompt
         });
     } catch (err: any) {
         console.error('AI generate/image failed:', err);

@@ -19,7 +19,7 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
     }
     if (!entryId || !fieldPath || !fromLocale || !toLocale) {
         return res.status(400).json({
-            error: 'entryId, fieldPath, fromLocale, and toLocale are required',
+            error: 'entryId, fieldPath, fromLocale, and toLocale are required'
         });
     }
 
@@ -51,7 +51,10 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
                 typeof parentValue === 'object' && parentValue !== null && subField in parentValue
                     ? (parentValue as Record<string, unknown>)[subField]
                     : undefined;
-            fieldType = (subDef.type ?? 'core/text') as 'core/text' | 'core/rich-text' | 'core/textarea';
+            fieldType = (subDef.type ?? 'core/text') as
+                | 'core/text'
+                | 'core/rich-text'
+                | 'core/textarea';
             if (!['core/text', 'core/rich-text', 'core/textarea'].includes(fieldType)) {
                 fieldType = 'core/text';
             }
@@ -64,20 +67,27 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
             if (!multilingual) {
                 return res.status(400).json({ error: 'Field is not multilingual' });
             }
-            fieldType = (fieldDef.type ?? 'core/text') as 'core/text' | 'core/rich-text' | 'core/textarea';
+            fieldType = (fieldDef.type ?? 'core/text') as
+                | 'core/text'
+                | 'core/rich-text'
+                | 'core/textarea';
             if (!['core/text', 'core/rich-text', 'core/textarea'].includes(fieldType)) {
                 return res.status(400).json({ error: 'Field type is not translatable' });
             }
             rawValue = entry.data?.[fieldPath];
         }
         const sourceValue =
-            typeof rawValue === 'object' && rawValue !== null && (rawValue as any)[fromLocale] != null
+            typeof rawValue === 'object' &&
+            rawValue !== null &&
+            (rawValue as any)[fromLocale] != null
                 ? String((rawValue as any)[fromLocale])
                 : typeof rawValue === 'string'
                   ? rawValue
                   : '';
 
-        const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(Boolean);
+        const projectLocales = [project.defaultLocale, ...(project.supportedLocales ?? [])].filter(
+            Boolean
+        );
         const context: MoteurAIContext = {
             projectId,
             projectName: project.label,
@@ -85,16 +95,10 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
             defaultLocale: project.defaultLocale ?? 'en',
             model: { id: modelId, label: model.label ?? modelId, fields: model.fields ?? {} },
             entry: entry.data,
-            credits: { remaining: getCredits(projectId) },
+            credits: { remaining: getCredits(projectId) }
         };
 
-        const value = await translateField(
-            sourceValue,
-            fieldType,
-            fromLocale,
-            toLocale,
-            context
-        );
+        const value = await translateField(sourceValue, fieldType, fromLocale, toLocale, context);
 
         const remaining = getCredits(projectId);
         const creditsUsed = context.credits.remaining - remaining;
@@ -102,18 +106,18 @@ router.post('/', requireProjectAccess, async (req: any, res: any) => {
         return res.json({
             value,
             creditsUsed,
-            creditsRemaining: remaining,
+            creditsRemaining: remaining
         });
     } catch (err: any) {
         if (err.message === 'INSUFFICIENT_CREDITS') {
             return res.status(402).json({
                 error: 'insufficient_credits',
-                message: 'Not enough AI credits',
+                message: 'Not enough AI credits'
             });
         }
         if (err.message === 'AI provider not configured') {
             return res.status(503).json({
-                error: 'AI translation is disabled (no provider configured)',
+                error: 'AI translation is disabled (no provider configured)'
             });
         }
         console.error('[AI translate/field]', err);

@@ -1,6 +1,6 @@
 import type { Presence, PresenceUpdate } from '@moteur/types/Presence';
 
-const FIELD_LOCK_TTL_MS = 10_000; // AI lock expiry (safety net)
+const _FIELD_LOCK_TTL_MS = 10_000; // AI lock expiry (safety net)
 
 interface FieldLockEntry {
     userId: string;
@@ -110,7 +110,7 @@ export class PresenceStore {
 
     getLocks(projectId: string): Record<string, string> {
         const locks: Record<string, string> = {};
-        const now = Date.now();
+        const _now = Date.now();
         for (const [key, val] of this.fieldLocks.entries()) {
             if (key.startsWith(`${projectId}:`)) {
                 const [, fieldPath] = key.split(':', 2);
