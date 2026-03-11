@@ -11,6 +11,7 @@ import {
     retryDelivery
 } from '@moteur/core/webhooks/webhookService.js';
 import { requireProjectAccess } from '../../middlewares/auth.js';
+import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -138,5 +139,114 @@ router.post(
         }
     }
 );
+
+export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
+    '/admin/projects/{projectId}/webhooks': {
+        get: {
+            summary: 'List webhooks',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'List of webhooks' } }
+        },
+        post: {
+            summary: 'Create webhook',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
+            responses: {
+                '201': { description: 'Webhook created' },
+                '422': { description: 'Validation failed' }
+            }
+        }
+    },
+    '/admin/projects/{projectId}/webhooks/{webhookId}': {
+        get: {
+            summary: 'Get webhook',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'Webhook' }, '404': { description: 'Not found' } }
+        },
+        patch: {
+            summary: 'Update webhook',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
+            responses: {
+                '200': { description: 'Webhook updated' },
+                '404': { description: 'Not found' }
+            }
+        },
+        delete: {
+            summary: 'Delete webhook',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '204': { description: 'Deleted' }, '404': { description: 'Not found' } }
+        }
+    },
+    '/admin/projects/{projectId}/webhooks/{webhookId}/rotate-secret': {
+        post: {
+            summary: 'Rotate webhook secret',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'New secret' } }
+        }
+    },
+    '/admin/projects/{projectId}/webhooks/{webhookId}/test': {
+        post: {
+            summary: 'Send test ping',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'Test sent' } }
+        }
+    },
+    '/admin/projects/{projectId}/webhooks/{webhookId}/log': {
+        get: {
+            summary: 'Get delivery log',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'limit', in: 'query', schema: { type: 'integer' } },
+                { name: 'offset', in: 'query', schema: { type: 'integer' } }
+            ],
+            responses: { '200': { description: 'Delivery log' } }
+        }
+    },
+    '/admin/projects/{projectId}/webhooks/{webhookId}/log/{deliveryId}/retry': {
+        post: {
+            summary: 'Retry failed delivery',
+            tags: ['Admin Webhooks'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'deliveryId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: {
+                '204': { description: 'Retry queued' },
+                '404': { description: 'Not found' },
+                '422': { description: 'Only failed deliveries can be retried' }
+            }
+        }
+    }
+};
 
 export default router;

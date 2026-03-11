@@ -14,6 +14,7 @@ import { getAdapter } from '@moteur/ai';
 import { getCredits, deductCredits, getCreditCost } from '@moteur/ai';
 import { requireProjectAccess } from '../../middlewares/auth.js';
 import { analyseImage as runImageAnalysis } from '../../ai/imageAnalysis.js';
+import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -158,5 +159,129 @@ router.post('/:id/move', requireProjectAccess, async (req: any, res: any) => {
             .json({ error: err?.message ?? 'Move failed' });
     }
 });
+
+export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
+    '/admin/projects/{projectId}/assets': {
+        get: {
+            summary: 'List assets',
+            tags: ['Admin Assets'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'type', in: 'query', schema: { type: 'string' } },
+                { name: 'folder', in: 'query', schema: { type: 'string' } },
+                { name: 'search', in: 'query', schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'List of assets' } }
+        },
+        post: {
+            summary: 'Upload asset',
+            tags: ['Admin Assets'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: {
+                content: {
+                    'multipart/form-data': {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                file: { type: 'string', format: 'binary' },
+                                folder: { type: 'string' },
+                                alt: { type: 'string' },
+                                title: { type: 'string' },
+                                credit: { type: 'string' },
+                                keepLocalCopy: { type: 'boolean' }
+                            }
+                        }
+                    }
+                }
+            },
+            responses: {
+                '201': { description: 'Asset created' },
+                '400': { description: 'Missing file' },
+                '413': { description: 'File too large' },
+                '415': { description: 'Unsupported type' }
+            }
+        }
+    },
+    '/admin/projects/{projectId}/assets/regenerate': {
+        post: {
+            summary: 'Regenerate asset variants',
+            tags: ['Admin Assets'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: {
+                content: {
+                    'application/json': {
+                        schema: {
+                            type: 'object',
+                            properties: { assetIds: { type: 'array', items: { type: 'string' } } }
+                        }
+                    }
+                }
+            },
+            responses: { '200': { description: 'Regeneration result' } }
+        }
+    },
+    '/admin/projects/{projectId}/assets/{id}': {
+        get: {
+            summary: 'Get asset by id',
+            tags: ['Admin Assets'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'Asset' }, '404': { description: 'Not found' } }
+        },
+        patch: {
+            summary: 'Update asset',
+            tags: ['Admin Assets'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
+            responses: {
+                '200': { description: 'Asset updated' },
+                '404': { description: 'Not found' }
+            }
+        },
+        delete: {
+            summary: 'Delete asset',
+            tags: ['Admin Assets'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '204': { description: 'Deleted' }, '404': { description: 'Not found' } }
+        }
+    },
+    '/admin/projects/{projectId}/assets/{id}/move': {
+        post: {
+            summary: 'Move asset to folder',
+            tags: ['Admin Assets'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: {
+                content: {
+                    'application/json': {
+                        schema: {
+                            type: 'object',
+                            required: ['folder'],
+                            properties: { folder: { type: 'string' } }
+                        }
+                    }
+                }
+            },
+            responses: {
+                '200': { description: 'Asset moved' },
+                '404': { description: 'Not found' }
+            }
+        }
+    }
+};
 
 export default router;

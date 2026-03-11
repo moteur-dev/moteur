@@ -9,6 +9,7 @@ import {
 import { getBlueprint } from '@moteur/core/blueprints.js';
 import { requireProjectAccess } from '../../middlewares/auth.js';
 import type { StructureSchema } from '@moteur/types/Structure.js';
+import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -85,5 +86,77 @@ router.delete('/:id', requireProjectAccess, async (req: any, res: any) => {
         return res.status(400).json({ error: err?.message ?? 'Failed to delete structure' });
     }
 });
+
+export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
+    '/admin/projects/{projectId}/structures': {
+        get: {
+            summary: 'List structures',
+            tags: ['Admin Structures'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'List of structures' } }
+        },
+        post: {
+            summary: 'Create structure',
+            tags: ['Admin Structures'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: {
+                content: {
+                    'application/json': {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                blueprintId: { type: 'string' },
+                                id: { type: 'string' },
+                                label: { type: 'string' },
+                                handle: { type: 'string' }
+                            }
+                        }
+                    }
+                }
+            },
+            responses: {
+                '201': { description: 'Structure created' },
+                '400': { description: 'Bad request' }
+            }
+        }
+    },
+    '/admin/projects/{projectId}/structures/{id}': {
+        get: {
+            summary: 'Get structure by id',
+            tags: ['Admin Structures'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'Structure' }, '404': { description: 'Not found' } }
+        },
+        patch: {
+            summary: 'Update structure',
+            tags: ['Admin Structures'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
+            responses: {
+                '200': { description: 'Structure updated' },
+                '404': { description: 'Not found' }
+            }
+        },
+        delete: {
+            summary: 'Delete structure',
+            tags: ['Admin Structures'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '204': { description: 'Deleted' }, '404': { description: 'Not found' } }
+        }
+    }
+};
 
 export default router;
