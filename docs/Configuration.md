@@ -57,6 +57,20 @@ See your deployment or [REST API](REST%20API.md) for auth-related env (e.g. `AUT
 
 ---
 
+## AI
+
+| Variable | Description |
+|----------|-------------|
+| `MOTEUR_AI_PROVIDER` | Provider: `openai`, `anthropic`, or `mock`. **Required** for AI; when unset, AI is disabled (503, Studio hides AI). |
+| `MOTEUR_AI_API_KEY` | API key for the selected provider (optional if provider-specific key is set). |
+| `MOTEUR_AI_CREDIT_COSTS` | Optional. JSON object to override default credit costs per operation (see [AI](AI.md)). |
+| `OPENAI_API_KEY` | OpenAI key; used when provider is `openai`. |
+| `ANTHROPIC_API_KEY` | Anthropic key; used when provider is `anthropic`. |
+
+See [AI](AI.md) for full documentation.
+
+---
+
 ## Storage & data
 
 Project and content storage are configured via core; see the main [README](../README.md) and project/storage docs.

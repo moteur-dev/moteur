@@ -55,6 +55,16 @@ export interface ProjectSchema {
     meta?: {
         audit?: Audit;
     };
+
+    /** AI-related project settings. */
+    ai?: {
+        /** When true, run image analysis (alt/caption) automatically after each image upload. Default: false. */
+        autoAnalyseImages?: boolean;
+        /** Image generation provider: openai (DALL-E), fal, replicate, or null if not set. */
+        imageProvider?: 'openai' | 'fal' | 'replicate' | null;
+        /** When true, the licensing acknowledgement for generated images has been shown and accepted. */
+        imageGenerationAcknowledged?: boolean;
+    };
 }
 
 /** Global instance-level video provider config (not in project.json). */

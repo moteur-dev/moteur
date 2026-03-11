@@ -62,4 +62,15 @@ describe('PresenceStore', () => {
         store.update('s1', 'u1', 'A', 'p1', { screenId: 'xyz' });
         expect(store.getScreen('s1')).toBe('xyz');
     });
+
+    it('tryLockField acquires when free and returns true', () => {
+        expect(store.tryLockField('p1', 'cover.alt', 'ai:image-analysis')).toBe(true);
+        expect(store.getLocks('p1')).toEqual({ 'cover.alt': 'ai:image-analysis' });
+    });
+
+    it('tryLockField returns false when field is held by another user', () => {
+        store.lockField('p1', 'cover.alt', 'u1');
+        expect(store.tryLockField('p1', 'cover.alt', 'ai:image-analysis')).toBe(false);
+        expect(store.getLocks('p1')).toEqual({ 'cover.alt': 'u1' });
+    });
 });

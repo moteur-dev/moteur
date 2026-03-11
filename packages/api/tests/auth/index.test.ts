@@ -23,7 +23,7 @@ describe('auth/index route wiring', () => {
         expect([401, 403]).toContain(meRes.status);
     });
 
-    it('should conditionally expose /auth/github and /auth/google', async () => {
+    it('should expose /auth/github and /auth/google and return 503 when OAuth not configured', async () => {
         // Mock both as disabled
         vi.spyOn(authProviders, 'isGitHubEnabled').mockReturnValue(false);
         vi.spyOn(authProviders, 'isGoogleEnabled').mockReturnValue(false);
@@ -34,8 +34,8 @@ describe('auth/index route wiring', () => {
         const githubRes = await request(appWithoutSocial).get('/auth/github');
         const googleRes = await request(appWithoutSocial).get('/auth/google');
 
-        expect(githubRes.status).toBe(404);
-        expect(googleRes.status).toBe(404);
+        expect(githubRes.status).toBe(503);
+        expect(googleRes.status).toBe(503);
     });
 });
 

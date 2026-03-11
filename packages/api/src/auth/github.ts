@@ -6,11 +6,18 @@ import { generateJWT } from '@moteur/core/auth.js';
 import { User } from '@moteur/types/User.js';
 import type { OpenAPIV3 } from 'openapi-types';
 import { runOnboardingForNewUser } from './onboarding.js';
+import { isGitHubEnabled } from '../utils/authProviders.js';
 
 const githubAuthRoute: Router = Router();
 
 // Redirect to GitHub OAuth
 githubAuthRoute.get('/github', (req, res) => {
+    if (!isGitHubEnabled()) {
+        res.status(503).json({
+            error: 'GitHub OAuth is not configured. Set AUTH_GITHUB_CLIENT_ID, AUTH_GITHUB_CLIENT_SECRET, and AUTH_GITHUB_REDIRECT_URI in the server environment.'
+        });
+        return;
+    }
     const clientId = process.env.AUTH_GITHUB_CLIENT_ID!;
     const redirectUri = process.env.AUTH_GITHUB_REDIRECT_URI!;
     const state = randomUUID(); // Optional: save to session/cookie for CSRF protection
@@ -24,6 +31,12 @@ githubAuthRoute.get('/github', (req, res) => {
 
 // Handle github OAuth callback: login user if email matches
 githubAuthRoute.get('/github/callback', async (req: any, res: any) => {
+    if (!isGitHubEnabled()) {
+        res.status(503).json({
+            error: 'GitHub OAuth is not configured. Set AUTH_GITHUB_CLIENT_ID, AUTH_GITHUB_CLIENT_SECRET, and AUTH_GITHUB_REDIRECT_URI in the server environment.'
+        });
+        return;
+    }
     const code = req.query.code as string;
 
     if (!code) return res.status(400).json({ error: 'Missing code' });

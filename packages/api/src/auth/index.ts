@@ -14,12 +14,8 @@ router.use(login);
 router.use(providers);
 router.use(refresh);
 router.use(me);
-if (isGitHubEnabled()) {
-    router.use(github);
-}
-if (isGoogleEnabled()) {
-    router.use(google);
-}
+router.use(github);
+router.use(google);
 
 export const authSpecs = {
     paths: {

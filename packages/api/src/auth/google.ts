@@ -6,11 +6,18 @@ import type { OpenAPIV3 } from 'openapi-types';
 import { getUserByEmail, createUser } from '@moteur/core/users.js';
 import { User } from '@moteur/types/User.js';
 import { runOnboardingForNewUser } from './onboarding.js';
+import { isGoogleEnabled } from '../utils/authProviders.js';
 
 const googleAuthRoute: Router = Router();
 
 //  Redirect to Google OAuth
 googleAuthRoute.get('/google', (req, res) => {
+    if (!isGoogleEnabled()) {
+        res.status(503).json({
+            error: 'Google OAuth is not configured. Set AUTH_GOOGLE_CLIENT_ID, AUTH_GOOGLE_CLIENT_SECRET, and AUTH_GOOGLE_REDIRECT_URI in the server environment.'
+        });
+        return;
+    }
     const clientId = process.env.AUTH_GOOGLE_CLIENT_ID!;
     const redirectUri = process.env.AUTH_GOOGLE_REDIRECT_URI!;
     const state = randomUUID();
@@ -24,6 +31,12 @@ googleAuthRoute.get('/google', (req, res) => {
 
 // Google OAuth callback
 googleAuthRoute.get('/google/callback', async (req: any, res: any) => {
+    if (!isGoogleEnabled()) {
+        res.status(503).json({
+            error: 'Google OAuth is not configured. Set AUTH_GOOGLE_CLIENT_ID, AUTH_GOOGLE_CLIENT_SECRET, and AUTH_GOOGLE_REDIRECT_URI in the server environment.'
+        });
+        return;
+    }
     const code = req.query.code as string;
 
     if (!code) return res.status(400).json({ error: 'Missing code' });
