@@ -7,6 +7,7 @@ import {
     deleteLayout
 } from '@moteur/core/layouts.js';
 import { requireProjectAccess } from '../../middlewares/auth.js';
+import type { OpenAPIV3 } from 'openapi-types';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -67,5 +68,57 @@ router.delete('/:layoutId', requireProjectAccess, async (req: any, res: any) => 
         return res.status(400).json({ error: err?.message ?? 'Failed to delete layout' });
     }
 });
+
+export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
+    '/admin/projects/{projectId}/layouts': {
+        get: {
+            summary: 'List layouts',
+            tags: ['Admin Layouts'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'List of layouts' } }
+        },
+        post: {
+            summary: 'Create layout',
+            tags: ['Admin Layouts'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
+            responses: { '201': { description: 'Layout created' }, '400': { description: 'Bad request' } }
+        }
+    },
+    '/admin/projects/{projectId}/layouts/{layoutId}': {
+        get: {
+            summary: 'Get layout by id',
+            tags: ['Admin Layouts'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'layoutId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '200': { description: 'Layout' }, '404': { description: 'Not found' } }
+        },
+        patch: {
+            summary: 'Update layout',
+            tags: ['Admin Layouts'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'layoutId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
+            responses: { '200': { description: 'Layout updated' }, '404': { description: 'Not found' } }
+        },
+        delete: {
+            summary: 'Delete layout',
+            tags: ['Admin Layouts'],
+            parameters: [
+                { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
+                { name: 'layoutId', in: 'path', required: true, schema: { type: 'string' } }
+            ],
+            responses: { '204': { description: 'Deleted' }, '404': { description: 'Not found' } }
+        }
+    }
+};
 
 export default router;

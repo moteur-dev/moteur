@@ -2,16 +2,16 @@ import { Router } from 'express';
 import { mergePathSpecs } from '../utils/mergePathSpecs.js';
 import adminTemplatesRouter, { openapi as adminTemplatesSpec } from './templates/index.js';
 import adminPagesRouter, { openapi as adminPagesSpec } from './pages/index.js';
-import adminStructuresRouter from './structures/index.js';
-import adminLayoutsRouter from './layouts/index.js';
+import adminStructuresRouter, { openapi as adminStructuresSpec } from './structures/index.js';
+import adminLayoutsRouter, { openapi as adminLayoutsSpec } from './layouts/index.js';
 import adminCollectionsRouter, { openapi as adminCollectionsSpec } from './collections/index.js';
 import adminApiKeyRouter, { openapi as adminApiKeySpec } from './apiKey/index.js';
-import adminAssetsRouter from './assets/index.js';
-import adminAssetConfigRouter from './assetConfig.js';
-import adminNavigationsRouter from './navigations/index.js';
-import adminWebhooksRouter from './webhooks/index.js';
+import adminAssetsRouter, { openapi as adminAssetsSpec } from './assets/index.js';
+import adminAssetConfigRouter, { openapi as adminAssetConfigSpec } from './assetConfig.js';
+import adminNavigationsRouter, { openapi as adminNavigationsSpec } from './navigations/index.js';
+import adminWebhooksRouter, { openapi as adminWebhooksSpec } from './webhooks/index.js';
 import adminFormsRouter, { openapi as adminFormsSpec } from './forms/index.js';
-import adminBlocksRouter from './blocks.js';
+import adminBlocksRouter, { openapi as adminBlocksSpec } from './blocks.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -32,9 +32,16 @@ export const adminSpecs = {
     paths: mergePathSpecs(
         adminTemplatesSpec,
         adminPagesSpec,
+        adminStructuresSpec,
+        adminLayoutsSpec,
         adminCollectionsSpec,
         adminApiKeySpec,
-        adminFormsSpec
+        adminAssetsSpec,
+        adminAssetConfigSpec,
+        adminNavigationsSpec,
+        adminWebhooksSpec,
+        adminFormsSpec,
+        adminBlocksSpec
     )
 };
 

@@ -25,9 +25,9 @@ import entriesRoute, { entriesSpecs } from './entries/index.js';
 import activityGlobalRoute, { openapi as activityGlobalSpec } from './activity/index.js';
 import adminRoutes, { adminSpecs } from './admin/index.js';
 import adminUsageRouter, { openapi as adminUsageSpec } from './admin/usage.js';
-import adminAssetsMigrateRouter from './admin/assets/migrate.js';
-import blocksRouter from './public/blocks.js';
-import webhooksAssetsRouter from './webhooks/assets.js';
+import adminAssetsMigrateRouter, { openapi as adminAssetsMigrateSpec } from './admin/assets/migrate.js';
+import blocksRouter, { openapi as blocksSpec } from './public/blocks.js';
+import webhooksAssetsRouter, { openapi as webhooksAssetsSpec } from './webhooks/assets.js';
 import path from 'path';
 import fs from 'fs';
 import { storageConfig } from '@moteur/core/config/storageConfig.js';
@@ -128,7 +128,10 @@ const mergedApiSpecs = await mergePluginSpecs({
         ...modelsSpecs.paths,
         ...entriesSpecs.paths,
         ...adminSpecs.paths,
-        ...adminUsageSpec
+        ...adminUsageSpec,
+        ...adminAssetsMigrateSpec,
+        ...blocksSpec,
+        ...webhooksAssetsSpec
     },
     components: {
         ...baseSpec.components,

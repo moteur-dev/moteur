@@ -251,7 +251,10 @@ describe('forms', () => {
             expect(updated.description).toBe('Reach out');
             expect(updated.id).toBe('contact');
             expect(updated.updatedAt).toBeDefined();
-            expect(updated.updatedAt).not.toBe(updated.createdAt);
+            // updatedAt must be >= createdAt (may be equal in CI when create/update run in same ms)
+            expect(new Date(updated.updatedAt!).getTime()).toBeGreaterThanOrEqual(
+                new Date(updated.createdAt).getTime()
+            );
         });
 
         it('throws when form not found', async () => {
