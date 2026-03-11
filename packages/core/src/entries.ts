@@ -13,6 +13,7 @@ import { getJson, putJson, hasKey } from './utils/storageAdapterUtils.js';
 import { entryKey, entryListPrefix } from './utils/storageKeys.js';
 import type { EntryStatus } from '@moteur/types/Model.js';
 import { dispatch as webhookDispatch } from './webhooks/webhookService.js';
+import { runEntryScanDebounced } from './radar/index.js';
 import {
     getCoreIdFieldIds,
     stripCoreIdFromData,
@@ -147,6 +148,11 @@ export async function createEntry(
     triggerEvent('entry.afterCreate', { entry, user, modelId, projectId });
 
     try {
+        runEntryScanDebounced(projectId, modelId, entry.id, { source: options?.source ?? 'api' });
+    } catch {
+        // never fail the operation
+    }
+    try {
         webhookDispatch(
             'entry.created',
             {
@@ -220,6 +226,11 @@ export async function updateEntry(
     await putJson(storage, entryKey(modelId, entryId), updated);
     triggerEvent('entry.afterUpdate', { entry: updated, user, modelId, projectId });
 
+    try {
+        runEntryScanDebounced(projectId, modelId, entryId, { source: options?.source ?? 'api' });
+    } catch {
+        // never fail the operation
+    }
     const source = options?.source ?? 'api';
     const payloadEntry = {
         entryId,

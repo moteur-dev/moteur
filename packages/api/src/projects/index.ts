@@ -27,6 +27,7 @@ import pageOutputsRouter, { openapi as pageOutputsSpec } from './pageOutputs.js'
 import navigationsPublicRouter, { openapi as navigationsPublicSpec } from './navigations/public.js';
 import collectionsPublicRouter, { openapi as collectionsPublicSpec } from './collections/public.js';
 import formsPublicRouter, { openapi as formsPublicSpec } from './forms/public.js';
+import radarRouter, { openapi as radarSpec } from './radar/index.js';
 import { optionalAuth, apiKeyAuth, requireCollectionAuth } from '../middlewares/auth.js';
 
 const router: Router = Router();
@@ -55,6 +56,7 @@ router.use('/:projectId/activity', activityRouter);
 router.use('/:projectId/comments', commentsRouter);
 router.use('/:projectId/reviews', reviewsRouter);
 router.use('/:projectId/notifications', notificationsRouter);
+router.use('/:projectId/radar', radarRouter);
 
 export const projectsSpecs = {
     paths: mergePathSpecs(
@@ -75,7 +77,8 @@ export const projectsSpecs = {
         pageOutputsSpec,
         navigationsPublicSpec,
         collectionsPublicSpec,
-        formsPublicSpec
+        formsPublicSpec,
+        radarSpec
     ),
     schemas: {
         ...createSchemas,

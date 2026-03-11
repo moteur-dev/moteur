@@ -92,3 +92,6 @@ export function scheduleKey(scheduleId: string): string {
 export function scheduleListPrefix(): string {
     return 'schedules/';
 }
+
+/** Radar violations (derived data, gitignored by default). */
+export const RADAR_KEY = '_radar.json';
