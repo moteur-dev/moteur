@@ -24,7 +24,7 @@ export async function getImageAdapter(
     projectSettings: ProjectAISettings
 ): Promise<MoteurAIAdapter> {
     const provider = projectSettings?.imageProvider ?? null;
-    if (provider == null || provider === '') {
+    if (provider == null) {
         throw new AIError('image_provider_not_configured');
     }
 
