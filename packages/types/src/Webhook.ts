@@ -21,7 +21,9 @@ export type WebhookEvent =
     | 'review.approved'
     | 'review.rejected'
     | 'comment.created'
-    | 'form.submitted';
+    | 'form.submitted'
+    | 'radar.violation.created'
+    | 'radar.violation.resolved';
 
 // A filter narrows which events actually trigger delivery
 // e.g. only fire when modelId === 'article'
@@ -95,7 +97,15 @@ export type WebhookPayloadData =
     | ReviewPayloadData
     | CommentPayloadData
     | FormPayloadData
-    | SchedulePayloadData;
+    | SchedulePayloadData
+    | RadarPayloadData;
+
+export type RadarPayloadData = {
+    violation: import('./Radar.js').RadarViolation;
+};
+
+// Re-export for consumers that need both
+export type { RadarViolation } from './Radar.js';
 
 export type SchedulePayloadData = {
     scheduleId: string;

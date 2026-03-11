@@ -10,7 +10,8 @@ import type {
     WebhookPayloadData,
     EntryPayloadData,
     ReviewPayloadData,
-    CommentPayloadData
+    CommentPayloadData,
+    RadarPayloadData
 } from '@moteur/types/Webhook.js';
 import { getProjectStorage } from '../utils/getProjectStorage.js';
 import { getJson, putJson } from '../utils/storageAdapterUtils.js';
@@ -48,7 +49,9 @@ const VALID_EVENTS: WebhookEvent[] = [
     'review.approved',
     'review.rejected',
     'comment.created',
-    'form.submitted'
+    'form.submitted',
+    'radar.violation.created',
+    'radar.violation.resolved'
 ];
 
 const FILTER_FIELDS = ['modelId', 'status', 'locale', 'environment', 'source'] as const;
@@ -115,13 +118,17 @@ export function evaluateFilters(
         let value: string | undefined;
         switch (filter.field) {
             case 'modelId':
-                value = (data as EntryPayloadData | ReviewPayloadData | CommentPayloadData).modelId;
+                value =
+                    (data as EntryPayloadData | ReviewPayloadData | CommentPayloadData).modelId ??
+                    (data as RadarPayloadData).violation?.modelSlug;
                 break;
             case 'status':
                 value = (data as EntryPayloadData | ReviewPayloadData).status;
                 break;
             case 'locale':
-                value = (data as EntryPayloadData).locale;
+                value =
+                    (data as EntryPayloadData).locale ??
+                    (data as RadarPayloadData).violation?.locale;
                 break;
             case 'environment':
                 value = context.environment;

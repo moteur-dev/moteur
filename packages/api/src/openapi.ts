@@ -111,6 +111,64 @@ const baseSchemas: OpenAPIV3.ComponentsObject['schemas'] = {
             updatedAt: { type: 'number' }
         },
         required: ['userId', 'name', 'projectId', 'updatedAt']
+    },
+    RadarViolation: {
+        type: 'object',
+        required: ['id', 'ruleId', 'severity', 'entrySlug', 'modelSlug', 'message', 'detectedAt'],
+        properties: {
+            id: { type: 'string' },
+            ruleId: { type: 'string' },
+            severity: { type: 'string', enum: ['error', 'warning', 'suggestion'] },
+            entrySlug: { type: 'string' },
+            modelSlug: { type: 'string' },
+            fieldPath: { type: 'string', nullable: true },
+            locale: { type: 'string', nullable: true },
+            message: { type: 'string' },
+            hint: { type: 'string', nullable: true },
+            aiAction: {
+                type: 'object',
+                nullable: true,
+                properties: {
+                    feature: { type: 'string', enum: ['translation', 'writing', 'image-analysis'] },
+                    label: { type: 'string' },
+                    action: { type: 'string' }
+                }
+            },
+            aiEnhancement: {
+                type: 'object',
+                nullable: true,
+                properties: {
+                    label: { type: 'string' },
+                    description: { type: 'string' },
+                    credits: { type: 'integer' },
+                    action: { type: 'string' }
+                }
+            },
+            detectedAt: { type: 'string', format: 'date-time' },
+            resolvedAt: { type: 'string', format: 'date-time', nullable: true }
+        }
+    },
+    RadarReportSummary: {
+        type: 'object',
+        required: ['errors', 'warnings', 'suggestions', 'total'],
+        properties: {
+            errors: { type: 'integer' },
+            warnings: { type: 'integer' },
+            suggestions: { type: 'integer' },
+            total: { type: 'integer' }
+        }
+    },
+    RadarReport: {
+        type: 'object',
+        required: ['scannedAt', 'summary', 'violations'],
+        properties: {
+            scannedAt: { type: 'string', format: 'date-time' },
+            summary: { $ref: '#/components/schemas/RadarReportSummary' },
+            violations: {
+                type: 'array',
+                items: { $ref: '#/components/schemas/RadarViolation' }
+            }
+        }
     }
 };
 
