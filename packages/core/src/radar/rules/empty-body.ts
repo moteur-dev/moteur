@@ -9,8 +9,12 @@ function blockCount(value: unknown): number {
             const blocks = (content as { blocks: unknown }).blocks;
             return Array.isArray(blocks) ? blocks.length : 0;
         }
-        if (content && typeof content === 'object' && Array.isArray((content as { value?: unknown }).value)) {
-            return ((content as { value: unknown[] }).value).length;
+        if (
+            content &&
+            typeof content === 'object' &&
+            Array.isArray((content as { value?: unknown }).value)
+        ) {
+            return (content as { value: unknown[] }).value.length;
         }
     }
     return 0;

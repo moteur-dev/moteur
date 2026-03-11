@@ -7,7 +7,9 @@ const UNREVIEWED_DAYS = 7;
 function hasAIBadge(_entry: { data: Record<string, unknown> }, _fieldKey: string): boolean {
     // V1: we don't have a standard AI badge field; assume we check options or a convention.
     // If entry.data has _aiGenerated as object with field keys, use that.
-    const data = _entry.data as Record<string, unknown> & { _aiGenerated?: Record<string, unknown> };
+    const data = _entry.data as Record<string, unknown> & {
+        _aiGenerated?: Record<string, unknown>;
+    };
     const badge = data?._aiGenerated;
     if (badge && typeof badge === 'object' && _fieldKey in badge) return true;
     return false;

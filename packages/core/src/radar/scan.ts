@@ -11,10 +11,7 @@ export interface ScanOptions {
 /**
  * Run a full project scan and persist results. Fires webhooks for created/resolved violations.
  */
-export async function runFullScan(
-    projectId: string,
-    options?: ScanOptions
-): Promise<RadarReport> {
+export async function runFullScan(projectId: string, options?: ScanOptions): Promise<RadarReport> {
     const graph = await buildRadarGraph(projectId);
     const violations: RadarViolation[] = [];
     const now = new Date().toISOString();
@@ -48,11 +45,7 @@ export async function runFullScan(
     for (const v of violations) {
         if (!prevIds.has(v.id)) {
             try {
-                webhookDispatch(
-                    'radar.violation.created',
-                    { violation: v },
-                    { projectId, source }
-                );
+                webhookDispatch('radar.violation.created', { violation: v }, { projectId, source });
             } catch {
                 // never fail scan on webhook
             }
@@ -109,7 +102,13 @@ export async function runEntryScan(
     const model = graph.models.get(entry.modelId);
     if (!model) {
         const existing = await loadRadarReport(projectId);
-        return existing ?? { scannedAt: new Date().toISOString(), summary: { errors: 0, warnings: 0, suggestions: 0, total: 0 }, violations: [] };
+        return (
+            existing ?? {
+                scannedAt: new Date().toISOString(),
+                summary: { errors: 0, warnings: 0, suggestions: 0, total: 0 },
+                violations: []
+            }
+        );
     }
 
     const ctx = {
@@ -135,7 +134,9 @@ export async function runEntryScan(
     await saveRadarReport(projectId, report);
 
     const source = options?.source ?? 'api';
-    const prevForEntry = new Set((previous?.violations ?? []).filter(v => v.entrySlug === entryId).map(v => v.id));
+    const prevForEntry = new Set(
+        (previous?.violations ?? []).filter(v => v.entrySlug === entryId).map(v => v.id)
+    );
     const newForEntry = new Set(entryViolations.map(v => v.id));
     for (const v of entryViolations) {
         if (!prevForEntry.has(v.id)) {
@@ -149,7 +150,11 @@ export async function runEntryScan(
     for (const v of previous?.violations ?? []) {
         if (v.entrySlug === entryId && !newForEntry.has(v.id)) {
             try {
-                webhookDispatch('radar.violation.resolved', { violation: { ...v, resolvedAt: now } }, { projectId, source });
+                webhookDispatch(
+                    'radar.violation.resolved',
+                    { violation: { ...v, resolvedAt: now } },
+                    { projectId, source }
+                );
             } catch {
                 // ignore
             }

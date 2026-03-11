@@ -5,7 +5,8 @@ export const requiredFieldEmpty: RuleEvaluator = ({ entry, model }) => {
     const violations: import('@moteur/types/Radar.js').RadarViolation[] = [];
     const now = new Date().toISOString();
     for (const [fieldKey, fieldDef] of Object.entries(model.fields)) {
-        const required = fieldDef?.options && (fieldDef.options as { required?: boolean }).required === true;
+        const required =
+            fieldDef?.options && (fieldDef.options as { required?: boolean }).required === true;
         if (!required) continue;
         const value = entry.data[fieldKey];
         const empty = value === undefined || value === null || value === '';

@@ -14,7 +14,8 @@ export const missingLocale: RuleEvaluator = ({ entry, model, locales }) => {
     for (const [fieldKey, fieldDef] of Object.entries(model.fields)) {
         if (!isMultilingual((fieldDef?.options as Record<string, unknown>) ?? {})) continue;
         const value = entry.data[fieldKey];
-        const valObj = typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : null;
+        const valObj =
+            typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : null;
         const sourceVal = defaultLocale ? valObj?.[defaultLocale] : undefined;
         const sourceFilled =
             sourceVal !== undefined &&

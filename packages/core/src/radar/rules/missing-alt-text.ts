@@ -6,9 +6,10 @@ function hasImageNoAlt(value: unknown): boolean {
     const o = value as Record<string, unknown>;
     const src = o.src ?? o.value;
     const hasSrc =
-        (typeof src === 'string' && src.trim() !== '') ||
-        (typeof src === 'object' && src !== null);
-    const alt = o.alt ?? (o.value && typeof o.value === 'object' && (o.value as Record<string, unknown>).alt);
+        (typeof src === 'string' && src.trim() !== '') || (typeof src === 'object' && src !== null);
+    const alt =
+        o.alt ??
+        (o.value && typeof o.value === 'object' && (o.value as Record<string, unknown>).alt);
     const altEmpty =
         alt === undefined ||
         alt === null ||

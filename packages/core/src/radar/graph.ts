@@ -1,9 +1,8 @@
 import type { Entry } from '@moteur/types/Model.js';
-import type { ModelSchema } from '@moteur/types/Model.js';
 import type { RadarGraph, RadarGraphEntry } from '@moteur/types/Radar.js';
 import { getProjectStorage } from '../utils/getProjectStorage.js';
 import { getJson } from '../utils/storageAdapterUtils.js';
-import { modelKey, modelListPrefix, entryKey, entryListPrefix } from '../utils/storageKeys.js';
+import { modelListPrefix, entryKey, entryListPrefix } from '../utils/storageKeys.js';
 import { getProjectById } from '../projects.js';
 import { getModelSchemaForProject } from '../models.js';
 
@@ -63,7 +62,12 @@ export async function buildRadarGraph(projectId: string): Promise<RadarGraph> {
             const type = fieldDef?.type;
             const value = e.data[fieldKey];
             if (type === 'core/relation' && value != null) {
-                const refId = typeof value === 'object' && value !== null && 'id' in value ? (value as { id: string }).id : typeof value === 'string' ? value : null;
+                const refId =
+                    typeof value === 'object' && value !== null && 'id' in value
+                        ? (value as { id: string }).id
+                        : typeof value === 'string'
+                          ? value
+                          : null;
                 if (refId && refId.trim() !== '') {
                     const arr = referrers.get(refId) ?? [];
                     if (!arr.includes(e.slug)) arr.push(e.slug);
@@ -72,7 +76,10 @@ export async function buildRadarGraph(projectId: string): Promise<RadarGraph> {
             }
             if (type === 'core/relations' && Array.isArray(value)) {
                 for (const item of value) {
-                    const refId = typeof item === 'object' && item !== null && 'id' in item ? (item as { id: string }).id : null;
+                    const refId =
+                        typeof item === 'object' && item !== null && 'id' in item
+                            ? (item as { id: string }).id
+                            : null;
                     if (refId && refId.trim() !== '') {
                         const arr = referrers.get(refId) ?? [];
                         if (!arr.includes(e.slug)) arr.push(e.slug);

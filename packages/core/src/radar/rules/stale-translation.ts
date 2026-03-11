@@ -26,12 +26,20 @@ export const staleTranslation: RuleEvaluator = ({ entry, model, locales }) => {
     for (const [fieldKey, fieldDef] of Object.entries(model.fields)) {
         if (!isMultilingual((fieldDef?.options as Record<string, unknown>) ?? {})) continue;
         const value = entry.data[fieldKey];
-        if (value == null || (typeof value === 'object' && Object.keys(value as object).length === 0)) continue;
-        const valObj = typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : null;
+        if (
+            value == null ||
+            (typeof value === 'object' && Object.keys(value as object).length === 0)
+        )
+            continue;
+        const valObj =
+            typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : null;
         for (const loc of locales) {
             if (loc === defaultLocale) continue;
             const targetVal = valObj?.[loc];
-            const targetEmpty = targetVal === undefined || targetVal === null || (typeof targetVal === 'string' && (targetVal as string).trim() === '');
+            const targetEmpty =
+                targetVal === undefined ||
+                targetVal === null ||
+                (typeof targetVal === 'string' && (targetVal as string).trim() === '');
             if (targetEmpty) continue;
             const sourceVal = valObj?.[defaultLocale];
             const sourceEmpty = sourceVal === undefined || sourceVal === null;

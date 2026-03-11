@@ -1,10 +1,7 @@
 import { Router } from 'express';
 import type { OpenAPIV3 } from 'openapi-types';
 import { optionalAuth, apiKeyAuth, requireProjectAccess } from '../../middlewares/auth.js';
-import {
-    loadRadarReport,
-    runFullScan
-} from '@moteur/core/radar/index.js';
+import { loadRadarReport, runFullScan } from '@moteur/core/radar/index.js';
 
 const router: Router = Router({ mergeParams: true });
 
@@ -14,63 +11,57 @@ function requireProjectOrApiKey(req: any, res: any, next: any) {
 }
 
 /** GET /projects/:projectId/radar — list violations, optionally run full scan */
-router.get(
-    '/',
-    optionalAuth,
-    apiKeyAuth,
-    requireProjectOrApiKey,
-    async (req: any, res: any) => {
-        const { projectId } = req.params;
-        const scan = req.query.scan === 'true' || req.query.scan === '1';
-        const severity = typeof req.query.severity === 'string' ? req.query.severity : undefined;
-        const model = typeof req.query.model === 'string' ? req.query.model : undefined;
-        const locale = typeof req.query.locale === 'string' ? req.query.locale : undefined;
-        const ruleId = typeof req.query.ruleId === 'string' ? req.query.ruleId : undefined;
+router.get('/', optionalAuth, apiKeyAuth, requireProjectOrApiKey, async (req: any, res: any) => {
+    const { projectId } = req.params;
+    const scan = req.query.scan === 'true' || req.query.scan === '1';
+    const severity = typeof req.query.severity === 'string' ? req.query.severity : undefined;
+    const model = typeof req.query.model === 'string' ? req.query.model : undefined;
+    const locale = typeof req.query.locale === 'string' ? req.query.locale : undefined;
+    const ruleId = typeof req.query.ruleId === 'string' ? req.query.ruleId : undefined;
 
-        try {
-            let report = scan
-                ? await runFullScan(projectId, { source: req.apiKeyAuth ? 'api' : 'studio' })
-                : await loadRadarReport(projectId);
+    try {
+        let report = scan
+            ? await runFullScan(projectId, { source: req.apiKeyAuth ? 'api' : 'studio' })
+            : await loadRadarReport(projectId);
 
-            if (!report) {
-                report = {
-                    scannedAt: new Date().toISOString(),
-                    summary: { errors: 0, warnings: 0, suggestions: 0, total: 0 },
-                    violations: []
-                };
-            }
-
-            let violations = report.violations;
-            if (severity) {
-                violations = violations.filter(v => v.severity === severity);
-            }
-            if (model) {
-                violations = violations.filter(v => v.modelSlug === model);
-            }
-            if (locale) {
-                violations = violations.filter(v => v.locale === locale);
-            }
-            if (ruleId) {
-                violations = violations.filter(v => v.ruleId === ruleId);
-            }
-
-            const summary = {
-                errors: violations.filter(v => v.severity === 'error').length,
-                warnings: violations.filter(v => v.severity === 'warning').length,
-                suggestions: violations.filter(v => v.severity === 'suggestion').length,
-                total: violations.length
+        if (!report) {
+            report = {
+                scannedAt: new Date().toISOString(),
+                summary: { errors: 0, warnings: 0, suggestions: 0, total: 0 },
+                violations: []
             };
-
-            return res.json({
-                scannedAt: report.scannedAt,
-                summary,
-                violations
-            });
-        } catch (err: any) {
-            return res.status(500).json({ error: err?.message ?? 'Radar failed' });
         }
+
+        let violations = report.violations;
+        if (severity) {
+            violations = violations.filter(v => v.severity === severity);
+        }
+        if (model) {
+            violations = violations.filter(v => v.modelSlug === model);
+        }
+        if (locale) {
+            violations = violations.filter(v => v.locale === locale);
+        }
+        if (ruleId) {
+            violations = violations.filter(v => v.ruleId === ruleId);
+        }
+
+        const summary = {
+            errors: violations.filter(v => v.severity === 'error').length,
+            warnings: violations.filter(v => v.severity === 'warning').length,
+            suggestions: violations.filter(v => v.severity === 'suggestion').length,
+            total: violations.length
+        };
+
+        return res.json({
+            scannedAt: report.scannedAt,
+            summary,
+            violations
+        });
+    } catch (err: any) {
+        return res.status(500).json({ error: err?.message ?? 'Radar failed' });
     }
-);
+});
 
 /** GET /projects/:projectId/radar/entry/:slug — violations for one entry */
 router.get(
@@ -95,11 +86,17 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
     '/projects/{projectId}/radar': {
         get: {
             summary: 'Get Radar violation report',
-            description: 'Returns current violations. Use ?scan=true to run a full scan first. Supports severity, model, locale, ruleId filters.',
+            description:
+                'Returns current violations. Use ?scan=true to run a full scan first. Supports severity, model, locale, ruleId filters.',
             parameters: [
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } },
                 { name: 'scan', in: 'query', required: false, schema: { type: 'boolean' } },
-                { name: 'severity', in: 'query', required: false, schema: { type: 'string', enum: ['error', 'warning', 'suggestion'] } },
+                {
+                    name: 'severity',
+                    in: 'query',
+                    required: false,
+                    schema: { type: 'string', enum: ['error', 'warning', 'suggestion'] }
+                },
                 { name: 'model', in: 'query', required: false, schema: { type: 'string' } },
                 { name: 'locale', in: 'query', required: false, schema: { type: 'string' } },
                 { name: 'ruleId', in: 'query', required: false, schema: { type: 'string' } }
@@ -122,7 +119,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                                             total: { type: 'integer' }
                                         }
                                     },
-                                    violations: { type: 'array', items: { $ref: '#/components/schemas/RadarViolation' } }
+                                    violations: {
+                                        type: 'array',
+                                        items: { $ref: '#/components/schemas/RadarViolation' }
+                                    }
                                 }
                             }
                         }
@@ -147,7 +147,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                                 type: 'object',
                                 properties: {
                                     entrySlug: { type: 'string' },
-                                    violations: { type: 'array', items: { $ref: '#/components/schemas/RadarViolation' } }
+                                    violations: {
+                                        type: 'array',
+                                        items: { $ref: '#/components/schemas/RadarViolation' }
+                                    }
                                 }
                             }
                         }

@@ -25,7 +25,11 @@ export const relationPointsToDraft: RuleEvaluator = ({ entry, model, graph }) =>
             const target = graph.entries.get(refId);
             if (target && (target.status === 'draft' || !target.status)) {
                 violations.push({
-                    id: makeViolationId('relation-points-to-draft', entry.slug, `${fieldKey}:${refId}`),
+                    id: makeViolationId(
+                        'relation-points-to-draft',
+                        entry.slug,
+                        `${fieldKey}:${refId}`
+                    ),
                     ruleId: 'relation-points-to-draft',
                     severity: 'warning',
                     entrySlug: entry.slug,

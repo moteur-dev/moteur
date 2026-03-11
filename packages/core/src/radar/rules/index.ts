@@ -35,7 +35,9 @@ const BASE_RULES: RuleEvaluator[] = [
     aiBadgeUnreviewed
 ];
 
-export function runAllRules(ctx: import('./types.js').RadarRuleContext): import('@moteur/types/Radar.js').RadarViolation[] {
+export function runAllRules(
+    ctx: import('./types.js').RadarRuleContext
+): import('@moteur/types/Radar.js').RadarViolation[] {
     const out: import('@moteur/types/Radar.js').RadarViolation[] = [];
     for (const rule of BASE_RULES) {
         out.push(...rule(ctx));
@@ -43,6 +45,19 @@ export function runAllRules(ctx: import('./types.js').RadarRuleContext): import(
     return out;
 }
 
-export { requiredFieldEmpty, brokenRelation, missingSlug, emptyBlockRequiredField, relationSelfReference };
-export { staleTranslation, missingLocale, relationPointsToDraft, missingAltText, emptyBody, draftStale };
+export {
+    requiredFieldEmpty,
+    brokenRelation,
+    missingSlug,
+    emptyBlockRequiredField,
+    relationSelfReference
+};
+export {
+    staleTranslation,
+    missingLocale,
+    relationPointsToDraft,
+    missingAltText,
+    emptyBody,
+    draftStale
+};
 export { orphanedEntry, thinBody, missingExcerpt, missingCover, aiBadgeUnreviewed };

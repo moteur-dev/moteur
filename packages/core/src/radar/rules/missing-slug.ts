@@ -7,7 +7,8 @@ export const missingSlug: RuleEvaluator = ({ entry, model }) => {
     )?.[0];
     if (!slugFieldKey) return [];
     const value = entry.data[slugFieldKey];
-    const empty = value === undefined || value === null || (typeof value === 'string' && value.trim() === '');
+    const empty =
+        value === undefined || value === null || (typeof value === 'string' && value.trim() === '');
     if (!empty) return [];
     return [
         {

@@ -6,8 +6,7 @@ function hasImage(value: unknown): boolean {
     const o = value as Record<string, unknown>;
     const src = o.src ?? o.value;
     return (
-        (typeof src === 'string' && src.trim() !== '') ||
-        (typeof src === 'object' && src !== null)
+        (typeof src === 'string' && src.trim() !== '') || (typeof src === 'object' && src !== null)
     );
 }
 

@@ -12,7 +12,8 @@ function collectEmptyRequiredInStructure(
     for (const [k, def] of Object.entries(schemaFields)) {
         const required = (def?.options as { required?: boolean })?.required === true;
         const val = obj[k];
-        const empty = val === undefined || val === null || (typeof val === 'string' && val.trim() === '');
+        const empty =
+            val === undefined || val === null || (typeof val === 'string' && val.trim() === '');
         if (required && empty) {
             out.push({ path: `${pathPrefix}.${k}`, fieldKey: k });
         }
@@ -26,8 +27,17 @@ export const emptyBlockRequiredField: RuleEvaluator = ({ entry, model }) => {
     for (const [fieldKey, fieldDef] of Object.entries(model.fields)) {
         if (fieldDef?.type !== 'core/structure') continue;
         const value = entry.data[fieldKey];
-        const content = value && typeof value === 'object' && 'content' in value ? (value as { content: unknown }).content : null;
-        const inlineSchema = (fieldDef.options as { inlineSchema?: { fields?: Record<string, { type?: string; options?: Record<string, unknown> }> } })?.inlineSchema;
+        const content =
+            value && typeof value === 'object' && 'content' in value
+                ? (value as { content: unknown }).content
+                : null;
+        const inlineSchema = (
+            fieldDef.options as {
+                inlineSchema?: {
+                    fields?: Record<string, { type?: string; options?: Record<string, unknown> }>;
+                };
+            }
+        )?.inlineSchema;
         const schemaFields = inlineSchema?.fields;
         const emptyPaths = collectEmptyRequiredInStructure(content, schemaFields, fieldKey);
         for (const { path } of emptyPaths) {

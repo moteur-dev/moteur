@@ -1,15 +1,23 @@
 import type { RuleEvaluator } from './types.js';
 import { makeViolationId } from '../violationId.js';
 
-function hasBodyContent(entry: { data: Record<string, unknown> }, model: { fields: Record<string, { type?: string }> }): boolean {
-    const bodyKey = Object.entries(model.fields).find(([, def]) => def?.type === 'core/structure')?.[0];
+function hasBodyContent(
+    entry: { data: Record<string, unknown> },
+    model: { fields: Record<string, { type?: string }> }
+): boolean {
+    const bodyKey = Object.entries(model.fields).find(
+        ([, def]) => def?.type === 'core/structure'
+    )?.[0];
     if (!bodyKey) return false;
     const value = entry.data[bodyKey];
     if (value == null) return false;
     if (typeof value === 'object' && 'content' in value) {
         const content = (value as { content: unknown }).content;
         if (content && typeof content === 'object' && 'blocks' in content) {
-            return Array.isArray((content as { blocks: unknown[] }).blocks) && (content as { blocks: unknown[] }).blocks.length > 0;
+            return (
+                Array.isArray((content as { blocks: unknown[] }).blocks) &&
+                (content as { blocks: unknown[] }).blocks.length > 0
+            );
         }
     }
     return false;

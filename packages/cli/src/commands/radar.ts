@@ -1,10 +1,7 @@
 import { cliRegistry } from '@moteur/core/registry/CommandRegistry.js';
 import { cliLoadUser } from '../utils/auth.js';
 import { projectSelectPrompt } from '../utils/projectSelectPrompt.js';
-import {
-    loadRadarReport,
-    runFullScan
-} from '@moteur/core/radar/index.js';
+import { loadRadarReport, runFullScan } from '@moteur/core/radar/index.js';
 import type { RadarViolation } from '@moteur/types/Radar.js';
 
 export async function radarCommand(args: {
@@ -110,6 +107,7 @@ function printViolation(v: RadarViolation) {
 
 cliRegistry.register('radar', {
     name: '',
-    description: 'Show Radar violations (content health). Use --scan to run a full scan, --format=json for JSON.',
+    description:
+        'Show Radar violations (content health). Use --scan to run a full scan, --format=json for JSON.',
     action: radarCommand
 });
