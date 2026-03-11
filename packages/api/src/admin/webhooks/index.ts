@@ -157,7 +157,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
             ],
             requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
-            responses: { '201': { description: 'Webhook created' }, '422': { description: 'Validation failed' } }
+            responses: {
+                '201': { description: 'Webhook created' },
+                '422': { description: 'Validation failed' }
+            }
         }
     },
     '/admin/projects/{projectId}/webhooks/{webhookId}': {
@@ -178,7 +181,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } }
             ],
             requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
-            responses: { '200': { description: 'Webhook updated' }, '404': { description: 'Not found' } }
+            responses: {
+                '200': { description: 'Webhook updated' },
+                '404': { description: 'Not found' }
+            }
         },
         delete: {
             summary: 'Delete webhook',
@@ -234,7 +240,11 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'webhookId', in: 'path', required: true, schema: { type: 'string' } },
                 { name: 'deliveryId', in: 'path', required: true, schema: { type: 'string' } }
             ],
-            responses: { '204': { description: 'Retry queued' }, '404': { description: 'Not found' }, '422': { description: 'Only failed deliveries can be retried' } }
+            responses: {
+                '204': { description: 'Retry queued' },
+                '404': { description: 'Not found' },
+                '422': { description: 'Only failed deliveries can be retried' }
+            }
         }
     }
 };

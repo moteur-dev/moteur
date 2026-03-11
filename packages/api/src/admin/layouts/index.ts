@@ -86,7 +86,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'projectId', in: 'path', required: true, schema: { type: 'string' } }
             ],
             requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
-            responses: { '201': { description: 'Layout created' }, '400': { description: 'Bad request' } }
+            responses: {
+                '201': { description: 'Layout created' },
+                '400': { description: 'Bad request' }
+            }
         }
     },
     '/admin/projects/{projectId}/layouts/{layoutId}': {
@@ -107,7 +110,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'layoutId', in: 'path', required: true, schema: { type: 'string' } }
             ],
             requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
-            responses: { '200': { description: 'Layout updated' }, '404': { description: 'Not found' } }
+            responses: {
+                '200': { description: 'Layout updated' },
+                '404': { description: 'Not found' }
+            }
         },
         delete: {
             summary: 'Delete layout',

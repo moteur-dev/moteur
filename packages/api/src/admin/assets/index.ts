@@ -242,7 +242,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
             ],
             requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
-            responses: { '200': { description: 'Asset updated' }, '404': { description: 'Not found' } }
+            responses: {
+                '200': { description: 'Asset updated' },
+                '404': { description: 'Not found' }
+            }
         },
         delete: {
             summary: 'Delete asset',
@@ -273,7 +276,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                     }
                 }
             },
-            responses: { '200': { description: 'Asset moved' }, '404': { description: 'Not found' } }
+            responses: {
+                '200': { description: 'Asset moved' },
+                '404': { description: 'Not found' }
+            }
         }
     }
 };

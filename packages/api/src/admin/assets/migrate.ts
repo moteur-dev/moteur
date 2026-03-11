@@ -9,7 +9,8 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
     '/admin/assets/migrate-provider': {
         post: {
             summary: 'Migrate assets between storage providers',
-            description: 'Migrate assets from one storage provider to another (e.g. local to Mux). Requires admin auth.',
+            description:
+                'Migrate assets from one storage provider to another (e.g. local to Mux). Requires admin auth.',
             tags: ['Admin Assets'],
             requestBody: {
                 content: {
@@ -18,7 +19,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                             type: 'object',
                             properties: {
                                 fromProvider: { type: 'string' },
-                                toProvider: { type: 'string', description: 'Target provider (required)' },
+                                toProvider: {
+                                    type: 'string',
+                                    description: 'Target provider (required)'
+                                },
                                 projectIds: { type: 'array', items: { type: 'string' } },
                                 keepLocalCopy: { type: 'boolean' }
                             },

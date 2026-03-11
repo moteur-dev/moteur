@@ -38,13 +38,15 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
     '/api/moteur/blocks': {
         get: {
             summary: 'List block types (public)',
-            description: 'Returns all registered block schemas with variant hints stripped for public use.',
+            description:
+                'Returns all registered block schemas with variant hints stripped for public use.',
             tags: ['Blocks'],
             responses: { '200': { description: 'Map of block id to block schema' } }
         },
         post: {
             summary: 'Register block type',
-            description: 'Create a new block type from a schema. Request body must be a block schema object.',
+            description:
+                'Create a new block type from a schema. Request body must be a block schema object.',
             tags: ['Blocks'],
             requestBody: {
                 content: {

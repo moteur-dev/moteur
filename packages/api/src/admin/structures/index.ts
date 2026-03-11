@@ -118,7 +118,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                     }
                 }
             },
-            responses: { '201': { description: 'Structure created' }, '400': { description: 'Bad request' } }
+            responses: {
+                '201': { description: 'Structure created' },
+                '400': { description: 'Bad request' }
+            }
         }
     },
     '/admin/projects/{projectId}/structures/{id}': {
@@ -139,7 +142,10 @@ export const openapi: Record<string, OpenAPIV3.PathItemObject> = {
                 { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
             ],
             requestBody: { content: { 'application/json': { schema: { type: 'object' } } } },
-            responses: { '200': { description: 'Structure updated' }, '404': { description: 'Not found' } }
+            responses: {
+                '200': { description: 'Structure updated' },
+                '404': { description: 'Not found' }
+            }
         },
         delete: {
             summary: 'Delete structure',
